@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoMovimiento {
+  INGRESO
+  EGRESO
+}
+
+model Categoria {
+  id          String          @id @default(cuid())
+  nombre      String          @unique
+  tipo        TipoMovimiento
+  icono       String          @default("CircleDollarSign")
+  createdAt   DateTime        @default(now())
+  movimientos Movimiento[]
+}
+
+model Plataforma {
+  id          String       @id @default(cuid())
+  nombre      String       @unique
+  createdAt   DateTime     @default(now())
+  movimientos Movimiento[]
+}
+
+model Movimiento {
+  id            String          @id @default(cuid())
+  createdAt     DateTime        @default(now())
+  concepto      String
+  monto         Float
+  tipo          TipoMovimiento
+  categoriaId   String
+  categoria     Categoria       @relation(fields: [categoriaId], references: [id])
+  plataformaId  String?
+  plataforma    Plataforma?     @relation(fields: [plataformaId], references: [id])
+  fecha         DateTime
+
+  @@index([fecha])
+  @@index([tipo])
+}
+
+model Configuracion {
+  id                String @id @default("default")
+  porcentajeAhorro  Float  @default(0.20)
+}
