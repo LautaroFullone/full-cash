@@ -1,0 +1,21 @@
+{
+   "prisma.pinToPrisma6": true,
+   "workbench.colorCustomizations": {
+      "activityBar.activeBackground": "#006e8b",
+      "activityBar.activeBorder": "#ffc63f",
+      "activityBar.background": "#003a34",
+      "activityBar.foreground": "#e5ffa6",
+      "activityBar.inactiveForeground": "#e5ffa699",
+      "activityBarBadge.background": "#ff4b5a",
+      "activityBarBadge.foreground": "#e5ffa6",
+      "statusBar.background": "#003a34",
+      "statusBar.foreground": "#e5ffa6",
+      "statusBarItem.hoverBackground": "#006e8b",
+      "statusBarItem.remoteBackground": "#006e8b",
+      "statusBarItem.remoteForeground": "#e5ffa6",
+      "titleBar.activeBackground": "#003a34",
+      "titleBar.activeForeground": "#e5ffa6",
+      "titleBar.inactiveBackground": "#003a3499",
+      "titleBar.inactiveForeground": "#e5ffa699"
+   }
+}
