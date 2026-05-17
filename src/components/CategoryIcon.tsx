@@ -1,55 +1,26 @@
-import {
-  Briefcase,
-  Rocket,
-  Gift,
-  Building2,
-  HandCoins,
-  CircleDollarSign,
-  Home,
-  UtensilsCrossed,
-  Wifi,
-  Gamepad2,
-  Car,
-  Heart,
-  GraduationCap,
-  Shirt,
-  CreditCard,
-  PawPrint,
-  MoreHorizontal,
-  type LucideProps,
-} from 'lucide-react';
-import { CATEGORY_ICON_MAP } from '@/types';
-
-const iconComponents: Record<string, React.ComponentType<LucideProps>> = {
-  Briefcase,
-  Rocket,
-  Gift,
-  Building2,
-  HandCoins,
-  CircleDollarSign,
-  Home,
-  UtensilsCrossed,
-  Wifi,
-  Gamepad2,
-  Car,
-  Heart,
-  GraduationCap,
-  Shirt,
-  CreditCard,
-  PawPrint,
-  MoreHorizontal,
-};
-
 interface CategoryIconProps {
-  categoryName: string;
-  iconName?: string;
+  icono: string; // emoji string o fallback
   size?: number;
   className?: string;
 }
 
-export function CategoryIcon({ categoryName, iconName, size = 20, className = '' }: CategoryIconProps) {
-  const resolvedIconName = iconName || CATEGORY_ICON_MAP[categoryName] || 'CircleDollarSign';
-  const IconComponent = iconComponents[resolvedIconName] || CircleDollarSign;
+/**
+ * Renders a category icon — now emoji-based.
+ * If `icono` looks like a Lucide icon name (old data), shows a fallback.
+ */
+export function CategoryIcon({ icono, size = 20, className = '' }: CategoryIconProps) {
+  // Detect if it's an emoji (not a PascalCase Lucide name)
+  const isEmoji = icono && !/^[A-Z]/.test(icono);
+  const display = isEmoji ? icono : '💰';
 
-  return <IconComponent size={size} className={className} strokeWidth={1.8} />;
+  return (
+    <span
+      className={className}
+      style={{ fontSize: size, lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}
+      role="img"
+      aria-label="category icon"
+    >
+      {display}
+    </span>
+  );
 }

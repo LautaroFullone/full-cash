@@ -1,26 +1,27 @@
 import prisma from './lib/prisma.js';
 
 const CATEGORIAS_INGRESO = [
-  { nombre: 'Sueldo', icono: 'Briefcase' },
-  { nombre: 'Emprendimiento', icono: 'Rocket' },
-  { nombre: 'Bono', icono: 'Gift' },
-  { nombre: 'Negocio', icono: 'Building2' },
-  { nombre: 'Deudas cobradas', icono: 'HandCoins' },
-  { nombre: 'Otros ingresos', icono: 'CircleDollarSign' },
+  { nombre: 'Sueldo', icono: '💼' },
+  { nombre: 'Emprendimiento', icono: '🚀' },
+  { nombre: 'Bono', icono: '🎁' },
+  { nombre: 'Negocio', icono: '🏢' },
+  { nombre: 'Deudas cobradas', icono: '🤝' },
+  { nombre: 'Otros ingresos', icono: '💰' },
 ];
 
 const CATEGORIAS_EGRESO = [
-  { nombre: 'Vivienda', icono: 'Home' },
-  { nombre: 'Comida', icono: 'UtensilsCrossed' },
-  { nombre: 'Servicios', icono: 'Wifi' },
-  { nombre: 'Entretenimiento', icono: 'Gamepad2' },
-  { nombre: 'Transporte', icono: 'Car' },
-  { nombre: 'Salud', icono: 'Heart' },
-  { nombre: 'Educación', icono: 'GraduationCap' },
-  { nombre: 'Ropa', icono: 'Shirt' },
-  { nombre: 'Deudas', icono: 'CreditCard' },
-  { nombre: 'Mascotas', icono: 'PawPrint' },
-  { nombre: 'Otros gastos', icono: 'MoreHorizontal' },
+  { nombre: 'Vivienda', icono: '🏠' },
+  { nombre: 'Comida', icono: '🍕' },
+  { nombre: 'Servicios', icono: '💡' },
+  { nombre: 'Entretenimiento', icono: '🎮' },
+  { nombre: 'Transporte', icono: '🚗' },
+  { nombre: 'Salud', icono: '💊' },
+  { nombre: 'Educación', icono: '🎓' },
+  { nombre: 'Ropa', icono: '👕' },
+  { nombre: 'Deudas', icono: '💳' },
+  { nombre: 'Mascotas', icono: '🐕' },
+  { nombre: 'Supermercado', icono: '🛒' },
+  { nombre: 'Otros gastos', icono: '📌' },
 ];
 
 const PLATAFORMAS = ['Mercado Pago', 'Santander', 'Efectivo'];
@@ -28,11 +29,10 @@ const PLATAFORMAS = ['Mercado Pago', 'Santander', 'Efectivo'];
 async function seed() {
   console.log('🌱 Seeding database...');
 
-  // Seed categorías
   for (const cat of CATEGORIAS_INGRESO) {
     await prisma.categoria.upsert({
       where: { nombre: cat.nombre },
-      update: {},
+      update: { icono: cat.icono },
       create: { ...cat, tipo: 'INGRESO' },
     });
   }
@@ -40,12 +40,11 @@ async function seed() {
   for (const cat of CATEGORIAS_EGRESO) {
     await prisma.categoria.upsert({
       where: { nombre: cat.nombre },
-      update: {},
+      update: { icono: cat.icono },
       create: { ...cat, tipo: 'EGRESO' },
     });
   }
 
-  // Seed plataformas
   for (const nombre of PLATAFORMAS) {
     await prisma.plataforma.upsert({
       where: { nombre },
@@ -54,7 +53,6 @@ async function seed() {
     });
   }
 
-  // Seed configuración default
   await prisma.configuracion.upsert({
     where: { id: 'default' },
     update: {},
@@ -65,10 +63,5 @@ async function seed() {
 }
 
 seed()
-  .catch((e) => {
-    console.error('❌ Seed failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch(e => { console.error('❌ Seed failed:', e); process.exit(1); })
+  .finally(async () => { await prisma.$disconnect(); });

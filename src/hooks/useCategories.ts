@@ -8,12 +8,18 @@ export function useCategories() {
   const query = useQuery({
     queryKey: ['categorias'],
     queryFn: () => api.getCategorias() as Promise<Categoria[]>,
-    staleTime: 5 * 60_000, // categorías cambian poco
+    staleTime: 5 * 60_000,
   });
 
   const createCategoria = useMutation({
     mutationFn: (data: { nombre: string; tipo: 'INGRESO' | 'EGRESO'; icono: string }) =>
       api.createCategoria(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['categorias'] }),
+  });
+
+  const updateCategoria = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { nombre?: string; icono?: string } }) =>
+      api.updateCategoria(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['categorias'] }),
   });
 
@@ -25,8 +31,14 @@ export function useCategories() {
   return {
     categorias: query.data ?? [],
     loading: query.isLoading,
-    createCategoria: (data: { nombre: string; tipo: 'INGRESO' | 'EGRESO'; icono: string }) =>
-      createCategoria.mutateAsync(data),
-    deleteCategoria: (id: string) => deleteCategoria.mutateAsync(id),
+    createCategoria: async (data: { nombre: string; tipo: 'INGRESO' | 'EGRESO'; icono: string }): Promise<void> => {
+      await createCategoria.mutateAsync(data);
+    },
+    updateCategoria: async (id: string, data: { nombre?: string; icono?: string }): Promise<void> => {
+      await updateCategoria.mutateAsync({ id, data });
+    },
+    deleteCategoria: async (id: string): Promise<void> => {
+      await deleteCategoria.mutateAsync(id);
+    },
   };
 }

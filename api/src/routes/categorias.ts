@@ -39,6 +39,24 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PUT /api/categorias/:id
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = createCategoriaSchema.partial().parse(req.body);
+    const categoria = await prisma.categoria.update({ where: { id }, data });
+    res.json(categoria);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Datos inválidos', details: error.errors });
+      return;
+    }
+    console.error('Error updating categoria:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+
 // DELETE /api/categorias/:id
 router.delete('/:id', async (req, res) => {
   try {

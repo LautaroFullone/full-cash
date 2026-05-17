@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Wallet } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Wallet, Tags } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface HeaderProps {
@@ -7,9 +7,10 @@ interface HeaderProps {
   saldo: number;
   onPrevMonth: () => void;
   onNextMonth: () => void;
+  onOpenCategories: () => void;
 }
 
-export function Header({ anio, monthName, saldo, onPrevMonth, onNextMonth }: HeaderProps) {
+export function Header({ anio, monthName, saldo, onPrevMonth, onNextMonth, onOpenCategories }: HeaderProps) {
   const isPositive = saldo >= 0;
 
   return (
@@ -39,6 +40,24 @@ export function Header({ anio, monthName, saldo, onPrevMonth, onNextMonth }: Hea
             </p>
           </div>
         </div>
+
+        {/* Right side: categories button + month selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button
+          onClick={onOpenCategories}
+          title="Gestionar categorías"
+          style={{
+            width: '36px', height: '36px', borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--color-border-strong)', background: 'transparent',
+            color: 'var(--color-text-muted)', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-strong)'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
+        >
+          <Tags size={16} />
+        </button>
 
         {/* Month Selector */}
         <div
@@ -103,6 +122,7 @@ export function Header({ anio, monthName, saldo, onPrevMonth, onNextMonth }: Hea
           >
             <ChevronRight size={16} />
           </button>
+        </div>
         </div>
       </div>
 

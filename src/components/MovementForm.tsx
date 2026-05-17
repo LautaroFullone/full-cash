@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Plus, X, Loader2 } from 'lucide-react';
 import { CategoryIcon } from './CategoryIcon';
 import { CurrencyInput } from './CurrencyInput';
+import { DatePicker } from './DatePicker';
+import { format } from 'date-fns';
 import type { Categoria, Plataforma, TipoMovimiento } from '@/types';
 
 interface MovementFormProps {
@@ -24,7 +26,7 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
   const [monto, setMonto] = useState<number | ''>('');
   const [categoriaId, setCategoriaId] = useState('');
   const [plataformaId, setPlataformaId] = useState('');
-  const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
+  const [fecha, setFecha] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -35,7 +37,7 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
     setMonto('');
     setCategoriaId('');
     setPlataformaId('');
-    setFecha(new Date().toISOString().split('T')[0]);
+    setFecha(format(new Date(), 'yyyy-MM-dd'));
     setError('');
   };
 
@@ -44,7 +46,6 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
     if (!concepto.trim()) { setError('Ingresá un concepto'); return; }
     if (!monto || monto <= 0) { setError('Ingresá un monto válido'); return; }
     if (!categoriaId) { setError('Seleccioná una categoría'); return; }
-
     try {
       setLoading(true);
       setError('');
@@ -70,7 +71,6 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
     setCategoriaId('');
   };
 
-  // ── Label helper ──
   const Label = ({ children }: { children: React.ReactNode }) => (
     <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px', display: 'block' }}>
       {children}
@@ -79,7 +79,7 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
 
   return (
     <>
-      {/* FAB Button */}
+      {/* FAB */}
       <button
         onClick={() => setIsOpen(true)}
         aria-label="Nuevo movimiento"
@@ -113,11 +113,11 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
             style={{
               width: '100%', maxWidth: '520px',
               background: 'var(--color-surface)', borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0',
-              padding: '8px 20px 32px', maxHeight: '92dvh', overflowY: 'auto',
+              padding: '8px 20px 40px', maxHeight: '92dvh', overflowY: 'auto',
               border: '1px solid var(--color-border)', borderBottom: 'none',
             }}
           >
-            {/* Handle */}
+            {/* Drag handle */}
             <div style={{ width: '40px', height: '4px', borderRadius: '2px', background: 'var(--color-border-strong)', margin: '12px auto 20px' }} />
 
             {/* Header */}
@@ -129,26 +129,17 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              {/* Tipo Toggle */}
+              {/* Tipo */}
               <div>
                 <Label>Tipo</Label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border-strong)' }}>
                   {(['INGRESO', 'EGRESO'] as TipoMovimiento[]).map(t => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => handleTipoChange(t)}
-                      style={{
-                        padding: '11px', border: 'none', fontSize: '14px', fontWeight: 700,
-                        fontFamily: 'var(--font-body)', cursor: 'pointer', transition: 'all 0.2s ease',
-                        background: tipo === t
-                          ? (t === 'INGRESO' ? 'var(--color-accent)' : 'var(--color-danger)')
-                          : 'var(--color-background)',
-                        color: tipo === t
-                          ? (t === 'INGRESO' ? 'var(--color-background)' : '#fff')
-                          : 'var(--color-text-muted)',
-                      }}
-                    >
+                    <button key={t} type="button" onClick={() => handleTipoChange(t)} style={{
+                      padding: '11px', border: 'none', fontSize: '14px', fontWeight: 700,
+                      fontFamily: 'var(--font-body)', cursor: 'pointer', transition: 'all 0.2s ease',
+                      background: tipo === t ? (t === 'INGRESO' ? 'var(--color-accent)' : 'var(--color-danger)') : 'var(--color-background)',
+                      color: tipo === t ? (t === 'INGRESO' ? 'var(--color-background)' : '#fff') : 'var(--color-text-muted)',
+                    }}>
                       {t === 'INGRESO' ? '↑ Ingreso' : '↓ Gasto'}
                     </button>
                   ))}
@@ -158,15 +149,10 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
               {/* Concepto */}
               <div>
                 <Label>Concepto</Label>
-                <input
-                  value={concepto}
-                  onChange={e => setConcepto(e.target.value)}
-                  placeholder="Ej: Sueldo, Supermercado..."
-                  style={{ width: '100%' }}
-                />
+                <input value={concepto} onChange={e => setConcepto(e.target.value)} placeholder="Ej: Sueldo, Supermercado..." style={{ width: '100%' }} />
               </div>
 
-              {/* Monto — CurrencyInput */}
+              {/* Monto */}
               <div>
                 <Label>Monto</Label>
                 <CurrencyInput value={monto} onChange={setMonto} />
@@ -175,13 +161,14 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
               {/* Categoría */}
               <div>
                 <Label>Categoría</Label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {filteredCategorias.map(cat => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => setCategoriaId(cat.id)}
-                      style={{
+                {filteredCategorias.length === 0 ? (
+                  <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', padding: '8px 0' }}>
+                    No hay categorías de {tipo === 'INGRESO' ? 'ingreso' : 'gasto'}. Creá una desde el gestor.
+                  </p>
+                ) : (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {filteredCategorias.map(cat => (
+                      <button key={cat.id} type="button" onClick={() => setCategoriaId(cat.id)} style={{
                         display: 'flex', alignItems: 'center', gap: '6px',
                         padding: '7px 12px', borderRadius: 'var(--radius-full)', border: '1px solid',
                         fontSize: '13px', fontFamily: 'var(--font-body)', cursor: 'pointer',
@@ -189,13 +176,13 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
                         borderColor: categoriaId === cat.id ? 'var(--color-accent)' : 'var(--color-border-strong)',
                         background: categoriaId === cat.id ? 'rgba(229,255,166,0.1)' : 'var(--color-background)',
                         color: categoriaId === cat.id ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-                      }}
-                    >
-                      <CategoryIcon categoryName={cat.nombre} iconName={cat.icono} size={14} />
-                      {cat.nombre}
-                    </button>
-                  ))}
-                </div>
+                      }}>
+                        <CategoryIcon icono={cat.icono} size={14} />
+                        {cat.nombre}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Plataforma */}
@@ -203,47 +190,29 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
                 <Label>Plataforma (opcional)</Label>
                 <select value={plataformaId} onChange={e => setPlataformaId(e.target.value)} style={{ width: '100%' }}>
                   <option value="">Sin plataforma</option>
-                  {plataformas.map(p => (
-                    <option key={p.id} value={p.id}>{p.nombre}</option>
-                  ))}
+                  {plataformas.map(p => (<option key={p.id} value={p.id}>{p.nombre}</option>))}
                 </select>
               </div>
 
-              {/* Fecha */}
+              {/* Fecha — DatePicker */}
               <div>
                 <Label>Fecha</Label>
-                <input
-                  type="date"
-                  value={fecha}
-                  onChange={e => setFecha(e.target.value)}
-                  style={{ width: '100%' }}
-                />
+                <DatePicker value={fecha} onChange={setFecha} />
               </div>
 
               {/* Error */}
-              {error && (
-                <p style={{ fontSize: '13px', color: 'var(--color-danger)', margin: 0, fontWeight: 500 }}>
-                  ⚠ {error}
-                </p>
-              )}
+              {error && <p style={{ fontSize: '13px', color: 'var(--color-danger)', margin: 0, fontWeight: 500 }}>⚠ {error}</p>}
 
               {/* Submit */}
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  marginTop: '4px', padding: '15px', border: 'none',
-                  borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-heading)',
-                  fontSize: '15px', fontWeight: 700, cursor: loading ? 'wait' : 'pointer',
-                  background: 'var(--color-text-primary)', color: 'var(--color-background)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                  opacity: loading ? 0.7 : 1, transition: 'all 0.2s ease',
-                }}
-              >
-                {loading
-                  ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
-                  : <Plus size={18} />
-                }
+              <button type="submit" disabled={loading} style={{
+                marginTop: '4px', padding: '15px', border: 'none', borderRadius: 'var(--radius-md)',
+                fontFamily: 'var(--font-heading)', fontSize: '15px', fontWeight: 700,
+                cursor: loading ? 'wait' : 'pointer',
+                background: 'var(--color-text-primary)', color: 'var(--color-background)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                opacity: loading ? 0.7 : 1, transition: 'all 0.2s ease',
+              }}>
+                {loading ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <Plus size={18} />}
                 Guardar movimiento
               </button>
             </form>

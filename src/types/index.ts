@@ -30,7 +30,7 @@ export interface Categoria {
   id: string;
   nombre: string;
   tipo: TipoMovimiento;
-  icono: string; // nombre del icono Lucide
+  icono: string; // emoji character
   createdAt: string;
 }
 
@@ -67,7 +67,6 @@ export interface ResumenMensual {
     categoriaNombre: string;
     total: number;
     porcentaje: number;
-    color: string;
   }[];
 }
 
@@ -99,23 +98,4 @@ export const CATEGORY_COLORS = [
   '#fab1a0', // salmon
 ] as const;
 
-// Mapeo de categoría → icono Lucide
-export const CATEGORY_ICON_MAP: Record<string, string> = {
-  'Sueldo': 'Briefcase',
-  'Emprendimiento': 'Rocket',
-  'Bono': 'Gift',
-  'Negocio': 'Building2',
-  'Deudas cobradas': 'HandCoins',
-  'Otros ingresos': 'CircleDollarSign',
-  'Vivienda': 'Home',
-  'Comida': 'UtensilsCrossed',
-  'Servicios': 'Wifi',
-  'Entretenimiento': 'Gamepad2',
-  'Transporte': 'Car',
-  'Salud': 'Heart',
-  'Educación': 'GraduationCap',
-  'Ropa': 'Shirt',
-  'Deudas': 'CreditCard',
-  'Mascotas': 'PawPrint',
-  'Otros gastos': 'MoreHorizontal',
-};
+

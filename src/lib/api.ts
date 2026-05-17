@@ -39,6 +39,9 @@ export const api = {
   createCategoria: (data: Record<string, unknown>) =>
     fetchAPI('/categorias', { method: 'POST', body: JSON.stringify(data) }),
 
+  updateCategoria: (id: string, data: Record<string, unknown>) =>
+    fetchAPI(`/categorias/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+
   deleteCategoria: (id: string) =>
     fetchAPI(`/categorias/${id}`, { method: 'DELETE' }),
 

@@ -89,7 +89,7 @@ export function MovementList({ movimientos, onDelete }: MovementListProps) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: mov.tipo === 'INGRESO' ? 'var(--color-accent)' : 'var(--color-danger)',
               }}>
-                <CategoryIcon categoryName={mov.categoria?.nombre || ''} iconName={mov.categoria?.icono} size={18} />
+                <CategoryIcon icono={mov.categoria?.icono ?? '💰'} size={18} />
               </div>
 
               {/* Info */}
