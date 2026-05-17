@@ -44,13 +44,12 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-try {
-  await prisma.$connect();
-  console.log('✅ Conexión a la base de datos establecida con éxito.');
-} catch (error) {
-  console.error('❌ Error al conectar con la base de datos:', error);
-}
-
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Full Cash API running on http://localhost:${PORT}`);
+  try {
+    await prisma.$connect();
+    console.log('✅ Conexión a la base de datos establecida con éxito.');
+  } catch (error) {
+    console.error('❌ Error al conectar con la base de datos:', error);
+  }
 });
