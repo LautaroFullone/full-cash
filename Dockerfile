@@ -15,8 +15,8 @@ RUN npm ci --prefix api
 # Copiar todo el código fuente
 COPY . .
 
-# Generar cliente de Prisma
-RUN npx prisma generate --schema=api/prisma/schema.prisma
+# Generar cliente de Prisma usando la versión local de la API
+RUN cd api && npx prisma generate
 
 # Compilar frontend (Vite)
 RUN npm run build
