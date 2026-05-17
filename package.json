@@ -4,13 +4,13 @@
    "version": "0.0.0",
    "type": "module",
    "scripts": {
-      "dev": "concurrently -n front,api -c cyan,magenta \"vite --port=3000\" \"tsx watch api/src/index.ts --env-file=api/env\"",
+      "dev": "concurrently -n front,api -c cyan,magenta \"vite --port=3000\" \"tsx watch api/src/index.ts --env-file=api/.env\"",
       "dev:front": "vite --port=3000",
       "dev:api": "tsx watch --env-file=api/env api/src/index.ts",
       "build": "vite build",
       "preview": "vite preview",
       "lint": "eslint .",
-      "start": "tsx --env-file=api/env api/src/index.ts"
+      "start": "tsx api/src/index.ts --env-file=api/.env "
    },
    "dependencies": {
       "@radix-ui/react-slot": "^1.2.4",
