@@ -1,10 +1,12 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import movimientosRouter from './routes/movimientos.js';
-import categoriasRouter from './routes/categorias.js';
-import plataformasRouter from './routes/plataformas.js';
 import configuracionRouter from './routes/configuracion.js';
+import movimientosRouter from './routes/movimientos.js';
+import plataformasRouter from './routes/plataformas.js';
+import categoriasRouter from './routes/categorias.js';
+import { fileURLToPath } from 'url';
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import path from 'path';
 
 dotenv.config();
 
@@ -24,6 +26,22 @@ app.use('/api/configuracion', configuracionRouter);
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Serve frontend static assets in production
+if (process.env.NODE_ENV === 'production') {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const frontendDistPath = path.resolve(__dirname, '../../dist');
+  
+  app.use(express.static(frontendDistPath));
+  
+  // Serve the SPA client for any non-API route
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(frontendDistPath, 'index.html'));
+    }
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`🚀 Full Cash API running on http://localhost:${PORT}`);
