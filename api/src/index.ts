@@ -37,9 +37,11 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(frontendDistPath));
   
   // Serve the SPA client for any non-API route
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
       res.sendFile(path.join(frontendDistPath, 'index.html'));
+    } else {
+      next();
     }
   });
 }
