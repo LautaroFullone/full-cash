@@ -9,8 +9,8 @@
       "dev:api": "tsx watch --env-file=api/env api/src/index.ts",
       "build": "vite build",
       "preview": "vite preview",
-      "lint": "eslint .",
-      "start": "tsx api/src/index.ts --env-file=api/.env "
+      "lint": "tsc --noEmit",
+      "start": "tsx api/src/index.ts"
    },
    "dependencies": {
       "@radix-ui/react-slot": "^1.2.4",
