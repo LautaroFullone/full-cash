@@ -2,6 +2,7 @@ import configuracionRouter from './routes/configuracion.js';
 import movimientosRouter from './routes/movimientos.js';
 import plataformasRouter from './routes/plataformas.js';
 import categoriasRouter from './routes/categorias.js';
+import prisma from './lib/prisma.js';
 import { fileURLToPath } from 'url';
 import express from 'express';
 import dotenv from 'dotenv';
@@ -41,6 +42,13 @@ if (process.env.NODE_ENV === 'production') {
       res.sendFile(path.join(frontendDistPath, 'index.html'));
     }
   });
+}
+
+try {
+  await prisma.$connect();
+  console.log('✅ Conexión a la base de datos establecida con éxito.');
+} catch (error) {
+  console.error('❌ Error al conectar con la base de datos:', error);
 }
 
 app.listen(PORT, () => {
