@@ -15,9 +15,9 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payl
   if (!active || !payload?.length) return null;
   const data = payload[0].payload;
   return (
-    <div style={{ background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border-strong)', borderRadius: 'var(--radius-md)', padding: '10px 14px', boxShadow: 'var(--shadow-elevated)' }}>
-      <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0 }}>{data.categoriaNombre}</p>
-      <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', margin: '2px 0 0' }}>{formatCurrency(data.total)} · {data.porcentaje.toFixed(1)}%</p>
+    <div className="bg-surface-elevated border border-border-strong rounded-md px-3.5 py-2.5 shadow-elevated">
+      <p className="text-[13px] font-semibold text-white">{data.categoriaNombre}</p>
+      <p className="text-xs text-text-muted mt-0.5">{formatCurrency(data.total)} · {data.porcentaje.toFixed(1)}%</p>
     </div>
   );
 }
@@ -25,8 +25,8 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payl
 export function CategoryChart({ distribucion }: CategoryChartProps) {
   if (!distribucion.length) {
     return (
-      <div className="card animate-slide-up" style={{ padding: '32px 20px', textAlign: 'center', animationDelay: '0.3s', animationFillMode: 'backwards' }}>
-        <p style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>No hay gastos este mes para graficar</p>
+      <div className="card animate-slide-up px-5 py-8 text-center [animation-delay:0.3s] [animation-fill-mode:backwards]">
+        <p className="text-sm text-text-muted">No hay gastos este mes para graficar</p>
       </div>
     );
   }
@@ -34,27 +34,35 @@ export function CategoryChart({ distribucion }: CategoryChartProps) {
   const chartData = distribucion.map((item, i) => ({ ...item, color: CATEGORY_COLORS[i % CATEGORY_COLORS.length] }));
 
   return (
-    <div className="card animate-slide-up" style={{ padding: '20px', animationDelay: '0.3s', animationFillMode: 'backwards' }}>
-      <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px' }}>Distribución de gastos</h3>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <div style={{ width: '140px', height: '140px', flexShrink: 0 }}>
+    <div className="card animate-slide-up p-5 [animation-delay:0.3s] [animation-fill-mode:backwards]">
+      <h3 className="text-sm font-semibold mb-4">Distribución de gastos</h3>
+      <div className="flex items-center gap-5">
+        <div className="w-[140px] h-[140px] shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={chartData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={3} dataKey="total" stroke="none" animationDuration={800}>
-                {chartData.map((entry, i) => (<Cell key={i} fill={entry.color} />))}
+              <Pie
+                data={chartData}
+                cx="50%" cy="50%"
+                innerRadius={40} outerRadius={65}
+                paddingAngle={3}
+                dataKey="total"
+                stroke="none"
+                animationDuration={800}
+              >
+                {chartData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {chartData.map((item) => (
-            <div key={item.categoriaId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.color, flexShrink: 0 }} />
-                <span style={{ color: 'var(--color-text-secondary)' }}>{item.categoriaNombre}</span>
+        <div className="flex-1 flex flex-col gap-2">
+          {chartData.map(item => (
+            <div key={item.categoriaId} className="flex items-center justify-between text-[13px]">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: item.color }} />
+                <span className="text-text-secondary">{item.categoriaNombre}</span>
               </div>
-              <span style={{ color: 'var(--color-text-muted)', fontWeight: 500, fontSize: '12px' }}>{item.porcentaje.toFixed(0)}%</span>
+              <span className="text-text-muted font-medium text-xs">{item.porcentaje.toFixed(0)}%</span>
             </div>
           ))}
         </div>

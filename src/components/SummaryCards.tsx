@@ -8,144 +8,35 @@ interface SummaryCardsProps {
 
 export function SummaryCards({ totalIngresos, totalEgresos }: SummaryCardsProps) {
   return (
-    <div
-      className="animate-slide-up"
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '12px',
-        animationDelay: '0.1s',
-        animationFillMode: 'backwards',
-      }}
-    >
+    <div className="animate-slide-up grid grid-cols-2 gap-3 [animation-delay:0.1s] [animation-fill-mode:backwards]">
       {/* Ingresos */}
-      <div
-        className="card"
-        style={{
-          padding: '20px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            top: '-10px',
-            right: '-10px',
-            width: '60px',
-            height: '60px',
-            borderRadius: '50%',
-            background: 'rgba(229,255,166,0.08)',
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            marginBottom: '12px',
-          }}
-        >
-          <div
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: 'var(--radius-sm)',
-              background: 'rgba(229,255,166,0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <TrendingUp size={16} color="var(--color-accent)" />
+      <div className="card p-5 relative overflow-hidden">
+        <div className="absolute -top-2.5 -right-2.5 w-[60px] h-[60px] rounded-full bg-accent/[8%]" />
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-sm bg-accent/[12%] flex items-center justify-center">
+            <TrendingUp size={16} className="text-accent" />
           </div>
-          <span
-            style={{
-              fontSize: '12px',
-              fontWeight: 600,
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}
-          >
+          <span className="text-xs font-semibold text-text-muted uppercase tracking-[0.5px]">
             Ingresos
           </span>
         </div>
-        <p
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '22px',
-            fontWeight: 700,
-            color: 'var(--color-accent)',
-            letterSpacing: '-0.5px',
-          }}
-        >
+        <p className="font-heading text-[22px] font-bold text-accent tracking-[-0.5px]">
           {formatCurrency(totalIngresos)}
         </p>
       </div>
 
       {/* Egresos */}
-      <div
-        className="card"
-        style={{
-          padding: '20px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            top: '-10px',
-            right: '-10px',
-            width: '60px',
-            height: '60px',
-            borderRadius: '50%',
-            background: 'rgba(255,75,90,0.08)',
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            marginBottom: '12px',
-          }}
-        >
-          <div
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: 'var(--radius-sm)',
-              background: 'rgba(255,75,90,0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <TrendingDown size={16} color="var(--color-danger)" />
+      <div className="card p-5 relative overflow-hidden">
+        <div className="absolute -top-2.5 -right-2.5 w-[60px] h-[60px] rounded-full bg-danger/[8%]" />
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-sm bg-danger/[12%] flex items-center justify-center">
+            <TrendingDown size={16} className="text-danger" />
           </div>
-          <span
-            style={{
-              fontSize: '12px',
-              fontWeight: 600,
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}
-          >
+          <span className="text-xs font-semibold text-text-muted uppercase tracking-[0.5px]">
             Egresos
           </span>
         </div>
-        <p
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '22px',
-            fontWeight: 700,
-            color: 'var(--color-danger)',
-            letterSpacing: '-0.5px',
-          }}
-        >
+        <p className="font-heading text-[22px] font-bold text-danger tracking-[-0.5px]">
           -{formatCurrency(totalEgresos)}
         </p>
       </div>

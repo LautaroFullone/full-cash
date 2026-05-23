@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth, addMonths, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface DatePickerProps {
-  value: string; // YYYY-MM-DD
+  value: string;
   onChange: (value: string) => void;
 }
 
@@ -17,92 +18,77 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     ? format(selected, "d 'de' MMMM, yyyy", { locale: es })
     : 'Seleccionar fecha';
 
-  // Build calendar grid
   const monthStart = startOfMonth(viewMonth);
   const monthEnd = endOfMonth(viewMonth);
-  const calStart = startOfWeek(monthStart, { weekStartsOn: 1 }); // Monday
+  const calStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
   const days: Date[] = [];
   let cur = calStart;
-  while (cur <= calEnd) {
-    days.push(cur);
-    cur = addDays(cur, 1);
-  }
+  while (cur <= calEnd) { days.push(cur); cur = addDays(cur, 1); }
 
   const today = new Date();
+  const WEEKDAYS = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'];
 
   const handleDayClick = (day: Date) => {
     onChange(format(day, 'yyyy-MM-dd'));
     setOpen(false);
   };
 
-  const WEEKDAYS = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'];
-
   return (
     <>
-      <div style={{ position: 'relative' }}>
+      <div className="relative">
         {/* Trigger */}
         <button
           type="button"
           onClick={() => setOpen(v => !v)}
-          style={{
-            width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-            padding: '10px 14px', borderRadius: 'var(--radius-md)',
-            border: `1px solid ${open ? 'var(--color-accent)' : 'var(--color-border-strong)'}`,
-            background: 'var(--color-background)', color: 'var(--color-text-primary)',
-            fontSize: '14px', fontFamily: 'var(--font-body)', cursor: 'pointer',
-            textAlign: 'left', transition: 'border-color 0.2s ease',
-            boxShadow: open ? '0 0 0 3px rgba(229,255,166,0.1)' : 'none',
-          }}
+          className={cn(
+            'w-full flex items-center gap-2.5 py-2.5 px-3.5 rounded-md border bg-background text-white text-sm font-body cursor-pointer text-left transition-all duration-200',
+            open ? 'border-accent shadow-[0_0_0_3px_rgba(229,255,166,0.1)]' : 'border-border-strong'
+          )}
         >
-          <CalendarDays size={16} color={open ? 'var(--color-accent)' : 'var(--color-text-muted)'} style={{ flexShrink: 0 }} />
-          <span style={{ flex: 1, textTransform: 'capitalize' }}>{displayLabel}</span>
+          <CalendarDays size={16} className={cn('shrink-0', open ? 'text-accent' : 'text-text-muted')} />
+          <span className="flex-1 capitalize">{displayLabel}</span>
         </button>
 
-        {/* Calendar Popover */}
+        {/* Calendar popover */}
         {open && (
           <div
-            style={{
-              position: 'absolute', top: 'calc(100% + 8px)', left: 0, right: 0, zIndex: 100,
-              background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--color-border-strong)', padding: '16px',
-              boxShadow: 'var(--shadow-elevated)',
-            }}
+            className="absolute top-[calc(100%+8px)] left-0 right-0 z-[100] bg-surface rounded-lg border border-border-strong p-4 shadow-elevated"
             onClick={e => e.stopPropagation()}
           >
-            {/* Month Nav */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            {/* Month nav */}
+            <div className="flex items-center justify-between mb-3">
               <button
                 type="button"
                 onClick={() => setViewMonth(m => subMonths(m, 1))}
-                style={{ width: '28px', height: '28px', border: '1px solid var(--color-border-strong)', borderRadius: 'var(--radius-xs)', background: 'transparent', color: 'var(--color-text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="w-7 h-7 border border-border-strong rounded-xs bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:text-white transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
-              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '14px', textTransform: 'capitalize' }}>
+              <span className="font-heading font-bold text-sm capitalize">
                 {format(viewMonth, 'MMMM yyyy', { locale: es })}
               </span>
               <button
                 type="button"
                 onClick={() => setViewMonth(m => addMonths(m, 1))}
-                style={{ width: '28px', height: '28px', border: '1px solid var(--color-border-strong)', borderRadius: 'var(--radius-xs)', background: 'transparent', color: 'var(--color-text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="w-7 h-7 border border-border-strong rounded-xs bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:text-white transition-colors"
               >
                 <ChevronRight size={14} />
               </button>
             </div>
 
             {/* Weekday headers */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
+            <div className="grid grid-cols-7 gap-0.5 mb-1">
               {WEEKDAYS.map(d => (
-                <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 700, color: 'var(--color-text-muted)', padding: '4px 0', textTransform: 'uppercase' }}>
+                <div key={d} className="text-center text-[10px] font-bold text-text-muted py-1 uppercase">
                   {d}
                 </div>
               ))}
             </div>
 
             {/* Day grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+            <div className="grid grid-cols-7 gap-0.5">
               {days.map((day, i) => {
                 const isSelected = selected && isSameDay(day, selected);
                 const isToday = isSameDay(day, today);
@@ -113,33 +99,13 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
                     key={i}
                     type="button"
                     onClick={() => handleDayClick(day)}
-                    style={{
-                      width: '100%', aspectRatio: '1', borderRadius: 'var(--radius-sm)',
-                      border: isToday && !isSelected ? '1px solid var(--color-border-strong)' : '1px solid transparent',
-                      background: isSelected ? 'var(--color-accent)' : 'transparent',
-                      color: isSelected
-                        ? '#003a34'
-                        : isToday
-                          ? 'var(--color-accent)'
-                          : isCurrentMonth
-                            ? 'var(--color-text-secondary)'
-                            : 'var(--color-text-muted)',
-                      fontSize: '13px',
-                      fontFamily: 'var(--font-body)',
-                      fontWeight: isSelected || isToday ? 700 : 400,
-                      cursor: 'pointer',
-                      opacity: isCurrentMonth ? 1 : 0.3,
-                      transition: 'all 0.1s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    onMouseEnter={e => {
-                      if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
-                    }}
-                    onMouseLeave={e => {
-                      if (!isSelected) e.currentTarget.style.background = 'transparent';
-                    }}
+                    className={cn(
+                      'w-full aspect-square rounded-sm border flex items-center justify-center text-[13px] font-body cursor-pointer transition-all duration-100',
+                      isSelected ? 'bg-accent text-[#003a34] border-transparent font-bold'
+                        : isToday ? 'border-border-strong text-accent font-bold bg-transparent hover:bg-white/[6%]'
+                          : 'border-transparent hover:bg-white/[6%]',
+                      isSelected ? '' : isCurrentMonth ? 'text-text-secondary' : 'text-text-muted opacity-30'
+                    )}
                   >
                     {format(day, 'd')}
                   </button>
@@ -150,12 +116,8 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         )}
       </div>
 
-      {/* Backdrop to close */}
       {open && (
-        <div
-          style={{ position: 'fixed', inset: 0, zIndex: 99 }}
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 z-[99]" onClick={() => setOpen(false)} />
       )}
     </>
   );

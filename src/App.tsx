@@ -11,7 +11,8 @@ import { useMovements } from '@/hooks/useMovements';
 import { useCategories } from '@/hooks/useCategories';
 import { usePlatforms } from '@/hooks/usePlatforms';
 import { useSavingsConfig } from '@/hooks/useSavingsConfig';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Wallet, Tags, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { formatCurrency, cn } from '@/lib/utils';
 
 function App() {
   const { mes, anio, monthName, goToPrevMonth, goToNextMonth } = useMonthSelector();
@@ -21,48 +22,140 @@ function App() {
   const { config, updatePorcentaje } = useSavingsConfig();
 
   const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
+
+  const saldo = resumen?.saldo ?? 0;
+  const isPositive = saldo >= 0;
 
   return (
-    <div style={{ maxWidth: '520px', margin: '0 auto', padding: '0 16px', paddingBottom: '100px' }}>
-      <Header
-        anio={anio}
-        monthName={monthName}
-        saldo={resumen?.saldo ?? 0}
-        onPrevMonth={goToPrevMonth}
-        onNextMonth={goToNextMonth}
-        onOpenCategories={() => setShowCategoryManager(true)}
-      />
+    <div className="min-h-dvh">
 
+      {/* ── Desktop Topbar ── */}
+      <header
+        className="hidden lg:flex items-center justify-between sticky top-0 z-30 h-16 px-10 border-b border-white/[6%]"
+        style={{ background: 'rgba(0, 42, 38, 0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
+            style={{ background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))' }}
+          >
+            <Wallet size={18} color="#002a26" strokeWidth={2.5} />
+          </div>
+          <div>
+            <div className="font-heading text-base font-black tracking-[-0.3px] text-white">Full Cash</div>
+            <p className="text-[11px] text-text-muted">Finanzas personales</p>
+          </div>
+        </div>
+
+        {/* Month Selector */}
+        <div className="flex items-center gap-1.5 bg-surface border border-border rounded-full p-[5px]">
+          <button
+            onClick={goToPrevMonth}
+            aria-label="Mes anterior"
+            className="w-[30px] h-[30px] rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors"
+          >
+            <ChevronLeft size={15} />
+          </button>
+          <span className="font-heading text-[13px] font-semibold capitalize min-w-[110px] text-center text-white">
+            {monthName} {anio}
+          </span>
+          <button
+            onClick={goToNextMonth}
+            aria-label="Mes siguiente"
+            className="w-[30px] h-[30px] rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors"
+          >
+            <ChevronRight size={15} />
+          </button>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowCategoryManager(true)}
+            className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+          >
+            <Tags size={14} />
+            Categorías
+          </button>
+          <button
+            onClick={() => setFormOpen(true)}
+            className="flex items-center gap-1.5 px-4 h-9 rounded-md border-none bg-accent text-background-deep text-[13px] font-heading font-bold cursor-pointer hover:bg-accent-dim transition-all duration-200"
+          >
+            <Plus size={15} strokeWidth={2.5} />
+            Nuevo
+          </button>
+        </div>
+      </header>
+
+      {/* ── Mobile Header ── */}
+      <div className="lg:hidden max-w-[520px] mx-auto px-4">
+        <Header
+          anio={anio}
+          monthName={monthName}
+          saldo={saldo}
+          onPrevMonth={goToPrevMonth}
+          onNextMonth={goToNextMonth}
+          onOpenCategories={() => setShowCategoryManager(true)}
+        />
+      </div>
+
+      {/* ── Content ── */}
       {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-          <Loader2 size={32} color="var(--color-accent)" style={{ animation: 'spin 1s linear infinite' }} />
+        <div className="flex justify-center py-16">
+          <Loader2 size={32} className="text-accent animate-spin" />
         </div>
       ) : (
-        <main style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <SummaryCards
-            totalIngresos={resumen?.totalIngresos ?? 0}
-            totalEgresos={resumen?.totalEgresos ?? 0}
-          />
+        <div className="max-w-130 lg:max-w-300 mx-auto px-4 lg:px-10 pb-24 lg:pb-12 lg:pt-8 lg:grid lg:grid-cols-[340px_1fr] lg:gap-6 lg:items-start">
 
-          {config && (
-            <SavingsBar
+          {/* ── Sidebar ── */}
+          <aside className="flex flex-col gap-4 lg:sticky lg:top-20">
+
+            {/* Balance Card — desktop only */}
+            <div
+              className={cn('hidden lg:block card animate-fade-in p-8 text-center', isPositive ? '' : '')}
+              style={{ background: `linear-gradient(135deg, var(--color-surface), ${isPositive ? 'rgba(229,255,166,0.07)' : 'rgba(255,75,90,0.07)'})` }}
+            >
+              <p className="text-[11px] text-text-muted mb-2.5 font-semibold uppercase tracking-[1.5px]">
+                Saldo del mes
+              </p>
+              <h2 className={cn('font-heading text-5xl font-black tracking-[-2px] transition-colors duration-300', isPositive ? 'text-accent' : 'text-danger')}>
+                {isPositive ? '+' : ''}{formatCurrency(saldo)}
+              </h2>
+            </div>
+
+            <SummaryCards
               totalIngresos={resumen?.totalIngresos ?? 0}
               totalEgresos={resumen?.totalEgresos ?? 0}
-              porcentajeAhorro={config.porcentajeAhorro}
-              onUpdatePorcentaje={updatePorcentaje}
             />
-          )}
 
-          <CategoryChart distribucion={resumen?.distribucionCategorias ?? []} />
+            {config && (
+              <SavingsBar
+                totalIngresos={resumen?.totalIngresos ?? 0}
+                totalEgresos={resumen?.totalEgresos ?? 0}
+                porcentajeAhorro={config.porcentajeAhorro}
+                onUpdatePorcentaje={updatePorcentaje}
+              />
+            )}
+          </aside>
 
-          <MovementList movimientos={movimientos} onDelete={deleteMovimiento} />
-        </main>
+          {/* ── Main ── */}
+          <main className="flex flex-col gap-4 mt-4 lg:mt-0">
+            <CategoryChart distribucion={resumen?.distribucionCategorias ?? []} />
+            <MovementList movimientos={movimientos} onDelete={deleteMovimiento} />
+          </main>
+
+        </div>
       )}
 
       <MovementForm
         categorias={categorias}
         plataformas={plataformas}
         onSubmit={createMovimiento}
+        isOpen={formOpen}
+        onClose={() => setFormOpen(false)}
+        onOpen={() => setFormOpen(true)}
       />
 
       {showCategoryManager && (

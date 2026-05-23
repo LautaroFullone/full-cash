@@ -4,6 +4,7 @@ import { CategoryIcon } from './CategoryIcon';
 import { CurrencyInput } from './CurrencyInput';
 import { DatePicker } from './DatePicker';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import type { Categoria, Plataforma, TipoMovimiento } from '@/types';
 
 interface MovementFormProps {
@@ -17,10 +18,21 @@ interface MovementFormProps {
     plataformaId?: string;
     fecha: string;
   }) => Promise<void>;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onOpen?: () => void;
 }
 
-export function MovementForm({ categorias, plataformas, onSubmit }: MovementFormProps) {
-  const [isOpen, setIsOpen] = useState(false);
+function FormLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="block text-[11px] font-bold text-text-muted uppercase tracking-[0.8px] mb-1.5">
+      {children}
+    </label>
+  );
+}
+
+export function MovementForm({ categorias, plataformas, onSubmit, isOpen: controlledOpen, onClose: controlledClose, onOpen: controlledOnOpen }: MovementFormProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [tipo, setTipo] = useState<TipoMovimiento>('EGRESO');
   const [concepto, setConcepto] = useState('');
   const [monto, setMonto] = useState<number | ''>('');
@@ -29,6 +41,10 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
   const [fecha, setFecha] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const handleOpen = () => { if (controlledOnOpen) controlledOnOpen(); else setInternalOpen(true); };
+  const handleClose = () => { if (controlledClose) controlledClose(); else setInternalOpen(false); };
 
   const filteredCategorias = categorias.filter(c => c.tipo === tipo);
 
@@ -58,7 +74,7 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
         fecha: new Date(fecha + 'T12:00:00').toISOString(),
       });
       resetForm();
-      setIsOpen(false);
+      handleClose();
     } catch {
       setError('Error al guardar el movimiento');
     } finally {
@@ -71,75 +87,58 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
     setCategoriaId('');
   };
 
-  const Label = ({ children }: { children: React.ReactNode }) => (
-    <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px', display: 'block' }}>
-      {children}
-    </label>
-  );
-
   return (
     <>
-      {/* FAB */}
+      {/* FAB — mobile only */}
       <button
-        onClick={() => setIsOpen(true)}
+        className="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full border-none flex items-center justify-center z-40 cursor-pointer hover:scale-110 transition-transform duration-200"
+        style={{ background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))', boxShadow: '0 4px 20px rgba(229,255,166,0.3)' }}
+        onClick={handleOpen}
         aria-label="Nuevo movimiento"
-        style={{
-          position: 'fixed', bottom: '24px', right: '24px', width: '56px', height: '56px',
-          borderRadius: '50%', border: 'none',
-          background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
-          color: 'var(--color-background)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(229,255,166,0.3)', zIndex: 40, cursor: 'pointer',
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; }}
-        onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
       >
-        <Plus size={24} strokeWidth={2.5} />
+        <Plus size={24} color="#003a34" strokeWidth={2.5} />
       </button>
 
       {/* Overlay */}
       {isOpen && (
         <div
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)',
-            zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-          }}
-          onClick={() => setIsOpen(false)}
+          className="modal-overlay fixed inset-0 bg-black/65 backdrop-blur-md z-50 flex justify-center"
+          onClick={handleClose}
         >
-          {/* Bottom Sheet */}
+          {/* Sheet / Dialog */}
           <div
-            className="animate-slide-up"
+            className="modal-sheet animate-slide-up bg-surface overflow-y-auto"
+            style={{ maxHeight: '92dvh', paddingLeft: '20px', paddingRight: '20px', paddingBottom: '40px' }}
             onClick={e => e.stopPropagation()}
-            style={{
-              width: '100%', maxWidth: '520px',
-              background: 'var(--color-surface)', borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0',
-              padding: '8px 20px 40px', maxHeight: '92dvh', overflowY: 'auto',
-              border: '1px solid var(--color-border)', borderBottom: 'none',
-            }}
           >
-            {/* Drag handle */}
-            <div style={{ width: '40px', height: '4px', borderRadius: '2px', background: 'var(--color-border-strong)', margin: '12px auto 20px' }} />
+            {/* Drag handle — mobile only */}
+            <div className="lg:hidden w-10 h-1 rounded-full bg-border-strong mx-auto mt-3 mb-5" />
 
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Nuevo movimiento</h2>
-              <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', padding: '4px', cursor: 'pointer' }}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold">Nuevo movimiento</h2>
+              <button onClick={handleClose} className="bg-transparent border-none text-text-muted p-1 cursor-pointer hover:text-white transition-colors">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
               {/* Tipo */}
               <div>
-                <Label>Tipo</Label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border-strong)' }}>
+                <FormLabel>Tipo</FormLabel>
+                <div className="grid grid-cols-2 rounded-md overflow-hidden border border-border-strong">
                   {(['INGRESO', 'EGRESO'] as TipoMovimiento[]).map(t => (
-                    <button key={t} type="button" onClick={() => handleTipoChange(t)} style={{
-                      padding: '11px', border: 'none', fontSize: '14px', fontWeight: 700,
-                      fontFamily: 'var(--font-body)', cursor: 'pointer', transition: 'all 0.2s ease',
-                      background: tipo === t ? (t === 'INGRESO' ? 'var(--color-accent)' : 'var(--color-danger)') : 'var(--color-background)',
-                      color: tipo === t ? (t === 'INGRESO' ? 'var(--color-background)' : '#fff') : 'var(--color-text-muted)',
-                    }}>
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => handleTipoChange(t)}
+                      className={cn(
+                        'py-3 border-none text-sm font-bold font-body cursor-pointer transition-all duration-200',
+                        tipo === t
+                          ? t === 'INGRESO' ? 'bg-accent text-background' : 'bg-danger text-white'
+                          : 'bg-background text-text-muted'
+                      )}
+                    >
                       {t === 'INGRESO' ? '↑ Ingreso' : '↓ Gasto'}
                     </button>
                   ))}
@@ -148,35 +147,42 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
 
               {/* Concepto */}
               <div>
-                <Label>Concepto</Label>
-                <input value={concepto} onChange={e => setConcepto(e.target.value)} placeholder="Ej: Sueldo, Supermercado..." style={{ width: '100%' }} />
+                <FormLabel>Concepto</FormLabel>
+                <input
+                  value={concepto}
+                  onChange={e => setConcepto(e.target.value)}
+                  placeholder="Ej: Sueldo, Supermercado..."
+                  className="w-full"
+                />
               </div>
 
               {/* Monto */}
               <div>
-                <Label>Monto</Label>
+                <FormLabel>Monto</FormLabel>
                 <CurrencyInput value={monto} onChange={setMonto} />
               </div>
 
               {/* Categoría */}
               <div>
-                <Label>Categoría</Label>
+                <FormLabel>Categoría</FormLabel>
                 {filteredCategorias.length === 0 ? (
-                  <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', padding: '8px 0' }}>
+                  <p className="text-[13px] text-text-muted py-2">
                     No hay categorías de {tipo === 'INGRESO' ? 'ingreso' : 'gasto'}. Creá una desde el gestor.
                   </p>
                 ) : (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  <div className="flex flex-wrap gap-2">
                     {filteredCategorias.map(cat => (
-                      <button key={cat.id} type="button" onClick={() => setCategoriaId(cat.id)} style={{
-                        display: 'flex', alignItems: 'center', gap: '6px',
-                        padding: '7px 12px', borderRadius: 'var(--radius-full)', border: '1px solid',
-                        fontSize: '13px', fontFamily: 'var(--font-body)', cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        borderColor: categoriaId === cat.id ? 'var(--color-accent)' : 'var(--color-border-strong)',
-                        background: categoriaId === cat.id ? 'rgba(229,255,166,0.1)' : 'var(--color-background)',
-                        color: categoriaId === cat.id ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-                      }}>
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setCategoriaId(cat.id)}
+                        className={cn(
+                          'flex items-center gap-1.5 py-[7px] px-3 rounded-full border text-[13px] font-body cursor-pointer transition-all duration-150',
+                          categoriaId === cat.id
+                            ? 'border-accent bg-accent/10 text-accent'
+                            : 'border-border-strong bg-background text-text-secondary hover:border-border hover:text-white'
+                        )}
+                      >
                         <CategoryIcon icono={cat.icono} size={14} />
                         {cat.nombre}
                       </button>
@@ -187,32 +193,30 @@ export function MovementForm({ categorias, plataformas, onSubmit }: MovementForm
 
               {/* Plataforma */}
               <div>
-                <Label>Plataforma (opcional)</Label>
-                <select value={plataformaId} onChange={e => setPlataformaId(e.target.value)} style={{ width: '100%' }}>
+                <FormLabel>Plataforma (opcional)</FormLabel>
+                <select value={plataformaId} onChange={e => setPlataformaId(e.target.value)} className="w-full">
                   <option value="">Sin plataforma</option>
-                  {plataformas.map(p => (<option key={p.id} value={p.id}>{p.nombre}</option>))}
+                  {plataformas.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
                 </select>
               </div>
 
-              {/* Fecha — DatePicker */}
+              {/* Fecha */}
               <div>
-                <Label>Fecha</Label>
+                <FormLabel>Fecha</FormLabel>
                 <DatePicker value={fecha} onChange={setFecha} />
               </div>
 
-              {/* Error */}
-              {error && <p style={{ fontSize: '13px', color: 'var(--color-danger)', margin: 0, fontWeight: 500 }}>⚠ {error}</p>}
+              {error && (
+                <p className="text-[13px] text-danger font-medium">⚠ {error}</p>
+              )}
 
               {/* Submit */}
-              <button type="submit" disabled={loading} style={{
-                marginTop: '4px', padding: '15px', border: 'none', borderRadius: 'var(--radius-md)',
-                fontFamily: 'var(--font-heading)', fontSize: '15px', fontWeight: 700,
-                cursor: loading ? 'wait' : 'pointer',
-                background: 'var(--color-text-primary)', color: 'var(--color-background)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                opacity: loading ? 0.7 : 1, transition: 'all 0.2s ease',
-              }}>
-                {loading ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <Plus size={18} />}
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-1 py-[15px] border-none rounded-md font-heading text-[15px] font-bold bg-white text-background flex items-center justify-center gap-2 disabled:opacity-70 transition-all duration-200 cursor-pointer"
+              >
+                {loading ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
                 Guardar movimiento
               </button>
             </form>

@@ -102,19 +102,6 @@ p {
   color: var(--color-text-primary);
 }
 
-/* ── Card base utility ── */
-.card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  transition: all 0.2s ease;
-}
-
-.card:hover {
-  border-color: var(--color-border-strong);
-}
-
 /* ── Input base ── */
 input, select, textarea {
   font-family: var(--font-body);
@@ -144,6 +131,13 @@ button {
   transition: all 0.2s ease;
 }
 
+/* ── Component utilities ── */
+@layer components {
+  .card {
+    @apply bg-surface border border-border rounded-lg shadow-card transition-all duration-200 hover:border-border-strong;
+  }
+}
+
 /* ── Animations ── */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
@@ -165,11 +159,6 @@ button {
   to { transform: rotate(360deg); }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(229, 255, 166, 0.2); }
-  50% { box-shadow: 0 0 20px 4px rgba(229, 255, 166, 0.15); }
-}
-
 .animate-fade-in {
   animation: fadeIn 0.3s ease forwards;
 }
@@ -180,4 +169,31 @@ button {
 
 .animate-scale-in {
   animation: scaleIn 0.2s ease forwards;
+}
+
+/* ── Modal — responsive bottom-sheet / centered dialog ── */
+.modal-overlay {
+  align-items: flex-end;
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 520px;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  padding-top: 0;
+}
+
+@media (min-width: 1024px) {
+  .modal-overlay {
+    align-items: center;
+  }
+
+  .modal-sheet {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border-strong);
+    max-width: 480px;
+    padding-top: 28px;
+  }
 }

@@ -9,12 +9,7 @@ interface SavingsBarProps {
   onUpdatePorcentaje: (value: number) => Promise<void>;
 }
 
-export function SavingsBar({
-  totalIngresos,
-  totalEgresos,
-  porcentajeAhorro,
-  onUpdatePorcentaje,
-}: SavingsBarProps) {
+export function SavingsBar({ totalIngresos, totalEgresos, porcentajeAhorro, onUpdatePorcentaje }: SavingsBarProps) {
   const [editing, setEditing] = useState(false);
   const [tempPorcentaje, setTempPorcentaje] = useState(Math.round(porcentajeAhorro * 100));
 
@@ -22,11 +17,7 @@ export function SavingsBar({
   const ahorroReal = totalIngresos - totalEgresos;
   const progreso = montoRecomendado > 0 ? Math.min((ahorroReal / montoRecomendado) * 100, 100) : 0;
 
-  const getProgressColor = () => {
-    if (progreso >= 80) return 'var(--color-accent)';
-    if (progreso >= 50) return 'var(--color-warning)';
-    return 'var(--color-danger)';
-  };
+  const progressColor = progreso >= 80 ? 'var(--color-accent)' : progreso >= 50 ? 'var(--color-warning)' : 'var(--color-danger)';
 
   const handleSave = async () => {
     await onUpdatePorcentaje(tempPorcentaje / 100);
@@ -34,126 +25,65 @@ export function SavingsBar({
   };
 
   return (
-    <div
-      className="card animate-slide-up"
-      style={{
-        padding: '20px',
-        animationDelay: '0.2s',
-        animationFillMode: 'backwards',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: 'var(--radius-sm)',
-              background: 'rgba(255,198,63,0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <PiggyBank size={16} color="var(--color-warning)" />
+    <div className="card animate-slide-up p-5 [animation-delay:0.2s] [animation-fill-mode:backwards]">
+      <div className="flex items-center justify-between mb-3.5">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-sm bg-warning/[12%] flex items-center justify-center">
+            <PiggyBank size={16} className="text-warning" />
           </div>
           <div>
-            <h3 style={{ fontSize: '14px', fontWeight: 600 }}>Meta de ahorro</h3>
-            <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', margin: 0 }}>
-              {Math.round(porcentajeAhorro * 100)}% del ingreso
-            </p>
+            <h3 className="text-sm font-semibold">Meta de ahorro</h3>
+            <p className="text-xs text-text-muted">{Math.round(porcentajeAhorro * 100)}% del ingreso</p>
           </div>
         </div>
 
         {editing ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex items-center gap-2">
             <input
               type="number"
               min={1}
               max={100}
               value={tempPorcentaje}
-              onChange={(e) => setTempPorcentaje(Number(e.target.value))}
-              style={{
-                width: '60px',
-                padding: '6px 8px',
-                fontSize: '13px',
-                textAlign: 'center',
-                borderRadius: 'var(--radius-sm)',
-              }}
+              onChange={e => setTempPorcentaje(Number(e.target.value))}
+              className="w-[60px] text-center text-[13px] rounded-sm py-1.5 px-2"
             />
-            <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>%</span>
+            <span className="text-[13px] text-text-muted">%</span>
             <button
               onClick={handleSave}
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                background: 'var(--color-accent)',
-                color: 'var(--color-background)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              className="w-7 h-7 rounded-sm border-none bg-accent text-background flex items-center justify-center"
             >
               <Check size={14} />
             </button>
           </div>
         ) : (
           <button
-            onClick={() => {
-              setTempPorcentaje(Math.round(porcentajeAhorro * 100));
-              setEditing(true);
-            }}
-            style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--color-border-strong)',
-              background: 'transparent',
-              color: 'var(--color-text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            onClick={() => { setTempPorcentaje(Math.round(porcentajeAhorro * 100)); setEditing(true); }}
+            className="w-7 h-7 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
           >
             <Settings2 size={14} />
           </button>
         )}
       </div>
 
-      {/* Progress bar */}
-      <div
-        style={{
-          height: '8px',
-          borderRadius: 'var(--radius-full)',
-          background: 'rgba(255,255,255,0.06)',
-          overflow: 'hidden',
-          marginBottom: '12px',
-        }}
-      >
+      {/* Progress track */}
+      <div className="h-2 rounded-full bg-white/[6%] overflow-hidden mb-3">
         <div
-          style={{
-            height: '100%',
-            width: `${Math.max(progreso, 0)}%`,
-            borderRadius: 'var(--radius-full)',
-            background: getProgressColor(),
-            transition: 'width 0.6s ease, background 0.3s ease',
-          }}
+          className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${Math.max(progreso, 0)}%`, background: progressColor }}
         />
       </div>
 
       {/* Values */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-        <span style={{ color: 'var(--color-text-muted)' }}>
-          Ahorro real: <span style={{ color: ahorroReal >= 0 ? 'var(--color-accent)' : 'var(--color-danger)', fontWeight: 600 }}>
+      <div className="flex justify-between text-[13px]">
+        <span className="text-text-muted">
+          Ahorro real:{' '}
+          <span className={`font-semibold ${ahorroReal >= 0 ? 'text-accent' : 'text-danger'}`}>
             {formatCurrency(ahorroReal)}
           </span>
         </span>
-        <span style={{ color: 'var(--color-text-muted)' }}>
-          Meta: <span style={{ fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-            {formatCurrency(montoRecomendado)}
-          </span>
+        <span className="text-text-muted">
+          Meta:{' '}
+          <span className="font-semibold text-text-secondary">{formatCurrency(montoRecomendado)}</span>
         </span>
       </div>
     </div>
