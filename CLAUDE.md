@@ -1,71 +1,71 @@
-# Full Cash — Architecture Conventions
+# Full Cash — Convenciones de arquitectura
 
-## Module structure
+## Estructura de módulos
 
 ```
 src/
-├── modules/<domain>/
-│   ├── services/       one file per API call; types defined inline
-│   ├── hooks/          business logic, consumes services + stores
-│   ├── components/     visual sub-components (no direct fetch)
-│   └── <Page>.tsx      root page — orchestrates hooks and composes components
-├── components/         UI primitives reused across modules (CurrencyInput, DatePicker)
-├── stores/             Zustand stores — state + setters ONLY, no business logic
-├── models/             one file per domain model; types shared across two or more modules
+├── modules/<dominio>/
+│   ├── services/       un archivo por llamada a la API; tipos definidos inline
+│   ├── hooks/          lógica de negocio, consume services + stores
+│   ├── components/     sub-componentes visuales (sin fetch directo)
+│   └── <Page>.tsx      página raíz — orquesta hooks y compone componentes
+├── components/         primitivos UI reutilizados entre módulos (CurrencyInput, DatePicker)
+├── stores/             stores Zustand — estado + setters ÚNICAMENTE, sin lógica de negocio
+├── models/             un archivo por modelo de dominio; tipos compartidos entre dos o más módulos
 │   ├── categoria.ts    Categoria, TipoMovimiento, CATEGORY_COLORS
 │   └── plataforma.ts   Plataforma
-├── utils/              one file per utility function
+├── utils/              un archivo por función utilitaria
 │   ├── cn.ts
 │   ├── formatCurrency.ts
 │   └── formatNumber.ts
 ├── lib/
-│   └── fetchAPI.ts     base fetch with auth header
-├── App.tsx             thin shell: reads authStore, calls useAuth().init(), renders LoginPage or DashboardPage
-└── main.tsx            QueryClientProvider + App, no AuthProvider
+│   └── fetchAPI.ts     fetch base con header de autenticación
+├── App.tsx             shell delgado: lee authStore, llama useAuth().init(), renderiza LoginPage o DashboardPage
+└── main.tsx            QueryClientProvider + App, sin AuthProvider
 ```
 
-## Rules
+## Reglas
 
-- **Service** = one file, one API call. Export the function + its request/response types inline. Always use `fetchAPI` from `@/lib/fetchAPI`.
-- **Hook** = consumes services + updates stores. Has loading/error state. Never makes `fetch` calls directly.
-- **Store (Zustand)** = state + setters only. No async logic, no API calls. Business logic lives in the hook.
-- **Page** = root of a module. Orchestrates hooks and assembles components. Never calls `fetchAPI` directly.
-- **Component** = purely visual, receives props. No fetch, no store reads (unless unavoidable).
-- Cross-module imports resolve to root-level directories: `@/models/`, `@/utils/`, `@/components/`, `@/stores/`, `@/lib/`. If two modules share something, move it there.
-- `@/utils` and `@/components` have barrel files (`index.ts`) — prefer importing from the barrel over the individual file path.
+- **Service** = un archivo, una llamada a la API. Exporta la función + sus tipos de request/response inline. Siempre usar `fetchAPI` de `@/lib/fetchAPI`.
+- **Hook** = consume services + actualiza stores. Tiene estado de loading/error. Nunca hace llamadas `fetch` directamente.
+- **Store (Zustand)** = estado + setters únicamente. Sin lógica async, sin llamadas a la API. La lógica de negocio vive en el hook.
+- **Page** = raíz de un módulo. Orquesta hooks y ensambla componentes. Nunca llama `fetchAPI` directamente.
+- **Component** = puramente visual, recibe props. Sin fetch, sin lectura de stores (salvo que sea inevitable).
+- Los imports entre módulos se resuelven hacia los directorios raíz: `@/models/`, `@/utils/`, `@/components/`, `@/stores/`, `@/lib/`. Si dos módulos comparten algo, moverlo ahí.
+- `@/utils` y `@/components` tienen barrel files (`index.ts`) — preferir importar desde el barrel antes que desde el path individual.
 
-## Auth flow
+## Flujo de autenticación
 
-1. `App.tsx` calls `useAuth().init()` on mount.
-2. `init()` reads the token from `localStorage`, calls `getMe`, sets `authStore.user`.
-3. `authStore.isLoading` starts `true`; set to `false` after init resolves.
-4. `logout()` removes the token and sets `authStore.user = null`.
+1. `App.tsx` llama `useAuth().init()` al montar.
+2. `init()` lee el token de `localStorage`, llama `getMe`, setea `authStore.user`.
+3. `authStore.isLoading` arranca en `true`; se setea a `false` cuando init resuelve.
+4. `logout()` elimina el token y setea `authStore.user = null`.
 
-## Tech stack
+## Stack tecnológico
 
 - **React 19** + **TypeScript** strict
-- **Vite** with `@vitejs/plugin-react`
+- **Vite** con `@vitejs/plugin-react`
 - **Tailwind CSS v4** via `@tailwindcss/vite`
 - **React Query** (`@tanstack/react-query`) — `staleTime: 30s`, `retry: 1`, `refetchOnWindowFocus: false`
-- **Zustand** for global state
-- **Express 5** backend with Prisma + PostgreSQL + **Morgan** HTTP logger (`dev` format in development, `combined` in production)
-- JWT in `localStorage` (`token` key), 30-day expiry
+- **Zustand** para estado global
+- **Express 5** backend con Prisma + PostgreSQL + **Morgan** HTTP logger (formato `dev` en desarrollo, `combined` en producción)
+- JWT en `localStorage` (clave `token`), expiración 30 días
 
-## Backend conventions
+## Convenciones de backend
 
-- All routes except `POST /api/auth/login` require `authMiddleware`.
-- Admin-only routes additionally require `adminMiddleware`.
-- When a route handler has typed params (e.g. `Request<{id: string}>`), cast as `(req as unknown as AuthRequest)` to satisfy TypeScript with the auth extension.
-- `prisma db push` (no migrations). Schema source of truth is `api/prisma/schema.prisma`.
-- Global categories have `userId = null`. Per-user hidden globals are tracked in `UserCategoriaHidden`.
+- Todas las rutas excepto `POST /api/auth/login` requieren `authMiddleware`.
+- Las rutas solo-admin requieren además `adminMiddleware`.
+- Cuando un handler tiene params tipados (ej. `Request<{id: string}>`), castear como `(req as unknown as AuthRequest)` para satisfacer TypeScript con la extensión de auth.
+- `prisma db push` (sin migrations). El schema es la fuente de verdad en `api/prisma/schema.prisma`.
+- Las categorías globales tienen `userId = null`. Las globales ocultas por usuario se trackean en `UserCategoriaHidden`.
 
-## Modules
+## Módulos
 
-| Module | Domain |
+| Módulo | Dominio |
 |---|---|
-| `auth` | Login, logout, session init |
+| `auth` | Login, logout, inicio de sesión |
 | `movements` | Movimientos + resumen mensual |
-| `categories` | Categorías (global + personal, hide/show) |
+| `categories` | Categorías (global + personal, ocultar/mostrar) |
 | `platforms` | Plataformas |
-| `dashboard` | Page layout, month selector, savings config |
-| `admin` | User management (ADMIN only) |
+| `dashboard` | Layout principal, selector de mes, config de ahorro |
+| `admin` | Gestión de usuarios (solo ADMIN) |
