@@ -5,195 +5,228 @@
    ============================================ */
 
 @theme {
-  /* ── Colors ── */
-  --color-background: #003a34;
-  --color-background-deep: #002a26;
-  --color-surface: #004d44;
-  --color-surface-elevated: #005a4d;
-  --color-surface-hover: #006b5c;
+   /* ── Colors ── */
+   --color-background: #003a34;
+   --color-background-deep: #002a26;
+   --color-surface: #004d44;
+   --color-surface-elevated: #005a4d;
+   --color-surface-hover: #006b5c;
 
-  --color-accent: #e5ffa6;
-  --color-accent-dim: #c8e68a;
-  --color-secondary: #006e8b;
-  --color-secondary-light: #0090b3;
-  --color-danger: #ff4b5a;
-  --color-danger-dim: #e8434f;
-  --color-warning: #ffc63f;
-  --color-warning-dim: #e5b035;
+   --color-accent: #e5ffa6;
+   --color-accent-dim: #c8e68a;
+   --color-secondary: #006e8b;
+   --color-secondary-light: #0090b3;
+   --color-danger: #ff4b5a;
+   --color-danger-dim: #e8434f;
+   --color-warning: #ffc63f;
+   --color-warning-dim: #e5b035;
 
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #8fb5ae;
-  --color-text-muted: #5e8a83;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-strong: rgba(255, 255, 255, 0.15);
+   --color-text-primary: #ffffff;
+   --color-text-secondary: #8fb5ae;
+   --color-text-muted: #5e8a83;
+   --color-border: rgba(255, 255, 255, 0.08);
+   --color-border-strong: rgba(255, 255, 255, 0.15);
 
-  /* ── Typography ── */
-  --font-heading: 'Montserrat', sans-serif;
-  --font-body: 'Google Sans', 'Inter', system-ui, sans-serif;
+   /* ── Typography ── */
+   --font-heading: 'Montserrat', sans-serif;
+   --font-body: 'Google Sans', 'Inter', system-ui, sans-serif;
 
-  /* ── Radius ── */
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
+   /* ── Radius ── */
+   --radius-xs: 6px;
+   --radius-sm: 8px;
+   --radius-md: 12px;
+   --radius-lg: 16px;
+   --radius-xl: 20px;
+   --radius-full: 9999px;
 
-  /* ── Shadows ── */
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.25);
-  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-glow-accent: 0 0 20px rgba(229, 255, 166, 0.15);
-  --shadow-glow-danger: 0 0 20px rgba(255, 75, 90, 0.15);
+   /* ── Shadows ── */
+   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.25);
+   --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4);
+   --shadow-glow-accent: 0 0 20px rgba(229, 255, 166, 0.15);
+   --shadow-glow-danger: 0 0 20px rgba(255, 75, 90, 0.15);
 }
 
 /* ── Base Styles ── */
 * {
-  box-sizing: border-box;
+   box-sizing: border-box;
 }
 
 html {
-  font-family: var(--font-body);
-  color: var(--color-text-primary);
-  background: var(--color-background-deep);
+   font-family: var(--font-body);
+   color: var(--color-text-primary);
+   background: var(--color-background-deep);
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  min-height: 100dvh;
-  background: var(--color-background);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+   margin: 0;
+   padding: 0;
+   min-height: 100dvh;
+   background: var(--color-background);
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
-  min-height: 100dvh;
+   min-height: 100dvh;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+   font-family: var(--font-heading);
+   font-weight: 700;
+   color: var(--color-text-primary);
+   margin: 0;
 }
 
 p {
-  margin: 0;
-  color: var(--color-text-secondary);
+   margin: 0;
+   color: var(--color-text-secondary);
 }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar {
-  width: 6px;
+   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+   background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-text-muted);
-  border-radius: var(--radius-full);
+   background: var(--color-text-muted);
+   border-radius: var(--radius-full);
 }
 
 /* ── Selection ── */
 ::selection {
-  background: rgba(229, 255, 166, 0.3);
-  color: var(--color-text-primary);
+   background: rgba(229, 255, 166, 0.3);
+   color: var(--color-text-primary);
 }
 
 /* ── Input base ── */
-input, select, textarea {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: var(--color-text-primary);
-  background: var(--color-background);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+input,
+select,
+textarea {
+   font-family: var(--font-body);
+   font-size: 0.95rem;
+   color: var(--color-text-primary);
+   background: var(--color-background);
+   border: 1px solid var(--color-border-strong);
+   border-radius: var(--radius-md);
+   padding: 10px 14px;
+   outline: none;
+   transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
 }
 
-input:focus, select:focus, textarea:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(229, 255, 166, 0.1);
+input:focus,
+select:focus,
+textarea:focus {
+   border-color: var(--color-accent);
+   box-shadow: 0 0 0 3px rgba(229, 255, 166, 0.1);
 }
 
 input::placeholder {
-  color: var(--color-text-muted);
+   color: var(--color-text-muted);
 }
 
 /* ── Button base ── */
 button {
-  font-family: var(--font-body);
-  cursor: pointer;
-  transition: all 0.2s ease;
+   font-family: var(--font-body);
+   cursor: pointer;
+   transition: all 0.2s ease;
 }
 
 /* ── Component utilities ── */
 @layer components {
-  .card {
-    @apply bg-surface border border-border rounded-lg shadow-card transition-all duration-200 hover:border-border-strong;
-  }
+   .card {
+      @apply bg-surface border border-border rounded-lg shadow-card transition-all duration-200 hover:border-border-strong;
+   }
 }
 
 /* ── Animations ── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+   from {
+      opacity: 0;
+      transform: translateY(8px);
+   }
+   to {
+      opacity: 1;
+      transform: translateY(0);
+   }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+   from {
+      opacity: 0;
+      transform: translateY(20px);
+   }
+   to {
+      opacity: 1;
+      transform: translateY(0);
+   }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+   from {
+      opacity: 0;
+      transform: scale(0.95);
+   }
+   to {
+      opacity: 1;
+      transform: scale(1);
+   }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+   from {
+      transform: rotate(0deg);
+   }
+   to {
+      transform: rotate(360deg);
+   }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease forwards;
+   animation: fadeIn 0.3s ease forwards;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.4s ease forwards;
+   animation: slideUp 0.4s ease forwards;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.2s ease forwards;
+   animation: scaleIn 0.2s ease forwards;
 }
 
 /* ── Modal — responsive bottom-sheet / centered dialog ── */
 .modal-overlay {
-  align-items: flex-end;
+   align-items: flex-end;
 }
 
 .modal-sheet {
-  width: 100%;
-  max-width: 520px;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  border: 1px solid var(--color-border);
-  border-bottom: none;
-  padding-top: 0;
+   width: 100%;
+   max-width: 520px;
+   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+   border: 1px solid var(--color-border);
+   border-bottom: none;
+   padding-top: 0;
 }
 
 @media (min-width: 1024px) {
-  .modal-overlay {
-    align-items: center;
-  }
+   .modal-overlay {
+      align-items: center;
+   }
 
-  .modal-sheet {
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--color-border-strong);
-    max-width: 480px;
-    padding-top: 28px;
-  }
+   .modal-sheet {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--color-border-strong);
+      max-width: 480px;
+      padding-top: 28px;
+   }
 }

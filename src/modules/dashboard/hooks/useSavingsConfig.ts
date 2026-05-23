@@ -3,21 +3,21 @@ import { getConfiguracion } from '../services/getConfiguracion'
 import { putConfiguracion } from '../services/putConfiguracion'
 
 export function useSavingsConfig() {
-  const qc = useQueryClient()
+   const qc = useQueryClient()
 
-  const query = useQuery({
-    queryKey: ['configuracion'],
-    queryFn: getConfiguracion,
-  })
+   const query = useQuery({
+      queryKey: ['configuracion'],
+      queryFn: getConfiguracion,
+   })
 
-  const updateMutation = useMutation({
-    mutationFn: putConfiguracion,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['configuracion'] }),
-  })
+   const updateMutation = useMutation({
+      mutationFn: putConfiguracion,
+      onSuccess: () => qc.invalidateQueries({ queryKey: ['configuracion'] }),
+   })
 
-  return {
-    config: query.data ?? null,
-    loading: query.isLoading,
-    updatePorcentaje: (value: number) => updateMutation.mutateAsync(value),
-  }
+   return {
+      config: query.data ?? null,
+      loading: query.isLoading,
+      updatePorcentaje: (value: number) => updateMutation.mutateAsync(value),
+   }
 }

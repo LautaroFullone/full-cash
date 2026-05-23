@@ -5,19 +5,19 @@ import './index.css'
 import App from './App.tsx'
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      staleTime: 30_000,
-      refetchOnWindowFocus: false,
-    },
-  },
+   defaultOptions: {
+      queries: {
+         retry: 1,
+         staleTime: 30_000,
+         refetchOnWindowFocus: false,
+      },
+   },
 })
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
-  </StrictMode>,
+   <StrictMode>
+      <QueryClientProvider client={queryClient}>
+         <App />
+      </QueryClientProvider>
+   </StrictMode>
 )
