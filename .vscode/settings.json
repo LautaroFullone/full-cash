@@ -1,5 +1,6 @@
 {
    "prisma.pinToPrisma6": true,
+   "editor.tabSize": 3,
    "workbench.colorCustomizations": {
       "activityBar.activeBackground": "#006e8b",
       "activityBar.activeBorder": "#ffc63f",
