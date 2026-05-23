@@ -59,7 +59,7 @@ export function CurrencyInput({ value, onChange, placeholder = '0', id }: Curren
         onFocus={handleFocus}
         onBlur={handleBlur}
         placeholder={placeholder}
-        className="w-full font-heading font-bold text-lg tracking-[-0.3px] pl-[30px]"
+        className="w-full font-heading font-bold text-lg tracking-[-0.3px] pl-7.5"
       />
     </div>
   )

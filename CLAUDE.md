@@ -26,12 +26,13 @@ src/
 
 ## Rules
 
-- **Service** = one file, one API call. Export the function + its request/response types inline. Always use `fetchAPI` from `@/shared/lib/fetchAPI`.
+- **Service** = one file, one API call. Export the function + its request/response types inline. Always use `fetchAPI` from `@/lib/fetchAPI`.
 - **Hook** = consumes services + updates stores. Has loading/error state. Never makes `fetch` calls directly.
 - **Store (Zustand)** = state + setters only. No async logic, no API calls. Business logic lives in the hook.
 - **Page** = root of a module. Orchestrates hooks and assembles components. Never calls `fetchAPI` directly.
 - **Component** = purely visual, receives props. No fetch, no store reads (unless unavoidable).
 - Cross-module imports resolve to root-level directories: `@/models/`, `@/utils/`, `@/components/`, `@/stores/`, `@/lib/`. If two modules share something, move it there.
+- `@/utils` and `@/components` have barrel files (`index.ts`) — prefer importing from the barrel over the individual file path.
 
 ## Auth flow
 
@@ -47,7 +48,7 @@ src/
 - **Tailwind CSS v4** via `@tailwindcss/vite`
 - **React Query** (`@tanstack/react-query`) — `staleTime: 30s`, `retry: 1`, `refetchOnWindowFocus: false`
 - **Zustand** for global state
-- **Express 5** backend with Prisma + PostgreSQL
+- **Express 5** backend with Prisma + PostgreSQL + **Morgan** HTTP logger (`dev` format in development, `combined` in production)
 - JWT in `localStorage` (`token` key), 30-day expiry
 
 ## Backend conventions

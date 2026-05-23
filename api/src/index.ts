@@ -10,14 +10,17 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import path from 'path'
+import morgan from 'morgan'
 
 dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3001
+const isDev = process.env.NODE_ENV !== 'production'
 
 app.use(cors())
 app.use(express.json())
+app.use(morgan(isDev ? 'dev' : 'combined'))
 
 // Routes
 app.use('/api/auth', authRouter)
