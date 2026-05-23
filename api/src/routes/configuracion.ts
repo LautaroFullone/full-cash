@@ -1,29 +1,29 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import prisma from '../lib/prisma.js';
+import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
+router.use(authMiddleware);
 
 const updateConfigSchema = z.object({
   porcentajeAhorro: z.number().min(0).max(1),
 });
 
 // GET /api/configuracion
-router.get('/', async (_req, res) => {
+router.get('/', async (req, res) => {
   try {
-    let config = await prisma.configuracion.findUnique({
-      where: { id: 'default' },
-    });
+    const userId = (req as AuthRequest).user.id;
+    let config = await prisma.configuracion.findUnique({ where: { userId } });
 
     if (!config) {
       config = await prisma.configuracion.create({
-        data: { id: 'default', porcentajeAhorro: 0.20 },
+        data: { userId, porcentajeAhorro: 0.20 },
       });
     }
 
     res.json(config);
-  } catch (error) {
-    console.error('Error fetching configuracion:', error);
+  } catch {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -31,12 +31,13 @@ router.get('/', async (_req, res) => {
 // PUT /api/configuracion
 router.put('/', async (req, res) => {
   try {
+    const userId = (req as AuthRequest).user.id;
     const data = updateConfigSchema.parse(req.body);
 
     const config = await prisma.configuracion.upsert({
-      where: { id: 'default' },
+      where: { userId },
       update: data,
-      create: { id: 'default', ...data },
+      create: { userId, ...data },
     });
 
     res.json(config);
@@ -45,7 +46,6 @@ router.put('/', async (req, res) => {
       res.status(400).json({ error: 'Datos inválidos', details: error.errors });
       return;
     }
-    console.error('Error updating configuracion:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });

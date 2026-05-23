@@ -2,6 +2,8 @@ import configuracionRouter from './routes/configuracion.js'
 import movimientosRouter from './routes/movimientos.js'
 import plataformasRouter from './routes/plataformas.js'
 import categoriasRouter from './routes/categorias.js'
+import authRouter from './routes/auth.js'
+import adminRouter from './routes/admin.js'
 import prisma from './lib/prisma.js'
 import { fileURLToPath } from 'url'
 import express from 'express'
@@ -18,6 +20,8 @@ app.use(cors())
 app.use(express.json())
 
 // Routes
+app.use('/api/auth', authRouter)
+app.use('/api/admin', adminRouter)
 app.use('/api/movimientos', movimientosRouter)
 app.use('/api/categorias', categoriasRouter)
 app.use('/api/plataformas', plataformasRouter)
@@ -36,7 +40,6 @@ if (process.env.NODE_ENV === 'production') {
 
    app.use(express.static(frontendDistPath))
 
-   // Serve the SPA client for any non-API route
    app.use((req, res, next) => {
       if (req.method === 'GET' && !req.path.startsWith('/api')) {
          res.sendFile(path.join(frontendDistPath, 'index.html'))

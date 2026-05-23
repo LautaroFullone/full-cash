@@ -1,16 +1,18 @@
-import { ChevronLeft, ChevronRight, Wallet, Tags } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Wallet, Tags, Users } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface HeaderProps {
   anio: number;
   monthName: string;
   saldo: number;
+  isAdmin?: boolean;
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onOpenCategories: () => void;
+  onOpenUsers?: () => void;
 }
 
-export function Header({ anio, monthName, saldo, onPrevMonth, onNextMonth, onOpenCategories }: HeaderProps) {
+export function Header({ anio, monthName, saldo, isAdmin, onPrevMonth, onNextMonth, onOpenCategories, onOpenUsers }: HeaderProps) {
   const isPositive = saldo >= 0;
 
   return (
@@ -31,6 +33,17 @@ export function Header({ anio, monthName, saldo, onPrevMonth, onNextMonth, onOpe
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Users button — admin only */}
+          {isAdmin && onOpenUsers && (
+            <button
+              onClick={onOpenUsers}
+              title="Gestionar usuarios"
+              className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
+            >
+              <Users size={16} />
+            </button>
+          )}
+
           {/* Categories button */}
           <button
             onClick={onOpenCategories}

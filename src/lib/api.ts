@@ -1,9 +1,15 @@
 const API_BASE = '/api';
 
+function getToken(): string | null {
+  return localStorage.getItem('token');
+}
+
 async function fetchAPI<T>(url: string, options?: RequestInit): Promise<T> {
+  const token = getToken();
   const response = await fetch(`${API_BASE}${url}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     ...options,
   });
@@ -17,6 +23,29 @@ async function fetchAPI<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  // Auth
+  login: (email: string, password: string) =>
+    fetchAPI<{ token: string; user: { id: string; email: string; nombre: string; role: string } }>(
+      '/auth/login',
+      { method: 'POST', body: JSON.stringify({ email, password }) }
+    ),
+
+  getMe: () =>
+    fetchAPI<{ id: string; email: string; nombre: string; role: string }>('/auth/me'),
+
+  // Admin - Users
+  getUsers: () =>
+    fetchAPI<{ id: string; email: string; nombre: string; role: string; createdAt: string }[]>('/admin/users'),
+
+  createUser: (data: { email: string; password: string; nombre: string }) =>
+    fetchAPI('/admin/users', { method: 'POST', body: JSON.stringify(data) }),
+
+  updateUser: (id: string, data: { nombre?: string; password?: string }) =>
+    fetchAPI(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  deleteUser: (id: string) =>
+    fetchAPI(`/admin/users/${id}`, { method: 'DELETE' }),
+
   // Movimientos
   getMovimientos: (mes: number, anio: number) =>
     fetchAPI(`/movimientos?mes=${mes}&anio=${anio}`),

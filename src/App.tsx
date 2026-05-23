@@ -6,12 +6,14 @@ import { CategoryChart } from '@/components/CategoryChart';
 import { MovementForm } from '@/components/MovementForm';
 import { MovementList } from '@/components/MovementList';
 import { CategoryManager } from '@/components/CategoryManager';
+import { UserManager } from '@/components/UserManager';
 import { useMonthSelector } from '@/hooks/useMonthSelector';
 import { useMovements } from '@/hooks/useMovements';
 import { useCategories } from '@/hooks/useCategories';
 import { usePlatforms } from '@/hooks/usePlatforms';
 import { useSavingsConfig } from '@/hooks/useSavingsConfig';
-import { Loader2, Wallet, Tags, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Loader2, Wallet, Tags, Plus, ChevronLeft, ChevronRight, Users, LogOut } from 'lucide-react';
 import { formatCurrency, cn } from '@/lib/utils';
 
 function App() {
@@ -21,7 +23,9 @@ function App() {
   const { plataformas } = usePlatforms();
   const { config, updatePorcentaje } = useSavingsConfig();
 
+  const { user, logout } = useAuth();
   const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [showUserManager, setShowUserManager] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
 
   const saldo = resumen?.saldo ?? 0;
@@ -72,6 +76,15 @@ function App() {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          {user?.role === 'ADMIN' && (
+            <button
+              onClick={() => setShowUserManager(true)}
+              className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+            >
+              <Users size={14} />
+              Usuarios
+            </button>
+          )}
           <button
             onClick={() => setShowCategoryManager(true)}
             className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
@@ -86,6 +99,13 @@ function App() {
             <Plus size={15} strokeWidth={2.5} />
             Nuevo
           </button>
+          <button
+            onClick={logout}
+            title="Cerrar sesión"
+            className="w-9 h-9 flex items-center justify-center rounded-md border border-border-strong text-text-secondary cursor-pointer hover:border-danger/60 hover:text-danger transition-all duration-200"
+          >
+            <LogOut size={15} />
+          </button>
         </div>
       </header>
 
@@ -95,9 +115,11 @@ function App() {
           anio={anio}
           monthName={monthName}
           saldo={saldo}
+          isAdmin={user?.role === 'ADMIN'}
           onPrevMonth={goToPrevMonth}
           onNextMonth={goToNextMonth}
           onOpenCategories={() => setShowCategoryManager(true)}
+          onOpenUsers={() => setShowUserManager(true)}
         />
       </div>
 
@@ -166,6 +188,10 @@ function App() {
           onUpdate={updateCategoria}
           onDelete={deleteCategoria}
         />
+      )}
+
+      {showUserManager && (
+        <UserManager onClose={() => setShowUserManager(false)} />
       )}
     </div>
   );

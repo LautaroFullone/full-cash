@@ -32,6 +32,7 @@ export interface Categoria {
   tipo: TipoMovimiento;
   icono: string; // emoji character
   createdAt: string;
+  userId: string | null; // null = global/shared
 }
 
 export interface Plataforma {

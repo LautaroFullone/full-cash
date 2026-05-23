@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Plus, Pencil, Trash2, Check, Loader2 } from 'lucide-react';
+import { X, Plus, Pencil, Trash2, Check, Loader2, EyeOff } from 'lucide-react';
 import { EmojiPicker } from './EmojiPicker';
 import { CategoryIcon } from './CategoryIcon';
 import { cn } from '@/lib/utils';
@@ -240,21 +240,35 @@ export function CategoryManager({ categorias, onClose, onCreate, onUpdate, onDel
                   <CategoryIcon icono={cat.icono} size={20} />
                 </div>
                 <span className="flex-1 text-sm font-medium text-white">{cat.nombre}</span>
-                <div className="flex gap-1">
-                  <button
-                    onClick={() => { setEditingId(cat.id); setAddingNew(false); }}
-                    className="w-[30px] h-[30px] rounded-xs border-none bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:bg-white/[8%] hover:text-white transition-all duration-150"
-                  >
-                    <Pencil size={13} />
-                  </button>
+
+                {cat.userId === null ? (
+                  /* Global category: only allow hiding */
                   <button
                     onClick={() => handleDelete(cat.id)}
                     disabled={!!deletingId}
-                    className="w-[30px] h-[30px] rounded-xs border-none bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:bg-danger/10 hover:text-danger transition-all duration-150"
+                    title="Ocultar de mi lista"
+                    className="w-[30px] h-[30px] rounded-xs border-none bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:bg-white/[8%] hover:text-text-secondary transition-all duration-150"
                   >
-                    <Trash2 size={13} />
+                    <EyeOff size={13} />
                   </button>
-                </div>
+                ) : (
+                  /* Personal category: edit + delete */
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => { setEditingId(cat.id); setAddingNew(false); }}
+                      className="w-[30px] h-[30px] rounded-xs border-none bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:bg-white/[8%] hover:text-white transition-all duration-150"
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(cat.id)}
+                      disabled={!!deletingId}
+                      className="w-[30px] h-[30px] rounded-xs border-none bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:bg-danger/10 hover:text-danger transition-all duration-150"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                )}
               </div>
             )
           )}

@@ -12,39 +12,81 @@ enum TipoMovimiento {
   EGRESO
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id               String                @id @default(cuid())
+  email            String                @unique
+  password         String
+  nombre           String
+  role             Role                  @default(USER)
+  createdAt        DateTime              @default(now())
+  movimientos      Movimiento[]
+  categorias       Categoria[]
+  plataformas      Plataforma[]
+  configuracion    Configuracion?
+  hiddenCategorias UserCategoriaHidden[]
+}
+
 model Categoria {
-  id          String          @id @default(cuid())
-  nombre      String          @unique
+  id          String                @id @default(cuid())
+  nombre      String
   tipo        TipoMovimiento
-  icono       String          @default("CircleDollarSign")
-  createdAt   DateTime        @default(now())
+  icono       String                @default("💰")
+  createdAt   DateTime              @default(now())
+  userId      String?               // null = global/shared
+  user        User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   movimientos Movimiento[]
+  hiddenBy    UserCategoriaHidden[]
+
+  @@unique([nombre, userId])
+}
+
+model UserCategoriaHidden {
+  userId      String
+  categoriaId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoria   Categoria @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+
+  @@id([userId, categoriaId])
 }
 
 model Plataforma {
   id          String       @id @default(cuid())
-  nombre      String       @unique
+  nombre      String
   createdAt   DateTime     @default(now())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   movimientos Movimiento[]
+
+  @@unique([nombre, userId])
 }
 
 model Movimiento {
-  id            String          @id @default(cuid())
-  createdAt     DateTime        @default(now())
-  concepto      String
-  monto         Float
-  tipo          TipoMovimiento
-  categoriaId   String
-  categoria     Categoria       @relation(fields: [categoriaId], references: [id])
-  plataformaId  String?
-  plataforma    Plataforma?     @relation(fields: [plataformaId], references: [id])
-  fecha         DateTime
+  id           String         @id @default(cuid())
+  createdAt    DateTime       @default(now())
+  concepto     String
+  monto        Float
+  tipo         TipoMovimiento
+  categoriaId  String
+  categoria    Categoria      @relation(fields: [categoriaId], references: [id])
+  plataformaId String?
+  plataforma   Plataforma?    @relation(fields: [plataformaId], references: [id])
+  fecha        DateTime
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([fecha])
   @@index([tipo])
+  @@index([userId])
 }
 
 model Configuracion {
-  id                String @id @default("default")
-  porcentajeAhorro  Float  @default(0.20)
+  id               String @id @default(cuid())
+  porcentajeAhorro Float  @default(0.20)
+  userId           String @unique
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
