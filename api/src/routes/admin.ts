@@ -1,8 +1,9 @@
+import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth.js';
+import { logError } from '../lib/logger.js';
+import prisma from '../lib/prisma.js';
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import prisma from '../lib/prisma.js';
-import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -28,7 +29,8 @@ router.get('/users', async (_req, res) => {
       orderBy: { createdAt: 'asc' },
     });
     res.json(users);
-  } catch {
+  } catch (error) {
+    logError('GET /api/admin/users', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -53,6 +55,7 @@ router.post('/users', async (req, res) => {
       res.status(400).json({ error: error.errors[0].message });
       return;
     }
+    logError('POST /api/admin/users', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -76,6 +79,7 @@ router.put('/users/:id', async (req, res) => {
       res.status(400).json({ error: error.errors[0].message });
       return;
     }
+    logError(`PUT /api/admin/users/${req.params.id}`, error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -91,7 +95,8 @@ router.delete('/users/:id', async (req, res) => {
     }
     await prisma.user.delete({ where: { id } });
     res.json({ success: true });
-  } catch {
+  } catch (error) {
+    logError(`DELETE /api/admin/users/${req.params.id}`, error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });

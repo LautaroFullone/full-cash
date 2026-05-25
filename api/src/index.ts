@@ -1,18 +1,28 @@
+import express, { NextFunction, Request, Response } from 'express'
 import configuracionRouter from './routes/configuracion.js'
 import movimientosRouter from './routes/movimientos.js'
 import plataformasRouter from './routes/plataformas.js'
 import categoriasRouter from './routes/categorias.js'
-import authRouter from './routes/auth.js'
+import { logError, logInfo } from './lib/logger.js'
 import adminRouter from './routes/admin.js'
+import authRouter from './routes/auth.js'
 import prisma from './lib/prisma.js'
 import { fileURLToPath } from 'url'
-import express from 'express'
-import dotenv from 'dotenv'
-import cors from 'cors'
-import path from 'path'
 import morgan from 'morgan'
+import dotenv from 'dotenv'
+import path from 'path'
+import cors from 'cors'
 
 dotenv.config()
+
+process.on('uncaughtException', (error) => {
+   logError('uncaughtException', error)
+   process.exit(1)
+})
+
+process.on('unhandledRejection', (reason) => {
+   logError('unhandledRejection', reason)
+})
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -52,12 +62,19 @@ if (process.env.NODE_ENV === 'production') {
    })
 }
 
+// Global error handler — catches any error passed via next(error)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
+   logError(`${req.method} ${req.path}`, error)
+   res.status(500).json({ error: 'Error interno del servidor' })
+})
+
 app.listen(PORT, async () => {
-   console.log(`🚀 Full Cash API running on http://localhost:${PORT}`)
+   logInfo(`Full Cash API running on http://localhost:${PORT}`)
    try {
       await prisma.$connect()
-      console.log('✅ Conexión a la base de datos establecida con éxito.')
+      logInfo('Conexión a la base de datos establecida con éxito.')
    } catch (error) {
-      console.error('❌ Error al conectar con la base de datos:', error)
+      logError('startup — prisma.$connect', error)
    }
 })

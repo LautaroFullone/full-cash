@@ -1,7 +1,8 @@
+import { authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { logError } from '../lib/logger.js';
+import prisma from '../lib/prisma.js';
 import { Router } from 'express';
 import { z } from 'zod';
-import prisma from '../lib/prisma.js';
-import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -19,7 +20,8 @@ router.get('/', async (req, res) => {
       orderBy: { nombre: 'asc' },
     });
     res.json(plataformas);
-  } catch {
+  } catch (error) {
+    logError('GET /api/plataformas', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -36,6 +38,7 @@ router.post('/', async (req, res) => {
       res.status(400).json({ error: 'Datos inválidos', details: error.errors });
       return;
     }
+    logError('POST /api/plataformas', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -58,7 +61,8 @@ router.delete('/:id', async (req, res) => {
     }
     await prisma.plataforma.delete({ where: { id } });
     res.json({ success: true });
-  } catch {
+  } catch (error) {
+    logError(`DELETE /api/plataformas/${req.params.id}`, error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });

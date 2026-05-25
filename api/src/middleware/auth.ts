@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { logError } from '../lib/logger.js';
 import jwt from 'jsonwebtoken';
 
 export interface AuthRequest extends Request {
@@ -23,7 +24,8 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
     };
     (req as AuthRequest).user = decoded;
     next();
-  } catch {
+  } catch (error) {
+    logError('authMiddleware — jwt.verify', error)
     res.status(401).json({ error: 'Token inválido o expirado' });
   }
 }

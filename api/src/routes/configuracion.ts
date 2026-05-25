@@ -1,7 +1,8 @@
+import { authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { logError } from '../lib/logger.js';
+import prisma from '../lib/prisma.js';
 import { Router } from 'express';
 import { z } from 'zod';
-import prisma from '../lib/prisma.js';
-import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -23,7 +24,8 @@ router.get('/', async (req, res) => {
     }
 
     res.json(config);
-  } catch {
+  } catch (error) {
+    logError('GET /api/configuracion', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -46,6 +48,7 @@ router.put('/', async (req, res) => {
       res.status(400).json({ error: 'Datos inválidos', details: error.errors });
       return;
     }
+    logError('PUT /api/configuracion', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });

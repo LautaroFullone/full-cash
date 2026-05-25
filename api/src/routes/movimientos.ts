@@ -1,7 +1,8 @@
+import { authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { logError } from '../lib/logger.js';
+import prisma from '../lib/prisma.js';
 import { Router } from 'express';
 import { z } from 'zod';
-import prisma from '../lib/prisma.js';
-import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -39,7 +40,8 @@ router.get('/', async (req, res) => {
     });
 
     res.json(movimientos);
-  } catch {
+  } catch (error) {
+    logError('GET /api/movimientos', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -86,7 +88,8 @@ router.get('/resumen', async (req, res) => {
       .sort((a, b) => b.total - a.total);
 
     res.json({ totalIngresos, totalEgresos, saldo: totalIngresos - totalEgresos, distribucionCategorias });
-  } catch {
+  } catch (error) {
+    logError('GET /api/movimientos/resumen', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -114,6 +117,7 @@ router.post('/', async (req, res) => {
       res.status(400).json({ error: 'Datos inválidos', details: error.errors });
       return;
     }
+    logError('POST /api/movimientos', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -142,6 +146,7 @@ router.put('/:id', async (req, res) => {
       res.status(400).json({ error: 'Datos inválidos', details: error.errors });
       return;
     }
+    logError(`PUT /api/movimientos/${req.params.id}`, error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -155,7 +160,8 @@ router.delete('/:id', async (req, res) => {
     if (!existing) { res.status(404).json({ error: 'Movimiento no encontrado' }); return; }
     await prisma.movimiento.delete({ where: { id } });
     res.json({ success: true });
-  } catch {
+  } catch (error) {
+    logError(`DELETE /api/movimientos/${req.params.id}`, error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });

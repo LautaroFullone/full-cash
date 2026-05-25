@@ -1,9 +1,10 @@
-import { Router } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { z } from 'zod';
-import prisma from '../lib/prisma.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { logError } from '../lib/logger.js';
+import prisma from '../lib/prisma.js';
+import { Router } from 'express';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import { z } from 'zod';
 
 const router = Router();
 
@@ -38,6 +39,7 @@ router.post('/login', async (req, res) => {
       res.status(400).json({ error: 'Email y contraseña son requeridos' });
       return;
     }
+    logError('POST /api/auth/login', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -54,7 +56,8 @@ router.get('/me', authMiddleware, async (req, res) => {
       return;
     }
     res.json(user);
-  } catch {
+  } catch (error) {
+    logError('GET /api/auth/me', error)
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
