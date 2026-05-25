@@ -4,7 +4,7 @@ import type { Categoria, TipoMovimiento } from '@/models/categoria'
 import { CurrencyInput } from '@/components/CurrencyInput'
 import type { Plataforma } from '@/models/plataforma'
 import { DatePicker } from '@/components/DatePicker'
-import { Plus, X, Loader2 } from 'lucide-react'
+import { TrendingUp, TrendingDown, AlertCircle, Plus, X, Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
@@ -134,9 +134,9 @@ export function MovementForm({
                      <h2 className="text-lg font-bold">Nuevo movimiento</h2>
                      <button
                         onClick={handleClose}
-                        className="bg-transparent border-none text-text-muted p-1 cursor-pointer hover:text-white transition-colors"
+                        className="w-8 h-8 flex items-center justify-center rounded-sm bg-transparent border border-border-strong text-text-muted cursor-pointer hover:border-border hover:text-white transition-all duration-150"
                      >
-                        <X size={20} />
+                        <X size={16} />
                      </button>
                   </div>
 
@@ -153,18 +153,42 @@ export function MovementForm({
                                     setCategoriaId('')
                                  }}
                                  className={cn(
-                                    'py-3 border-none text-sm font-bold font-body cursor-pointer transition-all duration-200',
+                                    'flex items-center justify-center gap-2 py-3 border-none text-sm font-bold font-body cursor-pointer transition-all duration-200',
                                     tipo === t
                                        ? t === 'INGRESO'
-                                          ? 'bg-accent text-background'
+                                          ? 'bg-accent text-background-deep'
                                           : 'bg-danger text-white'
-                                       : 'bg-background text-text-muted'
+                                       : 'bg-background text-text-muted hover:text-text-secondary'
                                  )}
                               >
-                                 {t === 'INGRESO' ? '↑ Ingreso' : '↓ Gasto'}
+                                 {t === 'INGRESO' ? (
+                                    <TrendingUp size={15} strokeWidth={2.5} />
+                                 ) : (
+                                    <TrendingDown size={15} strokeWidth={2.5} />
+                                 )}
+                                 {t === 'INGRESO' ? 'Ingreso' : 'Gasto'}
                               </button>
                            ))}
                         </div>
+                     </div>
+
+                     <div
+                        className={cn(
+                           'rounded-md px-5 py-6 border transition-colors duration-300',
+                           tipo === 'INGRESO'
+                              ? 'bg-accent/6 border-accent/20'
+                              : 'bg-danger/6 border-danger/20'
+                        )}
+                     >
+                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-[1px] text-center mb-4">
+                           Monto
+                        </p>
+                        <CurrencyInput
+                           value={monto}
+                           onChange={setMonto}
+                           variant="hero"
+                           color={tipo === 'INGRESO' ? 'accent' : 'danger'}
+                        />
                      </div>
 
                      <div>
@@ -175,11 +199,6 @@ export function MovementForm({
                            placeholder="Ej: Sueldo, Supermercado..."
                            className="w-full"
                         />
-                     </div>
-
-                     <div>
-                        <FormLabel>Monto</FormLabel>
-                        <CurrencyInput value={monto} onChange={setMonto} />
                      </div>
 
                      <div>
@@ -197,10 +216,10 @@ export function MovementForm({
                                     type="button"
                                     onClick={() => setCategoriaId(cat.id)}
                                     className={cn(
-                                       'flex items-center gap-1.5 py-[7px] px-3 rounded-full border text-[13px] font-body cursor-pointer transition-all duration-150',
+                                       'flex items-center gap-1.5 py-1.75 px-3 rounded-full border text-[13px] font-body cursor-pointer transition-all duration-150',
                                        categoriaId === cat.id
                                           ? 'border-accent bg-accent/10 text-accent'
-                                          : 'border-border-strong bg-background text-text-secondary hover:border-border hover:text-white'
+                                          : 'border-border-strong bg-background text-text-secondary hover:border-border-strong hover:bg-white/4 hover:text-white'
                                     )}
                                  >
                                     <CategoryIcon icono={cat.icono} size={14} />
@@ -233,13 +252,16 @@ export function MovementForm({
                      </div>
 
                      {error && (
-                        <p className="text-[13px] text-danger font-medium">⚠ {error}</p>
+                        <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-danger/10 border border-danger/20">
+                           <AlertCircle size={14} className="text-danger shrink-0" />
+                           <p className="text-[13px] text-danger font-medium">{error}</p>
+                        </div>
                      )}
 
                      <button
                         type="submit"
                         disabled={loading}
-                        className="mt-1 py-[15px] border-none rounded-md font-heading text-[15px] font-bold bg-white text-background flex items-center justify-center gap-2 disabled:opacity-70 transition-all duration-200 cursor-pointer"
+                        className="mt-1 py-3.75 border-none rounded-md font-heading text-[15px] font-bold bg-accent text-background-deep flex items-center justify-center gap-2 disabled:opacity-70 transition-all duration-200 cursor-pointer hover:bg-accent-dim active:scale-[0.98]"
                      >
                         {loading ? (
                            <Loader2 size={18} className="animate-spin" />
