@@ -2,7 +2,7 @@ import { TrendingUp, TrendingDown, AlertCircle, Plus, X, Loader2 } from 'lucide-
 import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
 import type { PostMovimientoBody } from '../services/postMovimiento'
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
-import { CurrencyInput, DatePicker, PlatformSelect } from '@/components'
+import { CurrencyInput, DatePicker, PlatformSelect, toast } from '@/components'
 import type { Plataforma } from '@/models/plataforma'
 import { format } from 'date-fns'
 import { useState, useEffect, useRef } from 'react'
@@ -101,6 +101,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
             plataformaId: plataformaId || undefined,
             fecha: new Date(fecha + 'T12:00:00').toISOString(),
          })
+         toast.success('Movimiento guardado')
          resetForm()
          handleClose()
       } catch {

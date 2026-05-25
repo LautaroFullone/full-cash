@@ -9,6 +9,7 @@ import { useMonthSelector } from './hooks/useMonthSelector'
 import { CategoryChart } from './components/CategoryChart'
 import { UserManager } from '@/modules/admin/UserManager'
 import { SummaryCards } from './components/SummaryCards'
+import { DashboardSkeleton } from '@/components/Skeleton'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { SavingsBar } from './components/SavingsBar'
@@ -17,7 +18,6 @@ import { Header } from './components/Header'
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
 import {
-   Loader2,
    Wallet,
    Tags,
    Plus,
@@ -144,9 +144,7 @@ export function DashboardPage() {
 
          {/* Content */}
          {loading ? (
-            <div className="flex justify-center py-16">
-               <Loader2 size={32} className="text-accent animate-spin" />
-            </div>
+            <DashboardSkeleton />
          ) : (
             <div className="max-w-130 lg:max-w-300 mx-auto px-4 lg:px-10 pb-24 lg:pb-12 lg:pt-8 lg:grid lg:grid-cols-[340px_1fr] lg:gap-6 lg:items-start">
                <aside className="flex flex-col gap-4 lg:sticky lg:top-20">
@@ -161,7 +159,7 @@ export function DashboardPage() {
                      </p>
                      <h2
                         className={cn(
-                           'font-heading text-5xl font-black tracking-[-2px] transition-colors duration-300',
+                           'font-heading text-5xl font-black tracking-[-2px] transition-colors duration-300z',
                            isPositive ? 'text-accent' : 'text-danger'
                         )}
                      >

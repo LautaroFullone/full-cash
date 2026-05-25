@@ -7,40 +7,40 @@ interface CategoryChartProps {
    distribucion: DistribucionCategoria[]
 }
 
-function CustomTooltip({
+const CustomTooltip = ({
    active,
    payload,
 }: {
    active?: boolean
    payload?: { payload: DistribucionCategoria }[]
-}) {
+}) => {
    if (!active || !payload?.length) return null
    const data = payload[0].payload
    return (
       <div className="bg-surface-elevated border border-border-strong rounded-md px-3.5 py-2.5 shadow-elevated">
          <p className="text-[13px] font-semibold text-white">{data.categoriaNombre}</p>
-         <p className="text-xs text-text-muted mt-0.5">
+         <p className="text-xs text-text-muted mt-0.5 tabular-nums">
             {formatCurrency(data.total)} · {data.porcentaje.toFixed(1)}%
          </p>
       </div>
    )
 }
 
-export function CategoryChart({ distribucion }: CategoryChartProps) {
+export const CategoryChart: React.FC<CategoryChartProps> = ({ distribucion }) => {
    if (!distribucion.length) {
       return (
          <div className="card animate-slide-up px-5 py-8 text-center [animation-delay:0.3s] [animation-fill-mode:backwards]">
-            <p className="text-sm text-text-muted">
-               No hay gastos este mes para graficar
-            </p>
+            <p className="text-sm text-text-muted">No hay gastos este mes para graficar</p>
          </div>
       )
    }
 
+   // Filtrar categorías con porcentaje > 0 para la leyenda
    const chartData = distribucion.map((item, i) => ({
       ...item,
       color: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
    }))
+   const legendData = chartData.filter((item) => item.porcentaje >= 1)
 
    return (
       <div className="card animate-slide-up p-5 [animation-delay:0.3s] [animation-fill-mode:backwards]">
@@ -68,24 +68,27 @@ export function CategoryChart({ distribucion }: CategoryChartProps) {
                   </PieChart>
                </ResponsiveContainer>
             </div>
-            <div className="flex-1 flex flex-col gap-2">
-               {chartData.map((item) => (
-                  <div
-                     key={item.categoriaId}
-                     className="flex items-center justify-between text-[13px]"
-                  >
-                     <div className="flex items-center gap-2">
+
+            <div className="flex-1 flex flex-col gap-2.5">
+               {legendData.map((item) => (
+                  <div key={item.categoriaId} className="flex items-center justify-between gap-2">
+                     <div className="flex items-center gap-2 min-w-0">
                         <div
                            className="w-2 h-2 rounded-full shrink-0"
                            style={{ background: item.color }}
                         />
-                        <span className="text-text-secondary">
+                        <span className="text-[13px] text-text-secondary truncate">
                            {item.categoriaNombre}
                         </span>
                      </div>
-                     <span className="text-text-muted font-medium text-xs">
-                        {item.porcentaje.toFixed(0)}%
-                     </span>
+                     <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[11px] text-text-muted tabular-nums">
+                           {formatCurrency(item.total)}
+                        </span>
+                        <span className="text-[11px] font-semibold text-text-secondary tabular-nums w-8 text-right">
+                           {item.porcentaje.toFixed(0)}%
+                        </span>
+                     </div>
                   </div>
                ))}
             </div>
