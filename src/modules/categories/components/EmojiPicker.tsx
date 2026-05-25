@@ -270,10 +270,11 @@ export const ALL_EMOJIS = EMOJI_GROUPS.flatMap((g) => g.emojis)
 interface EmojiPickerProps {
    selected: string
    usedEmojis?: string[]
+   autoFocusSearch?: boolean
    onSelect: (emoji: string) => void
 }
 
-export function EmojiPicker({ selected, usedEmojis = [], onSelect }: EmojiPickerProps) {
+export function EmojiPicker({ selected, usedEmojis = [], autoFocusSearch = false, onSelect }: EmojiPickerProps) {
    const [search, setSearch] = useState('')
 
    const filteredGroups = search.trim()
@@ -294,7 +295,7 @@ export function EmojiPicker({ selected, usedEmojis = [], onSelect }: EmojiPicker
                onChange={(e) => setSearch(e.target.value)}
                placeholder="Buscar emoji..."
                className="flex-1 border-none bg-transparent text-[13px] p-0 text-white"
-               autoFocus
+               autoFocus={autoFocusSearch}
             />
          </div>
          <div className="max-h-[220px] overflow-y-auto p-2">

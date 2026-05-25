@@ -40,9 +40,9 @@ export function MovementList({ movimientos, onDelete }: MovementListProps) {
 
    return (
       <div className="card animate-slide-up p-5 [animation-delay:0.4s] [animation-fill-mode:backwards]">
-         <div className="flex items-center justify-between mb-4">
+         <div className="flex flex-col gap-3 mb-4">
             <div className="flex items-center gap-2">
-               <h3 className="text-sm font-semibold">Todos los movimientos</h3>
+               <h3 className="text-sm font-semibold">Movimientos</h3>
                <span className="text-[11px] font-bold bg-accent text-background rounded-full px-2 py-0.5 min-w-[20px] text-center">
                   {filtered.length}
                </span>
@@ -53,10 +53,10 @@ export function MovementList({ movimientos, onDelete }: MovementListProps) {
                      key={f.value}
                      onClick={() => setFilter(f.value)}
                      className={cn(
-                        'px-3 py-[5px] rounded-full border-none text-xs font-medium font-body cursor-pointer transition-all duration-150',
+                        'flex-1 py-1.5 rounded-full border-none text-xs font-medium font-body cursor-pointer transition-all duration-150',
                         filter === f.value
                            ? 'bg-surface-elevated text-white'
-                           : 'bg-transparent text-text-muted'
+                           : 'bg-transparent text-text-muted hover:text-text-secondary'
                      )}
                   >
                      {f.label}

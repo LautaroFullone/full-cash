@@ -206,6 +206,39 @@ button {
    animation: scaleIn 0.2s ease forwards;
 }
 
+@keyframes slideDown {
+   from {
+      opacity: 1;
+      transform: translateY(0);
+   }
+   to {
+      opacity: 0;
+      transform: translateY(16px);
+   }
+}
+
+@keyframes overlayFadeIn {
+   from { opacity: 0; }
+   to { opacity: 1; }
+}
+
+@keyframes overlayFadeOut {
+   from { opacity: 1; }
+   to { opacity: 0; }
+}
+
+.animate-slide-down {
+   animation: slideDown 0.25s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+.animate-overlay-in {
+   animation: overlayFadeIn 0.22s ease forwards;
+}
+
+.animate-overlay-out {
+   animation: overlayFadeOut 0.2s ease forwards;
+}
+
 /* ── Modal — responsive bottom-sheet / centered dialog ── */
 .modal-overlay {
    align-items: flex-end;

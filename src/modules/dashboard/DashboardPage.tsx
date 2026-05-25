@@ -1,4 +1,21 @@
+import { MovementForm } from '@/modules/movements/components/MovementForm'
+import { MovementList } from '@/modules/movements/components/MovementList'
+import { useCategories } from '@/modules/categories/hooks/useCategories'
+import { CategoryManager } from '@/modules/categories/CategoryManager'
+import { useMovements } from '@/modules/movements/hooks/useMovements'
+import { usePlatforms } from '@/modules/platforms/hooks/usePlatforms'
+import { useSavingsConfig } from './hooks/useSavingsConfig'
+import { useMonthSelector } from './hooks/useMonthSelector'
+import { CategoryChart } from './components/CategoryChart'
+import { UserManager } from '@/modules/admin/UserManager'
+import { SummaryCards } from './components/SummaryCards'
+import { formatCurrency } from '@/utils/formatCurrency'
+import { useAuth } from '@/modules/auth/hooks/useAuth'
+import { SavingsBar } from './components/SavingsBar'
+import { useAuthStore } from '@/stores/authStore'
+import { Header } from './components/Header'
 import { useState } from 'react'
+import { cn } from '@/utils/cn'
 import {
    Loader2,
    Wallet,
@@ -9,23 +26,6 @@ import {
    Users,
    LogOut,
 } from 'lucide-react'
-import { Header } from './components/Header'
-import { SummaryCards } from './components/SummaryCards'
-import { SavingsBar } from './components/SavingsBar'
-import { CategoryChart } from './components/CategoryChart'
-import { MovementForm } from '@/modules/movements/components/MovementForm'
-import { MovementList } from '@/modules/movements/components/MovementList'
-import { CategoryManager } from '@/modules/categories/CategoryManager'
-import { UserManager } from '@/modules/admin/UserManager'
-import { useMonthSelector } from './hooks/useMonthSelector'
-import { useMovements } from '@/modules/movements/hooks/useMovements'
-import { useCategories } from '@/modules/categories/hooks/useCategories'
-import { usePlatforms } from '@/modules/platforms/hooks/usePlatforms'
-import { useSavingsConfig } from './hooks/useSavingsConfig'
-import { useAuth } from '@/modules/auth/hooks/useAuth'
-import { useAuthStore } from '@/stores/authStore'
-import { formatCurrency } from '@/utils/formatCurrency'
-import { cn } from '@/utils/cn'
 
 export function DashboardPage() {
    const { mes, anio, monthName, goToPrevMonth, goToNextMonth } = useMonthSelector()

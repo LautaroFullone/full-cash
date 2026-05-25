@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Plus, Pencil, Trash2, Check, Loader2, EyeOff } from 'lucide-react'
+import { X, Plus, Pencil, Trash2, Check, Loader2, EyeOff, ArrowRight } from 'lucide-react'
 import { EmojiPicker } from './components/EmojiPicker'
 import { CategoryIcon } from './components/CategoryIcon'
 import { cn } from '@/utils/cn'
@@ -80,6 +80,7 @@ function EditRow({ categoria, usedEmojis, onSave, onCancel }: EditRowProps) {
             <EmojiPicker
                selected={icono}
                usedEmojis={usedEmojis.filter((e) => e !== categoria.icono)}
+               autoFocusSearch
                onSelect={(e) => {
                   setIcono(e)
                   setShowPicker(false)
@@ -100,71 +101,90 @@ interface NewRowProps {
 function NewRow({ tipo, usedEmojis, onSave, onCancel }: NewRowProps) {
    const [nombre, setNombre] = useState('')
    const [icono, setIcono] = useState('')
-   const [showPicker, setShowPicker] = useState(false)
+   const [step, setStep] = useState<'name' | 'emoji'>('name')
    const [saving, setSaving] = useState(false)
 
-   const handleSave = async () => {
-      if (!nombre.trim() || !icono) return
+   const canAdvance = nombre.trim().length > 0
+
+   const handleAdvance = () => {
+      if (canAdvance) setStep('emoji')
+   }
+
+   const handleSelectEmoji = async (emoji: string) => {
+      setIcono(emoji)
       setSaving(true)
-      await onSave({ nombre: nombre.trim(), tipo, icono })
+      await onSave({ nombre: nombre.trim(), tipo, icono: emoji })
       setSaving(false)
    }
 
    return (
       <div className="flex flex-col gap-2 p-3 bg-accent/4 rounded-md border border-accent/20">
-         <div className="flex gap-2 items-center">
-            <button
-               type="button"
-               onClick={() => setShowPicker((v) => !v)}
-               className={cn(
-                  'w-10 h-10 rounded-sm bg-background cursor-pointer shrink-0 flex items-center justify-center border',
-                  icono
-                     ? 'border-accent text-xl'
-                     : 'border-border-strong text-sm text-text-muted'
-               )}
-            >
-               {icono || '＋'}
-            </button>
-            <input
-               value={nombre}
-               onChange={(e) => setNombre(e.target.value)}
-               className="flex-1 text-sm"
-               placeholder={`Nueva categoría de ${tipo === 'INGRESO' ? 'ingreso' : 'gasto'}...`}
-               onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSave()
-                  if (e.key === 'Escape') onCancel()
-               }}
-               autoFocus
-            />
-            <button
-               type="button"
-               onClick={handleSave}
-               disabled={saving || !nombre.trim() || !icono}
-               className="w-9 h-9 rounded-sm border-none bg-accent text-background flex items-center justify-center disabled:opacity-40"
-            >
-               {saving ? (
-                  <Loader2 size={14} className="animate-spin" />
-               ) : (
-                  <Check size={14} />
-               )}
-            </button>
-            <button
-               type="button"
-               onClick={onCancel}
-               className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center"
-            >
-               <X size={14} />
-            </button>
-         </div>
-         {(!icono || showPicker) && (
-            <EmojiPicker
-               selected={icono}
-               usedEmojis={usedEmojis}
-               onSelect={(e) => {
-                  setIcono(e)
-                  setShowPicker(false)
-               }}
-            />
+         {step === 'name' ? (
+            <div className="flex gap-2 items-center">
+               <input
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  className="flex-1 text-sm"
+                  placeholder={`Nueva categoría de ${tipo === 'INGRESO' ? 'ingreso' : 'gasto'}...`}
+                  onKeyDown={(e) => {
+                     if (e.key === 'Enter') handleAdvance()
+                     if (e.key === 'Escape') onCancel()
+                  }}
+                  autoFocus
+               />
+               <button
+                  type="button"
+                  onClick={handleAdvance}
+                  disabled={!canAdvance}
+                  className={cn(
+                     'h-9 px-3 rounded-sm text-[12px] font-semibold flex items-center gap-1.5 shrink-0 transition-all duration-150',
+                     canAdvance
+                        ? 'bg-accent text-background cursor-pointer active:scale-[0.96]'
+                        : 'bg-white/5 text-text-muted cursor-not-allowed opacity-40'
+                  )}
+               >
+                  Emoji
+                  <ArrowRight size={12} />
+               </button>
+               <button
+                  type="button"
+                  onClick={onCancel}
+                  className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center cursor-pointer"
+               >
+                  <X size={14} />
+               </button>
+            </div>
+         ) : (
+            <>
+               <div className="flex gap-2 items-center">
+                  <div className="w-10 h-10 rounded-sm bg-background shrink-0 flex items-center justify-center text-xl border border-border">
+                     {icono || '❓'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                     <p className="text-sm font-medium text-white truncate">{nombre}</p>
+                     <p className="text-[11px] text-text-muted leading-none mt-0.5">
+                        Elegí un emoji
+                     </p>
+                  </div>
+                  {saving && (
+                     <Loader2 size={15} className="animate-spin text-accent shrink-0" />
+                  )}
+                  <button
+                     type="button"
+                     onClick={onCancel}
+                     className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center cursor-pointer"
+                  >
+                     <X size={14} />
+                  </button>
+               </div>
+               <div className="animate-fade-in">
+                  <EmojiPicker
+                     selected={icono}
+                     usedEmojis={usedEmojis}
+                     onSelect={handleSelectEmoji}
+                  />
+               </div>
+            </>
          )}
       </div>
    )

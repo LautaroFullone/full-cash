@@ -2,11 +2,10 @@ import { TrendingUp, TrendingDown, AlertCircle, Plus, X, Loader2 } from 'lucide-
 import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
 import type { PostMovimientoBody } from '../services/postMovimiento'
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
-import { CurrencyInput } from '@/components/CurrencyInput'
+import { CurrencyInput, DatePicker, PlatformSelect } from '@/components'
 import type { Plataforma } from '@/models/plataforma'
-import { DatePicker } from '@/components/DatePicker'
 import { format } from 'date-fns'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { cn } from '@/utils/cn'
 
 interface MovementFormProps {
@@ -18,22 +17,20 @@ interface MovementFormProps {
    onOpen?: () => void
 }
 
-function FormLabel({ children }: { children: React.ReactNode }) {
-   return (
-      <label className="block text-[11px] font-bold text-text-muted uppercase tracking-[0.8px] mb-1.5">
-         {children}
-      </label>
-   )
-}
+const FormLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+   <label className="block text-[11px] font-bold text-text-muted uppercase tracking-[0.8px] mb-1.5">
+      {children}
+   </label>
+)
 
-export function MovementForm({
+export const MovementForm: React.FC<MovementFormProps> = ({
    categorias,
    plataformas,
    onSubmit,
    isOpen: controlledOpen,
    onClose: controlledClose,
    onOpen: controlledOnOpen,
-}: MovementFormProps) {
+}) => {
    const [internalOpen, setInternalOpen] = useState(false)
    const [tipo, setTipo] = useState<TipoMovimiento>('EGRESO')
    const [concepto, setConcepto] = useState('')
@@ -44,14 +41,37 @@ export function MovementForm({
    const [loading, setLoading] = useState(false)
    const [error, setError] = useState('')
 
+   // Exit animation state
+   const [mounted, setMounted] = useState(false)
+   const [closing, setClosing] = useState(false)
+   const timerRef = useRef<ReturnType<typeof setTimeout>>()
+
    const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
+
+   useEffect(() => {
+      if (isOpen) {
+         clearTimeout(timerRef.current)
+         setMounted(true)
+         setClosing(false)
+      }
+   }, [isOpen])
+
+   // Cleanup on unmount
+   useEffect(() => () => clearTimeout(timerRef.current), [])
+
    const handleOpen = () => {
       if (controlledOnOpen) controlledOnOpen()
       else setInternalOpen(true)
    }
+
    const handleClose = () => {
-      if (controlledClose) controlledClose()
-      else setInternalOpen(false)
+      setClosing(true)
+      timerRef.current = setTimeout(() => {
+         setMounted(false)
+         setClosing(false)
+         if (controlledClose) controlledClose()
+         else setInternalOpen(false)
+      }, 250)
    }
 
    const filteredCategorias = categorias.filter((c) => c.tipo === tipo)
@@ -67,18 +87,9 @@ export function MovementForm({
 
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault()
-      if (!concepto.trim()) {
-         setError('Ingresá un concepto')
-         return
-      }
-      if (!monto || monto <= 0) {
-         setError('Ingresá un monto válido')
-         return
-      }
-      if (!categoriaId) {
-         setError('Seleccioná una categoría')
-         return
-      }
+      if (!concepto.trim()) { setError('Ingresá un concepto'); return }
+      if (!monto || monto <= 0) { setError('Ingresá un monto válido'); return }
+      if (!categoriaId) { setError('Seleccioná una categoría'); return }
       try {
          setLoading(true)
          setError('')
@@ -101,11 +112,11 @@ export function MovementForm({
 
    return (
       <>
+         {/* FAB — solo mobile */}
          <button
-            className="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full border-none flex items-center justify-center z-40 cursor-pointer hover:scale-110 transition-transform duration-200"
+            className="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full border-none flex items-center justify-center z-40 cursor-pointer transition-transform duration-200 hover:scale-[1.06] active:scale-[0.96]"
             style={{
-               background:
-                  'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
+               background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
                boxShadow: '0 4px 20px rgba(229,255,166,0.3)',
             }}
             onClick={handleOpen}
@@ -114,33 +125,39 @@ export function MovementForm({
             <Plus size={24} color="#003a34" strokeWidth={2.5} />
          </button>
 
-         {isOpen && (
+         {mounted && (
             <div
-               className="modal-overlay fixed inset-0 bg-black/65 backdrop-blur-md z-50 flex justify-center"
+               className={cn(
+                  'modal-overlay fixed inset-0 bg-black/65 backdrop-blur-md z-50 flex justify-center',
+                  closing ? 'animate-overlay-out' : 'animate-overlay-in'
+               )}
                onClick={handleClose}
             >
                <div
-                  className="modal-sheet animate-slide-up bg-surface overflow-y-auto"
-                  style={{
-                     maxHeight: '92dvh',
-                     paddingLeft: '20px',
-                     paddingRight: '20px',
-                     paddingBottom: '40px',
-                  }}
+                  className={cn(
+                     'modal-sheet bg-surface overflow-y-auto',
+                     closing ? 'animate-slide-down' : 'animate-slide-up'
+                  )}
+                  style={{ maxHeight: '92dvh', paddingLeft: '20px', paddingRight: '20px', paddingBottom: '40px' }}
                   onClick={(e) => e.stopPropagation()}
                >
-                  <div className="lg:hidden w-10 h-1 rounded-full bg-border-strong mx-auto mt-3 mb-5" />
+                  {/* Drag handle — solo mobile */}
+                  <div className="lg:hidden w-12 h-1 rounded-full bg-border-strong mx-auto mt-3 mb-5" />
+
+                  {/* Header del modal */}
                   <div className="flex items-center justify-between mb-6">
-                     <h2 className="text-lg font-bold">Nuevo movimiento</h2>
+                     <h2 className="text-lg font-bold text-wrap-balance">Nuevo movimiento</h2>
+                     {/* w-10 h-10 = 40×40px hit area mínimo */}
                      <button
                         onClick={handleClose}
-                        className="w-8 h-8 flex items-center justify-center rounded-sm bg-transparent border border-border-strong text-text-muted cursor-pointer hover:border-border hover:text-white transition-all duration-150"
+                        className="w-10 h-10 flex items-center justify-center rounded-sm bg-transparent border border-border-strong text-text-muted cursor-pointer hover:border-border hover:text-white transition-colors duration-150"
                      >
                         <X size={16} />
                      </button>
                   </div>
 
                   <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
+                     {/* Tipo */}
                      <div>
                         <FormLabel>Tipo</FormLabel>
                         <div className="grid grid-cols-2 rounded-md overflow-hidden border border-border-strong">
@@ -148,12 +165,9 @@ export function MovementForm({
                               <button
                                  key={t}
                                  type="button"
-                                 onClick={() => {
-                                    setTipo(t)
-                                    setCategoriaId('')
-                                 }}
+                                 onClick={() => { setTipo(t); setCategoriaId('') }}
                                  className={cn(
-                                    'flex items-center justify-center gap-2 py-3 border-none text-sm font-bold font-body cursor-pointer transition-all duration-200',
+                                    'flex items-center justify-center gap-2 py-3 border-none text-sm font-bold font-body cursor-pointer transition-colors duration-200 active:scale-[0.96]',
                                     tipo === t
                                        ? t === 'INGRESO'
                                           ? 'bg-accent text-background-deep'
@@ -161,23 +175,21 @@ export function MovementForm({
                                        : 'bg-background text-text-muted hover:text-text-secondary'
                                  )}
                               >
-                                 {t === 'INGRESO' ? (
-                                    <TrendingUp size={15} strokeWidth={2.5} />
-                                 ) : (
-                                    <TrendingDown size={15} strokeWidth={2.5} />
-                                 )}
+                                 {t === 'INGRESO'
+                                    ? <TrendingUp size={15} strokeWidth={2.5} />
+                                    : <TrendingDown size={15} strokeWidth={2.5} />
+                                 }
                                  {t === 'INGRESO' ? 'Ingreso' : 'Gasto'}
                               </button>
                            ))}
                         </div>
                      </div>
 
+                     {/* Monto — misma jerarquía visual que Tipo */}
                      <div
                         className={cn(
                            'rounded-md px-5 py-6 border transition-colors duration-300',
-                           tipo === 'INGRESO'
-                              ? 'bg-accent/6 border-accent/20'
-                              : 'bg-danger/6 border-danger/20'
+                           tipo === 'INGRESO' ? 'bg-accent/6 border-accent/20' : 'bg-danger/6 border-danger/20'
                         )}
                      >
                         <p className="text-[10px] font-bold text-text-muted uppercase tracking-[1px] text-center mb-4">
@@ -191,6 +203,7 @@ export function MovementForm({
                         />
                      </div>
 
+                     {/* Concepto */}
                      <div>
                         <FormLabel>Concepto</FormLabel>
                         <input
@@ -201,12 +214,12 @@ export function MovementForm({
                         />
                      </div>
 
+                     {/* Categoría */}
                      <div>
                         <FormLabel>Categoría</FormLabel>
                         {filteredCategorias.length === 0 ? (
                            <p className="text-[13px] text-text-muted py-2">
-                              No hay categorías de{' '}
-                              {tipo === 'INGRESO' ? 'ingreso' : 'gasto'}.
+                              No hay categorías de {tipo === 'INGRESO' ? 'ingreso' : 'gasto'}.
                            </p>
                         ) : (
                            <div className="flex flex-wrap gap-2">
@@ -216,10 +229,10 @@ export function MovementForm({
                                     type="button"
                                     onClick={() => setCategoriaId(cat.id)}
                                     className={cn(
-                                       'flex items-center gap-1.5 py-1.75 px-3 rounded-full border text-[13px] font-body cursor-pointer transition-all duration-150',
+                                       'flex items-center gap-1.5 py-1.75 px-3 rounded-full border text-[13px] font-body cursor-pointer transition-colors duration-150 active:scale-[0.96]',
                                        categoriaId === cat.id
                                           ? 'border-accent bg-accent/10 text-accent'
-                                          : 'border-border-strong bg-background text-text-secondary hover:border-border-strong hover:bg-white/4 hover:text-white'
+                                          : 'border-border-strong bg-background text-text-secondary hover:bg-white/4 hover:text-white'
                                     )}
                                  >
                                     <CategoryIcon icono={cat.icono} size={14} />
@@ -230,27 +243,23 @@ export function MovementForm({
                         )}
                      </div>
 
+                     {/* Plataforma */}
                      <div>
                         <FormLabel>Plataforma (opcional)</FormLabel>
-                        <select
+                        <PlatformSelect
                            value={plataformaId}
-                           onChange={(e) => setPlataformaId(e.target.value)}
-                           className="w-full"
-                        >
-                           <option value="">Sin plataforma</option>
-                           {plataformas.map((p) => (
-                              <option key={p.id} value={p.id}>
-                                 {p.nombre}
-                              </option>
-                           ))}
-                        </select>
+                           onChange={setPlataformaId}
+                           plataformas={plataformas}
+                        />
                      </div>
 
+                     {/* Fecha */}
                      <div>
                         <FormLabel>Fecha</FormLabel>
                         <DatePicker value={fecha} onChange={setFecha} />
                      </div>
 
+                     {/* Error */}
                      {error && (
                         <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-danger/10 border border-danger/20">
                            <AlertCircle size={14} className="text-danger shrink-0" />
@@ -258,16 +267,13 @@ export function MovementForm({
                         </div>
                      )}
 
+                     {/* Submit */}
                      <button
                         type="submit"
                         disabled={loading}
-                        className="mt-1 py-3.75 border-none rounded-md font-heading text-[15px] font-bold bg-accent text-background-deep flex items-center justify-center gap-2 disabled:opacity-70 transition-all duration-200 cursor-pointer hover:bg-accent-dim active:scale-[0.98]"
+                        className="mt-1 py-3.75 border-none rounded-md font-heading text-[15px] font-bold bg-accent text-background-deep flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer hover:bg-accent-dim active:scale-[0.98] transition-[background-color,opacity,transform] duration-200"
                      >
-                        {loading ? (
-                           <Loader2 size={18} className="animate-spin" />
-                        ) : (
-                           <Plus size={18} />
-                        )}
+                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
                         Guardar movimiento
                      </button>
                   </form>

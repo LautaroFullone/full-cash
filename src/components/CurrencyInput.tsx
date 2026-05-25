@@ -12,7 +12,10 @@ interface CurrencyInputProps {
 
 const formatDisplay = (num: number | ''): string => {
    if (num === '' || num === 0) return ''
-   return num.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+   return num.toLocaleString('es-AR', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+   })
 }
 
 export const CurrencyInput: React.FC<CurrencyInputProps> = ({
@@ -42,7 +45,8 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
 
       // Re-insert thousand dots
       const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-      const formatted = decPart !== undefined ? `${formattedInt},${decPart}` : formattedInt
+      const formatted =
+         decPart !== undefined ? `${formattedInt},${decPart}` : formattedInt
 
       setDisplayValue(formatted)
 
@@ -56,11 +60,16 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
       let newCursor = formatted.length
       let count = 0
       for (let i = 0; i < formatted.length; i++) {
-         if (count === cleanBeforeCursor) { newCursor = i; break }
+         if (count === cleanBeforeCursor) {
+            newCursor = i
+            break
+         }
          if (formatted[i] !== '.') count++
       }
 
-      requestAnimationFrame(() => { inputRef.current?.setSelectionRange(newCursor, newCursor) })
+      requestAnimationFrame(() => {
+         inputRef.current?.setSelectionRange(newCursor, newCursor)
+      })
    }
 
    const handleBlur = () => {
@@ -73,7 +82,7 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
 
    if (variant === 'hero') {
       return (
-         <div className="flex items-center justify-center gap-1.5">
+         <div className="flex items-center justify-center ">
             <span
                className={cn(
                   'font-heading font-bold text-2xl leading-none transition-colors duration-200',
@@ -93,7 +102,7 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
                onBlur={handleBlur}
                placeholder={placeholder}
                className={cn(
-                  'bg-transparent border-none outline-none shadow-none font-heading font-black tracking-[-2px] text-center leading-none text-4xl min-w-[3ch]',
+                  'bg-transparent border-none outline-none shadow-none font-heading font-black tracking-[-2px] text-center leading-none text-4xl min-w-[3ch] tabular-nums',
                   displayValue ? colorClass : 'text-text-muted'
                )}
                style={{

@@ -12,7 +12,7 @@ interface HeaderProps {
    onOpenUsers?: () => void
 }
 
-export function Header({
+export const Header: React.FC<HeaderProps> = ({
    anio,
    monthName,
    saldo,
@@ -21,76 +21,80 @@ export function Header({
    onNextMonth,
    onOpenCategories,
    onOpenUsers,
-}: HeaderProps) {
+}) => {
    const isPositive = saldo >= 0
 
    return (
-      <header className="animate-fade-in pt-6 pb-4">
-         <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
+      <header className="animate-fade-in pt-5 pb-4 flex flex-col gap-3">
+         {/* Fila 1: logo + botones de acción */}
+         <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
                <div
-                  className="w-[42px] h-[42px] rounded-md flex items-center justify-center shrink-0"
+                  className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
                   style={{
                      background:
                         'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
                   }}
                >
-                  <Wallet size={22} color="#003a34" strokeWidth={2.2} />
+                  <Wallet size={18} color="#003a34" strokeWidth={2.5} />
                </div>
                <div>
-                  <h1 className="font-heading text-xl font-black tracking-[-0.5px]">
+                  <h1 className="font-heading text-lg font-black tracking-[-0.5px] leading-tight">
                      Full Cash
                   </h1>
-                  <p className="text-xs text-text-muted">Finanzas personales</p>
+                  <p className="text-[11px] text-text-muted leading-tight">Finanzas personales</p>
                </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
                {isAdmin && onOpenUsers && (
                   <button
                      onClick={onOpenUsers}
                      title="Gestionar usuarios"
-                     className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
+                     className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
                   >
-                     <Users size={16} />
+                     <Users size={15} />
                   </button>
                )}
                <button
                   onClick={onOpenCategories}
                   title="Gestionar categorías"
-                  className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
+                  className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
                >
-                  <Tags size={16} />
+                  <Tags size={15} />
                </button>
-               <div className="flex items-center gap-2 bg-surface border border-border rounded-full p-1.5">
-                  <button
-                     onClick={onPrevMonth}
-                     aria-label="Mes anterior"
-                     className="w-8 h-8 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-text-primary transition-colors duration-200"
-                  >
-                     <ChevronLeft size={16} />
-                  </button>
-                  <span className="font-heading text-sm font-semibold capitalize min-w-[100px] text-center text-white">
-                     {monthName} {anio}
-                  </span>
-                  <button
-                     onClick={onNextMonth}
-                     aria-label="Mes siguiente"
-                     className="w-8 h-8 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-text-primary transition-colors duration-200"
-                  >
-                     <ChevronRight size={16} />
-                  </button>
-               </div>
             </div>
          </div>
 
+         {/* Fila 2: selector de mes (centrado, ancho completo) */}
+         <div className="flex items-center bg-surface border border-border rounded-full p-1.5">
+            <button
+               onClick={onPrevMonth}
+               aria-label="Mes anterior"
+               className="w-8 h-8 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors duration-200 shrink-0"
+            >
+               <ChevronLeft size={16} />
+            </button>
+            <span className="flex-1 font-heading text-sm font-semibold capitalize text-center text-white">
+               {monthName} {anio}
+            </span>
+            <button
+               onClick={onNextMonth}
+               aria-label="Mes siguiente"
+               className="w-8 h-8 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors duration-200 shrink-0"
+            >
+               <ChevronRight size={16} />
+            </button>
+         </div>
+
+         {/* Saldo del mes */}
          <div
-            className="card p-6 text-center"
+            className="card p-5 text-center"
             style={{
                background: `linear-gradient(135deg, var(--color-surface), ${isPositive ? 'rgba(229,255,166,0.05)' : 'rgba(255,75,90,0.05)'})`,
             }}
          >
-            <p className="text-[11px] text-text-muted mb-1 font-semibold uppercase tracking-[1px]">
+            <p className="text-[10px] text-text-muted mb-1 font-semibold uppercase tracking-[1px]">
                Saldo del mes
             </p>
             <h2
