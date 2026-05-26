@@ -1,11 +1,11 @@
-import { useState } from 'react'
 import { X, Plus, Pencil, Trash2, Check, Loader2, EyeOff, ArrowRight } from 'lucide-react'
-import { EmojiPicker } from './components/EmojiPicker'
-import { CategoryIcon } from './components/CategoryIcon'
-import { cn } from '@/utils/cn'
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
 import type { PostCategoriaBody } from './services/postCategoria'
 import type { PutCategoriaBody } from './services/putCategoria'
+import { CategoryIcon } from './components/CategoryIcon'
+import { EmojiPicker } from './components/EmojiPicker'
+import { useState } from 'react'
+import { cn } from '@/utils/cn'
 
 interface CategoryManagerProps {
    categorias: Categoria[]

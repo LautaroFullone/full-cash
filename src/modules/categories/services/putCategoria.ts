@@ -6,6 +6,9 @@ export interface PutCategoriaBody {
    icono?: string
 }
 
-export function putCategoria(id: string, body: PutCategoriaBody): Promise<Categoria> {
-   return fetchAPI(`/categorias/${id}`, { method: 'PUT', body: JSON.stringify(body) })
+export function putCategoria(id: string, body: PutCategoriaBody) {
+   return fetchAPI<Categoria>(`/categorias/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+   })
 }

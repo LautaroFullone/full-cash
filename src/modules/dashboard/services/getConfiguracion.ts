@@ -6,6 +6,6 @@ export interface Configuracion {
    userId: string
 }
 
-export function getConfiguracion(): Promise<Configuracion> {
-   return fetchAPI('/configuracion')
+export function getConfiguracion() {
+   return fetchAPI<Configuracion>('/configuracion')
 }

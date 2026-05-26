@@ -12,18 +12,19 @@ import { cn } from '@/utils/cn'
 
 interface MovementListProps {
    movimientos: Movimiento[]
-   onDelete: (id: string) => Promise<void> | void
+   onDelete: (id: string) => Promise<unknown> | void
+   tipo?: TipoMovimiento
+   bare?: boolean
 }
 
-type FilterType = 'TODOS' | TipoMovimiento
-
-export const MovementList: React.FC<MovementListProps> = ({ movimientos, onDelete }) => {
-   const [filter, setFilter] = useState<FilterType>('TODOS')
+export const MovementList: React.FC<MovementListProps> = ({
+   movimientos,
+   onDelete,
+   tipo,
+   bare = false,
+}) => {
    const [confirmId, setConfirmId] = useState<string | null>(null)
    const [deletingId, setDeletingId] = useState<string | null>(null)
-
-   const filtered =
-      filter === 'TODOS' ? movimientos : movimientos.filter((m) => m.tipo === filter)
 
    const handleDeleteConfirm = async () => {
       if (!confirmId) return
@@ -40,48 +41,31 @@ export const MovementList: React.FC<MovementListProps> = ({ movimientos, onDelet
       }
    }
 
-   const filters: { label: string; value: FilterType }[] = [
-      { label: 'Todos', value: 'TODOS' },
-      { label: 'Ingresos', value: 'INGRESO' },
-      { label: 'Gastos', value: 'EGRESO' },
-   ]
+   const heading =
+      tipo === 'INGRESO' ? 'Ingresos' : tipo === 'EGRESO' ? 'Gastos' : 'Movimientos'
+
+   const wrapperClass = bare
+      ? ''
+      : 'card animate-slide-up p-5 [animation-delay:0.4s] [animation-fill-mode:backwards]'
 
    return (
       <>
-         <div className="card animate-slide-up p-5 [animation-delay:0.4s] [animation-fill-mode:backwards]">
-            <div className="flex flex-col gap-3 mb-4">
-               <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold">Movimientos</h3>
-                  <span className="text-[11px] font-bold bg-accent text-background rounded-full px-2 py-0.5 min-w-[20px] text-center tabular-nums">
-                     {filtered.length}
-                  </span>
-               </div>
-               <div className="flex gap-0.5 bg-background rounded-full p-[3px]">
-                  {filters.map((f) => (
-                     <button
-                        key={f.value}
-                        onClick={() => setFilter(f.value)}
-                        className={cn(
-                           'flex-1 py-1.5 rounded-full border-none text-xs font-medium font-body cursor-pointer transition-colors duration-150 active:scale-[0.96]',
-                           filter === f.value
-                              ? 'bg-surface-elevated text-white'
-                              : 'bg-transparent text-text-muted hover:text-text-secondary'
-                        )}
-                     >
-                        {f.label}
-                     </button>
-                  ))}
-               </div>
+         <div className={wrapperClass}>
+            <div className="flex items-center gap-2 mb-4">
+               <h3 className="text-sm font-semibold">{heading}</h3>
+               <span className="text-[11px] font-bold bg-accent text-background rounded-full px-2 py-0.5 min-w-[20px] text-center tabular-nums">
+                  {movimientos.length}
+               </span>
             </div>
 
-            {filtered.length === 0 ? (
+            {movimientos.length === 0 ? (
                <div className="text-center py-10">
                   <Inbox size={40} className="text-text-muted opacity-50 mx-auto mb-3" />
                   <p className="text-sm text-text-muted">No hay movimientos</p>
                </div>
             ) : (
                <div className="flex flex-col gap-0.5">
-                  {filtered.map((mov) => (
+                  {movimientos.map((mov) => (
                      <div
                         key={mov.id}
                         className={cn(

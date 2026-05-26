@@ -7,6 +7,9 @@ export interface PostCategoriaBody {
    icono: string
 }
 
-export function postCategoria(body: PostCategoriaBody): Promise<Categoria> {
-   return fetchAPI('/categorias', { method: 'POST', body: JSON.stringify(body) })
+export function postCategoria(body: PostCategoriaBody) {
+   return fetchAPI<Categoria>('/categorias', {
+      method: 'POST',
+      body: JSON.stringify(body),
+   })
 }

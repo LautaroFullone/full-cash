@@ -5,6 +5,6 @@ export interface DeleteCategoriaResponse {
    hidden: boolean
 }
 
-export function deleteCategoria(id: string): Promise<DeleteCategoriaResponse> {
-   return fetchAPI(`/categorias/${id}`, { method: 'DELETE' })
+export function deleteCategoria(id: string) {
+   return fetchAPI<DeleteCategoriaResponse>(`/categorias/${id}`, { method: 'DELETE' })
 }

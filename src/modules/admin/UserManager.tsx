@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react'
 import { X, Plus, Trash2, Loader2, UserCircle2 } from 'lucide-react'
-import { cn } from '@/utils/cn'
+import type { AdminUser } from './services/getUsers'
+import { deleteUser } from './services/deleteUser'
 import { getUsers } from './services/getUsers'
 import { postUser } from './services/postUser'
-import { deleteUser } from './services/deleteUser'
-import type { AdminUser } from './services/getUsers'
+import { useState, useEffect } from 'react'
+import { cn } from '@/utils/cn'
 
 interface Props {
    onClose: () => void
 }
 
-export function UserManager({ onClose }: Props) {
+export const UserManager: React.FC<Props> = ({ onClose }) => {
    const [users, setUsers] = useState<AdminUser[]>([])
    const [loading, setLoading] = useState(true)
    const [showForm, setShowForm] = useState(false)

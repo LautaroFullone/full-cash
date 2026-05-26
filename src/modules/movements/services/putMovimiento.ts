@@ -1,5 +1,5 @@
-import { fetchAPI } from '@/lib/fetchAPI'
 import type { Movimiento } from './getMovimientos'
+import { fetchAPI } from '@/lib/fetchAPI'
 
 export type PutMovimientoBody = Partial<{
    concepto: string
@@ -10,6 +10,9 @@ export type PutMovimientoBody = Partial<{
    fecha: string
 }>
 
-export function putMovimiento(id: string, body: PutMovimientoBody): Promise<Movimiento> {
-   return fetchAPI(`/movimientos/${id}`, { method: 'PUT', body: JSON.stringify(body) })
+export function putMovimiento(id: string, body: PutMovimientoBody) {
+   return fetchAPI<Movimiento>(`/movimientos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+   })
 }

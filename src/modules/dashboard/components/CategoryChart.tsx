@@ -1,10 +1,14 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import { CATEGORY_COLORS } from '@/models/categoria'
-import { formatCurrency } from '@/utils/formatCurrency'
 import type { DistribucionCategoria } from '@/modules/movements/services/getResumenMensual'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import type { TipoMovimiento } from '@/models/categoria'
+import { formatCurrency } from '@/utils/formatCurrency'
+import { CATEGORY_COLORS } from '@/models/categoria'
+import { cn } from '@/utils/cn'
 
 interface CategoryChartProps {
    distribucion: DistribucionCategoria[]
+   tipo?: TipoMovimiento
+   bare?: boolean
 }
 
 const CustomTooltip = ({
@@ -26,11 +30,28 @@ const CustomTooltip = ({
    )
 }
 
-export const CategoryChart: React.FC<CategoryChartProps> = ({ distribucion }) => {
+export const CategoryChart: React.FC<CategoryChartProps> = ({
+   distribucion,
+   tipo = 'EGRESO',
+   bare = false,
+}) => {
+   const label = tipo === 'INGRESO' ? 'ingresos' : 'gastos'
+   const wrapperClass = bare
+      ? ''
+      : 'card animate-slide-up p-5 [animation-delay:0.3s] [animation-fill-mode:backwards]'
+
    if (!distribucion.length) {
       return (
-         <div className="card animate-slide-up px-5 py-8 text-center [animation-delay:0.3s] [animation-fill-mode:backwards]">
-            <p className="text-sm text-text-muted">No hay gastos este mes para graficar</p>
+         <div
+            className={cn(
+               bare
+                  ? 'text-center py-6'
+                  : 'card animate-slide-up px-5 py-8 text-center [animation-delay:0.3s] [animation-fill-mode:backwards]'
+            )}
+         >
+            <p className="text-sm text-text-muted">
+               No hay {label} este mes para graficar
+            </p>
          </div>
       )
    }
@@ -43,8 +64,8 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({ distribucion }) =>
    const legendData = chartData.filter((item) => item.porcentaje >= 1)
 
    return (
-      <div className="card animate-slide-up p-5 [animation-delay:0.3s] [animation-fill-mode:backwards]">
-         <h3 className="text-sm font-semibold mb-4">Distribución de gastos</h3>
+      <div className={wrapperClass}>
+         <h3 className="text-sm font-semibold mb-4">Distribución de {label}</h3>
          <div className="flex items-center gap-5">
             <div className="w-[140px] h-[140px] shrink-0">
                <ResponsiveContainer width="100%" height="100%">
@@ -71,7 +92,10 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({ distribucion }) =>
 
             <div className="flex-1 flex flex-col gap-2.5">
                {legendData.map((item) => (
-                  <div key={item.categoriaId} className="flex items-center justify-between gap-2">
+                  <div
+                     key={item.categoriaId}
+                     className="flex items-center justify-between gap-2"
+                  >
                      <div className="flex items-center gap-2 min-w-0">
                         <div
                            className="w-2 h-2 rounded-full shrink-0"

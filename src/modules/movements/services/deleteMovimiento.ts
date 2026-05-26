@@ -1,5 +1,5 @@
 import { fetchAPI } from '@/lib/fetchAPI'
 
-export function deleteMovimiento(id: string): Promise<{ success: boolean }> {
-   return fetchAPI(`/movimientos/${id}`, { method: 'DELETE' })
+export function deleteMovimiento(id: string) {
+   return fetchAPI<{ success: boolean }>(`/movimientos/${id}`, { method: 'DELETE' })
 }

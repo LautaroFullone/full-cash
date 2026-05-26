@@ -1,5 +1,5 @@
-import { fetchAPI } from '@/lib/fetchAPI'
 import type { Movimiento } from './getMovimientos'
+import { fetchAPI } from '@/lib/fetchAPI'
 
 export interface PostMovimientoBody {
    concepto: string
@@ -10,6 +10,9 @@ export interface PostMovimientoBody {
    fecha: string
 }
 
-export function postMovimiento(body: PostMovimientoBody): Promise<Movimiento> {
-   return fetchAPI('/movimientos', { method: 'POST', body: JSON.stringify(body) })
+export function postMovimiento(body: PostMovimientoBody) {
+   return fetchAPI<Movimiento>('/movimientos', {
+      method: 'POST',
+      body: JSON.stringify(body),
+   })
 }

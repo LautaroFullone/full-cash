@@ -1,14 +1,12 @@
 import { MovementForm } from '@/modules/movements/components/MovementForm'
-import { MovementList } from '@/modules/movements/components/MovementList'
 import { useCategories } from '@/modules/categories/hooks/useCategories'
 import { CategoryManager } from '@/modules/categories/CategoryManager'
 import { useMovements } from '@/modules/movements/hooks/useMovements'
 import { usePlatforms } from '@/modules/platforms/hooks/usePlatforms'
 import { useSavingsConfig } from './hooks/useSavingsConfig'
 import { useMonthSelector } from './hooks/useMonthSelector'
-import { CategoryChart } from './components/CategoryChart'
+import { MovementsFolder } from './components/MovementsFolder'
 import { UserManager } from '@/modules/admin/UserManager'
-import { SummaryCards } from './components/SummaryCards'
 import { DashboardSkeleton } from '@/components/Skeleton'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
@@ -147,9 +145,9 @@ export function DashboardPage() {
             <DashboardSkeleton />
          ) : (
             <div className="max-w-130 lg:max-w-300 mx-auto px-4 lg:px-10 pb-24 lg:pb-12 lg:pt-8 lg:grid lg:grid-cols-[340px_1fr] lg:gap-6 lg:items-start">
-               <aside className="flex flex-col gap-4 lg:sticky lg:top-20">
+               <aside className="hidden lg:flex flex-col gap-4 lg:sticky lg:top-20">
                   <div
-                     className="hidden lg:block card animate-fade-in p-8 text-center"
+                     className="card animate-fade-in p-8 text-center"
                      style={{
                         background: `linear-gradient(135deg, var(--color-surface), ${isPositive ? 'rgba(229,255,166,0.07)' : 'rgba(255,75,90,0.07)'})`,
                      }}
@@ -159,7 +157,7 @@ export function DashboardPage() {
                      </p>
                      <h2
                         className={cn(
-                           'font-heading text-5xl font-black tracking-[-2px] transition-colors duration-300z',
+                           'font-heading text-5xl font-black tracking-[-2px] transition-colors duration-300',
                            isPositive ? 'text-accent' : 'text-danger'
                         )}
                      >
@@ -167,12 +165,7 @@ export function DashboardPage() {
                         {formatCurrency(saldo)}
                      </h2>
                   </div>
-
-                  <SummaryCards
-                     totalIngresos={resumen?.totalIngresos ?? 0}
-                     totalEgresos={resumen?.totalEgresos ?? 0}
-                  />
-
+                  {/*
                   {config && (
                      <SavingsBar
                         totalIngresos={resumen?.totalIngresos ?? 0}
@@ -180,12 +173,16 @@ export function DashboardPage() {
                         porcentajeAhorro={config.porcentajeAhorro}
                         onUpdatePorcentaje={updatePorcentaje}
                      />
-                  )}
+                  )} */}
                </aside>
 
-               <main className="flex flex-col gap-4 mt-4 lg:mt-0">
-                  <CategoryChart distribucion={resumen?.distribucionCategorias ?? []} />
-                  <MovementList movimientos={movimientos} onDelete={deleteMovimiento} />
+               <main className="mt-4 lg:mt-0">
+                  <MovementsFolder
+                     movimientos={movimientos}
+                     totalIngresos={resumen?.totalIngresos ?? 0}
+                     totalEgresos={resumen?.totalEgresos ?? 0}
+                     onDelete={deleteMovimiento}
+                  />
                </main>
             </div>
          )}

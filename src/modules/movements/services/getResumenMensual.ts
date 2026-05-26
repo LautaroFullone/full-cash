@@ -14,6 +14,6 @@ export interface ResumenMensual {
    distribucionCategorias: DistribucionCategoria[]
 }
 
-export function getResumenMensual(mes: number, anio: number): Promise<ResumenMensual> {
-   return fetchAPI(`/movimientos/resumen?mes=${mes}&anio=${anio}`)
+export function getResumenMensual(mes: number, anio: number) {
+   return fetchAPI<ResumenMensual>(`/movimientos/resumen?mes=${mes}&anio=${anio}`)
 }

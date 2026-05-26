@@ -11,6 +11,9 @@ export interface LoginResponse {
    user: AuthUser
 }
 
-export function postLogin(body: LoginBody): Promise<LoginResponse> {
-   return fetchAPI('/auth/login', { method: 'POST', body: JSON.stringify(body) })
+export function postLogin(body: LoginBody) {
+   return fetchAPI<LoginResponse>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(body),
+   })
 }

@@ -1,8 +1,8 @@
-import { useState, FormEvent } from 'react'
-import { useAuth } from './hooks/useAuth'
 import { Wallet, Loader2 } from 'lucide-react'
+import { FormEvent, useState } from 'react'
+import { useAuth } from './hooks/useAuth'
 
-export function LoginPage() {
+export const LoginPage: React.FC = () => {
    const { login } = useAuth()
    const [email, setEmail] = useState('')
    const [password, setPassword] = useState('')

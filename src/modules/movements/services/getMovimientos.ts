@@ -1,6 +1,6 @@
-import { fetchAPI } from '@/lib/fetchAPI'
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
 import type { Plataforma } from '@/models/plataforma'
+import { fetchAPI } from '@/lib/fetchAPI'
 
 export interface Movimiento {
    id: string
@@ -20,6 +20,6 @@ export interface GetMovimientosParams {
    anio: number
 }
 
-export function getMovimientos(params: GetMovimientosParams): Promise<Movimiento[]> {
-   return fetchAPI(`/movimientos?mes=${params.mes}&anio=${params.anio}`)
+export function getMovimientos(params: GetMovimientosParams) {
+   return fetchAPI<Movimiento[]>(`/movimientos?mes=${params.mes}&anio=${params.anio}`)
 }
