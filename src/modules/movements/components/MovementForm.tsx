@@ -2,7 +2,13 @@ import { TrendingUp, TrendingDown, AlertCircle, Plus, X, Loader2 } from 'lucide-
 import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
 import type { PostMovimientoBody } from '../services/postMovimiento'
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
-import { CurrencyInput, DatePicker, PlatformSelect, toast } from '@/components'
+import {
+   CurrencyInput,
+   DatePicker,
+   PlatformSelect,
+   PrimaryButton,
+   toast,
+} from '@/components'
 import type { Plataforma } from '@/models/plataforma'
 import { format } from 'date-fns'
 import { useState, useEffect, useRef } from 'react'
@@ -293,18 +299,16 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                      )}
 
                      {/* Submit */}
-                     <button
+                     <PrimaryButton
+                        size="lg"
+                        fullWidth
+                        loading={loading}
+                        icon={<Plus size={18} />}
                         type="submit"
-                        disabled={loading}
-                        className="mt-1 py-3.75 border-none rounded-md font-heading text-[15px] font-bold bg-accent text-background-deep flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer hover:bg-accent-dim active:scale-[0.98] transition-[background-color,opacity,transform] duration-200"
+                        className="mt-1 active:scale-[0.98] transition-[background-color,opacity,transform] duration-200"
                      >
-                        {loading ? (
-                           <Loader2 size={18} className="animate-spin" />
-                        ) : (
-                           <Plus size={18} />
-                        )}
                         Guardar movimiento
-                     </button>
+                     </PrimaryButton>
                   </form>
                </div>
             </div>

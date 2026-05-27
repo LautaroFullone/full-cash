@@ -10,6 +10,7 @@ import { UserManager } from '@/modules/admin/UserManager'
 import { DashboardSkeleton } from '@/components/Skeleton'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
+import { PrimaryButton } from '@/components'
 import { SavingsBar } from './components/SavingsBar'
 import { useAuthStore } from '@/stores/authStore'
 import { Header } from './components/Header'
@@ -109,13 +110,13 @@ export function DashboardPage() {
                   <Tags size={14} />
                   Categorías
                </button>
-               <button
+               <PrimaryButton
+                  size="sm"
+                  icon={<Plus size={15} strokeWidth={2.5} />}
                   onClick={() => setFormOpen(true)}
-                  className="flex items-center gap-1.5 px-4 h-9 rounded-md border-none bg-accent text-background-deep text-[13px] font-heading font-bold cursor-pointer hover:bg-accent-dim transition-all duration-200"
                >
-                  <Plus size={15} strokeWidth={2.5} />
                   Nuevo
-               </button>
+               </PrimaryButton>
                <button
                   onClick={logout}
                   title="Cerrar sesión"

@@ -1,6 +1,7 @@
 import { X, Plus, Trash2, Loader2, UserCircle2 } from 'lucide-react'
 import type { AdminUser } from './services/getUsers'
 import { deleteUser } from './services/deleteUser'
+import { PrimaryButton } from '@/components'
 import { getUsers } from './services/getUsers'
 import { postUser } from './services/postUser'
 import { useState, useEffect } from 'react'
@@ -159,14 +160,15 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
                         >
                            Cancelar
                         </button>
-                        <button
+                        <PrimaryButton
+                           size="sm"
+                           loading={creating}
+                           disabled={!nombre || !email || !password}
+                           className="flex-1"
                            onClick={handleCreate}
-                           disabled={creating || !nombre || !email || !password}
-                           className="flex-1 h-9 rounded-md bg-accent text-background-deep font-heading font-bold text-sm cursor-pointer hover:bg-accent-dim transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                         >
-                           {creating && <Loader2 size={13} className="animate-spin" />}
                            Crear
-                        </button>
+                        </PrimaryButton>
                      </div>
                   </div>
                )}
@@ -174,13 +176,14 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
 
             {!showForm && (
                <div className="px-5 py-4 border-t border-border">
-                  <button
+                  <PrimaryButton
+                     size="md"
+                     fullWidth
+                     icon={<Plus size={15} strokeWidth={2.5} />}
                      onClick={() => setShowForm(true)}
-                     className="w-full h-10 rounded-md bg-accent text-background-deep font-heading font-bold text-sm cursor-pointer hover:bg-accent-dim transition-colors flex items-center justify-center gap-2"
                   >
-                     <Plus size={15} strokeWidth={2.5} />
                      Crear usuario
-                  </button>
+                  </PrimaryButton>
                </div>
             )}
          </div>

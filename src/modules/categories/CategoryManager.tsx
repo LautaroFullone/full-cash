@@ -4,6 +4,7 @@ import type { PostCategoriaBody } from './services/postCategoria'
 import type { PutCategoriaBody } from './services/putCategoria'
 import { CategoryIcon } from './components/CategoryIcon'
 import { EmojiPicker } from './components/EmojiPicker'
+import { PrimaryButton } from '@/components'
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
 
@@ -205,6 +206,8 @@ export function CategoryManager({
 
    const usedEmojis = categorias.map((c) => c.icono).filter(Boolean)
    const filtered = categorias.filter((c) => c.tipo === tab)
+   const userCategorias = categorias.filter((c) => c.userId !== null)
+   const atLimit = userCategorias.length >= 20
 
    const handleDelete = async (id: string) => {
       setDeleteError(null)
@@ -353,18 +356,24 @@ export function CategoryManager({
                   />
                )}
 
-               {!addingNew && (
-                  <button
-                     onClick={() => {
-                        setAddingNew(true)
-                        setEditingId(null)
-                     }}
-                     className="flex items-center gap-2 px-3 py-2.5 mt-1 rounded-md border border-dashed border-border-strong bg-transparent text-accent text-[13px] font-semibold font-body cursor-pointer transition-all duration-150 hover:bg-accent/5 hover:border-accent"
-                  >
-                     <Plus size={16} />
-                     Nueva categoría de {tab === 'INGRESO' ? 'ingreso' : 'gasto'}
-                  </button>
-               )}
+               {!addingNew &&
+                  (atLimit ? (
+                     <p className="text-center text-[12px] text-text-muted py-1">
+                        Límite de 20 categorías propias alcanzado
+                     </p>
+                  ) : (
+                     <PrimaryButton
+                        size="md"
+                        fullWidth
+                        icon={<Plus size={15} strokeWidth={2.5} />}
+                        onClick={() => {
+                           setAddingNew(true)
+                           setEditingId(null)
+                        }}
+                     >
+                        Nueva categoría de {tab === 'INGRESO' ? 'ingreso' : 'gasto'}
+                     </PrimaryButton>
+                  ))}
             </div>
          </div>
       </div>

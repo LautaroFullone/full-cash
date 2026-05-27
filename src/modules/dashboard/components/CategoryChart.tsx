@@ -1,33 +1,12 @@
 import type { DistribucionCategoria } from '@/modules/movements/services/getResumenMensual'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import { getCategoryColor } from '@/models/categoria'
 import type { TipoMovimiento } from '@/models/categoria'
-import { formatCurrency } from '@/utils/formatCurrency'
-import { CATEGORY_COLORS } from '@/models/categoria'
 import { cn } from '@/utils/cn'
 
 interface CategoryChartProps {
    distribucion: DistribucionCategoria[]
    tipo?: TipoMovimiento
    bare?: boolean
-}
-
-const CustomTooltip = ({
-   active,
-   payload,
-}: {
-   active?: boolean
-   payload?: { payload: DistribucionCategoria }[]
-}) => {
-   if (!active || !payload?.length) return null
-   const data = payload[0].payload
-   return (
-      <div className="bg-surface-elevated border border-border-strong rounded-md px-3.5 py-2.5 shadow-elevated">
-         <p className="text-[13px] font-semibold text-white">{data.categoriaNombre}</p>
-         <p className="text-xs text-text-muted mt-0.5 tabular-nums">
-            {formatCurrency(data.total)} · {data.porcentaje.toFixed(1)}%
-         </p>
-      </div>
-   )
 }
 
 export const CategoryChart: React.FC<CategoryChartProps> = ({
@@ -56,66 +35,40 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
       )
    }
 
-   // Filtrar categorías con porcentaje > 0 para la leyenda
-   const chartData = distribucion.map((item, i) => ({
+   const chartData = distribucion.map((item) => ({
       ...item,
-      color: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
+      color: getCategoryColor(item.categoriaId),
    }))
-   const legendData = chartData.filter((item) => item.porcentaje >= 1)
 
    return (
       <div className={wrapperClass}>
-         <h3 className="text-sm font-semibold mb-4">Distribución de {label}</h3>
-         <div className="flex items-center gap-5">
-            <div className="w-[140px] h-[140px] shrink-0">
-               <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                     <Pie
-                        data={chartData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={65}
-                        paddingAngle={3}
-                        dataKey="total"
-                        stroke="none"
-                        animationDuration={800}
-                     >
-                        {chartData.map((entry, i) => (
-                           <Cell key={i} fill={entry.color} />
-                        ))}
-                     </Pie>
-                     <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
-               </ResponsiveContainer>
-            </div>
+         {/* Segmented bar — each segment's width is proportional via flex */}
+         <div className="flex h-3 rounded-full overflow-hidden gap-0.5">
+            {chartData.map((item) => (
+               <div
+                  key={item.categoriaId}
+                  style={{
+                     flex: item.porcentaje,
+                     minWidth: '10px', // ancho visual minimo por categoria
+                     backgroundColor: item.color,
+                  }}
+               />
+            ))}
+         </div>
 
-            <div className="flex-1 flex flex-col gap-2.5">
-               {legendData.map((item) => (
+         {/* Legend */}
+         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+            {chartData.map((item) => (
+               <div key={item.categoriaId} className="flex items-center gap-1.5">
                   <div
-                     key={item.categoriaId}
-                     className="flex items-center justify-between gap-2"
-                  >
-                     <div className="flex items-center gap-2 min-w-0">
-                        <div
-                           className="w-2 h-2 rounded-full shrink-0"
-                           style={{ background: item.color }}
-                        />
-                        <span className="text-[13px] text-text-secondary truncate">
-                           {item.categoriaNombre}
-                        </span>
-                     </div>
-                     <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[11px] text-text-muted tabular-nums">
-                           {formatCurrency(item.total)}
-                        </span>
-                        <span className="text-[11px] font-semibold text-text-secondary tabular-nums w-8 text-right">
-                           {item.porcentaje.toFixed(0)}%
-                        </span>
-                     </div>
-                  </div>
-               ))}
-            </div>
+                     className="w-2.5 h-2.5 rounded-full shrink-0"
+                     style={{ backgroundColor: item.color }}
+                  />
+                  <span className="text-xs text-text-secondary">
+                     {item.categoriaNombre}
+                  </span>
+               </div>
+            ))}
          </div>
       </div>
    )

@@ -1,3 +1,4 @@
+import { PrimaryButton } from '@/components'
 import { Wallet, Loader2 } from 'lucide-react'
 import { FormEvent, useState } from 'react'
 import { useAuth } from './hooks/useAuth'
@@ -77,14 +78,15 @@ export const LoginPage: React.FC = () => {
 
                   {error && <p className="text-danger text-sm text-center">{error}</p>}
 
-                  <button
+                  <PrimaryButton
+                     size="lg"
+                     fullWidth
+                     loading={loading}
                      type="submit"
-                     disabled={loading}
-                     className="h-11 rounded-md bg-accent text-background-deep font-heading font-bold text-sm cursor-pointer hover:bg-accent-dim transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
+                     className="mt-1"
                   >
-                     {loading && <Loader2 size={15} className="animate-spin" />}
                      {loading ? 'Ingresando...' : 'Ingresar'}
-                  </button>
+                  </PrimaryButton>
                </form>
             </div>
          </div>

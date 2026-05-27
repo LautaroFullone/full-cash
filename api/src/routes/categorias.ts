@@ -45,6 +45,13 @@ router.post('/', async (req, res) => {
    try {
       const userId = (req as AuthRequest).user.id
       const data = createCategoriaSchema.parse(req.body)
+
+      const count = await prisma.categoria.count({ where: { userId } })
+      if (count >= 20) {
+         res.status(400).json({ error: 'Límite de 20 categorías propias alcanzado' })
+         return
+      }
+
       const categoria = await prisma.categoria.create({ data: { ...data, userId } })
       res.status(201).json(categoria)
    } catch (error) {

@@ -1,13 +1,14 @@
-import { AlertDialog } from '@/components/AlertDialog'
-import { toast } from '@/components/Toaster'
 import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
-import { formatCurrency } from '@/utils/formatCurrency'
+import { getCategoryColor } from '@/models/categoria'
 import type { Movimiento } from '../services/getMovimientos'
 import type { TipoMovimiento } from '@/models/categoria'
+import { AlertDialog } from '@/components/AlertDialog'
+import { formatCurrency } from '@/utils/formatCurrency'
+import { toast } from '@/components/Toaster'
+import { Trash2, Inbox, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Trash2, Inbox } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { cn } from '@/utils/cn'
 
 interface MovementListProps {
@@ -15,6 +16,149 @@ interface MovementListProps {
    onDelete: (id: string) => Promise<unknown> | void
    tipo?: TipoMovimiento
    bare?: boolean
+}
+
+type Grupo = {
+   categoriaId: string
+   nombre: string
+   icono: string
+   total: number
+   porcentaje: number
+   items: Movimiento[]
+}
+
+interface MovementRowProps {
+   mov: Movimiento
+   deletingId: string | null
+   onDeleteClick: (id: string) => void
+}
+
+const MovementRow: React.FC<MovementRowProps> = ({ mov, deletingId, onDeleteClick }) => (
+   <div
+      className={cn(
+         'flex items-center p-3 gap-3 rounded-md transition-colors duration-150 hover:bg-white/3',
+         deletingId === mov.id && 'opacity-40 pointer-events-none'
+      )}
+   >
+      <div className="flex-1 min-w-0">
+         <p className="text-sm font-medium text-white truncate">{mov.concepto}</p>
+         {mov.plataforma && (
+            <div className="flex items-center mt-0.5">
+               <span className="text-[10px] font-medium text-text-muted border border-border-strong rounded-full px-1.5 py-px leading-none">
+                  {mov.plataforma.nombre}
+               </span>
+            </div>
+         )}
+      </div>
+
+      <div className="flex flex-col items-end gap-0.5 shrink-0">
+         <span
+            className={cn(
+               'font-heading text-sm font-bold tabular-nums',
+               mov.tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
+            )}
+         >
+            {mov.tipo === 'INGRESO' ? '+' : '-'}
+            {formatCurrency(mov.monto)}
+         </span>
+         <span className="text-[10px] text-text-muted tabular-nums">
+            {format(new Date(mov.fecha), 'd MMM', { locale: es })}
+         </span>
+      </div>
+
+      <button
+         onClick={() => onDeleteClick(mov.id)}
+         className="w-10 h-10 rounded-sm border-none bg-transparent text-text-muted flex items-center justify-center shrink-0 opacity-40 hover:opacity-100 hover:text-danger transition-[opacity,color] duration-150 active:scale-[0.96]"
+      >
+         <Trash2 size={14} />
+      </button>
+   </div>
+)
+
+interface CategoryGroupRowProps {
+   grupo: Grupo
+   tipo: TipoMovimiento | undefined
+   isExpanded: boolean
+   onToggle: () => void
+   deletingId: string | null
+   onDeleteClick: (id: string) => void
+}
+
+const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
+   grupo,
+   tipo,
+   isExpanded,
+   onToggle,
+   deletingId,
+   onDeleteClick,
+}) => {
+   const color = getCategoryColor(grupo.categoriaId)
+   return (
+      <div>
+         <button
+            type="button"
+            onClick={onToggle}
+            className="w-full flex items-center p-3 gap-3 rounded-md hover:bg-white/3 transition-colors duration-150 cursor-pointer"
+         >
+            <div className="w-9.5 h-9.5 rounded-sm shrink-0 flex items-center justify-center bg-white/5">
+               <CategoryIcon icono={grupo.icono} size={18} />
+            </div>
+
+            <div className="flex-1 min-w-0 text-left">
+               <div className="flex items-center gap-1.5">
+                  <span
+                     className="w-2 h-2 rounded-full shrink-0"
+                     style={{ backgroundColor: color }}
+                  />
+                  <p className="text-sm font-medium text-white">{grupo.nombre}</p>
+               </div>
+               <p className="text-xs text-text-muted tabular-nums">
+                  {grupo.porcentaje >= 1
+                     ? `${Math.round(grupo.porcentaje)}%`
+                     : `${grupo.porcentaje.toFixed(1)}%`}
+               </p>
+            </div>
+
+            <span
+               className={cn(
+                  'font-heading text-sm font-bold tabular-nums shrink-0',
+                  tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
+               )}
+            >
+               {tipo === 'INGRESO' ? '+' : '-'}
+               {formatCurrency(grupo.total)}
+            </span>
+
+            <ChevronRight
+               size={16}
+               className={cn(
+                  'text-text-muted shrink-0 transition-transform duration-200',
+                  isExpanded && 'rotate-90'
+               )}
+            />
+         </button>
+
+         <div
+            className={cn(
+               'grid transition-[grid-template-rows] duration-300 ease-out',
+               isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+            )}
+         >
+            <div className="overflow-hidden">
+               <div className="pl-12 pr-2 pb-2 flex flex-col gap-0.5">
+                  {grupo.items.map((mov) => (
+                     <MovementRow
+                        key={mov.id}
+                        mov={mov}
+                        deletingId={deletingId}
+                        onDeleteClick={onDeleteClick}
+                     />
+                  ))}
+               </div>
+            </div>
+         </div>
+      </div>
+   )
 }
 
 export const MovementList: React.FC<MovementListProps> = ({
@@ -25,6 +169,51 @@ export const MovementList: React.FC<MovementListProps> = ({
 }) => {
    const [confirmId, setConfirmId] = useState<string | null>(null)
    const [deletingId, setDeletingId] = useState<string | null>(null)
+   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+
+   const toggle = (id: string) => {
+      setExpandedIds((prev) => {
+         const next = new Set(prev)
+         next.has(id) ? next.delete(id) : next.add(id)
+         return next
+      })
+   }
+
+   const grupos = useMemo<Grupo[]>(() => {
+      const map = new Map<
+         string,
+         { nombre: string; icono: string; total: number; items: Movimiento[] }
+      >()
+      const grandTotal = movimientos.reduce((s, m) => s + m.monto, 0)
+
+      movimientos.forEach((m) => {
+         const cur = map.get(m.categoriaId)
+         if (cur) {
+            cur.total += m.monto
+            cur.items.push(m)
+         } else {
+            map.set(m.categoriaId, {
+               nombre: m.categoria?.nombre ?? '—',
+               icono: m.categoria?.icono ?? '💰',
+               total: m.monto,
+               items: [m],
+            })
+         }
+      })
+
+      return Array.from(map.entries())
+         .map(([categoriaId, data]) => ({
+            categoriaId,
+            nombre: data.nombre,
+            icono: data.icono,
+            total: data.total,
+            porcentaje: grandTotal > 0 ? (data.total / grandTotal) * 100 : 0,
+            items: data.items.sort(
+               (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+            ),
+         }))
+         .sort((a, b) => b.total - a.total)
+   }, [movimientos])
 
    const handleDeleteConfirm = async () => {
       if (!confirmId) return
@@ -65,67 +254,16 @@ export const MovementList: React.FC<MovementListProps> = ({
                </div>
             ) : (
                <div className="flex flex-col gap-0.5">
-                  {movimientos.map((mov) => (
-                     <div
-                        key={mov.id}
-                        className={cn(
-                           'flex items-center p-3 gap-3 rounded-md transition-colors duration-150 hover:bg-white/3',
-                           deletingId === mov.id && 'opacity-40 pointer-events-none'
-                        )}
-                     >
-                        {/* Category icon */}
-                        <div
-                           className={cn(
-                              'w-9.5 h-9.5 rounded-sm shrink-0 flex items-center justify-center',
-                              mov.tipo === 'INGRESO'
-                                 ? 'bg-accent/10 text-accent'
-                                 : 'bg-danger/10 text-danger'
-                           )}
-                        >
-                           <CategoryIcon icono={mov.categoria?.icono ?? '💰'} size={18} />
-                        </div>
-
-                        {/* Concepto + categoría + plataforma */}
-                        <div className="flex-1 min-w-0">
-                           <p className="text-sm font-medium text-white truncate">
-                              {mov.concepto}
-                           </p>
-                           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                              <span className="text-xs text-text-muted">
-                                 {mov.categoria?.nombre}
-                              </span>
-                              {mov.plataforma && (
-                                 <span className="text-[10px] font-medium text-text-muted border border-border-strong rounded-full px-1.5 py-px leading-none shrink-0">
-                                    {mov.plataforma.nombre}
-                                 </span>
-                              )}
-                           </div>
-                        </div>
-
-                        {/* Monto + fecha */}
-                        <div className="flex flex-col items-end gap-0.5 shrink-0">
-                           <span
-                              className={cn(
-                                 'font-heading text-sm font-bold tabular-nums',
-                                 mov.tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
-                              )}
-                           >
-                              {mov.tipo === 'INGRESO' ? '+' : '-'}
-                              {formatCurrency(mov.monto)}
-                           </span>
-                           <span className="text-[10px] text-text-muted tabular-nums">
-                              {format(new Date(mov.fecha), 'd MMM', { locale: es })}
-                           </span>
-                        </div>
-
-                        {/* Delete — 40×40px hit area */}
-                        <button
-                           onClick={() => setConfirmId(mov.id)}
-                           className="w-10 h-10 rounded-sm border-none bg-transparent text-text-muted flex items-center justify-center shrink-0 opacity-40 hover:opacity-100 hover:text-danger transition-[opacity,color] duration-150 active:scale-[0.96]"
-                        >
-                           <Trash2 size={14} />
-                        </button>
-                     </div>
+                  {grupos.map((grupo) => (
+                     <CategoryGroupRow
+                        key={grupo.categoriaId}
+                        grupo={grupo}
+                        tipo={tipo}
+                        isExpanded={expandedIds.has(grupo.categoriaId)}
+                        onToggle={() => toggle(grupo.categoriaId)}
+                        deletingId={deletingId}
+                        onDeleteClick={setConfirmId}
+                     />
                   ))}
                </div>
             )}
