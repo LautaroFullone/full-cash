@@ -1,4 +1,12 @@
-import { ChevronLeft, ChevronRight, Wallet, Tags, Users } from 'lucide-react'
+import {
+   ChevronLeft,
+   ChevronRight,
+   Wallet,
+   Tags,
+   Users,
+   CreditCard,
+   LogOut,
+} from 'lucide-react'
 import { formatCurrency } from '@/utils/formatCurrency'
 
 interface HeaderProps {
@@ -9,6 +17,8 @@ interface HeaderProps {
    onPrevMonth: () => void
    onNextMonth: () => void
    onOpenCategories: () => void
+   onOpenPlatforms: () => void
+   onLogout: () => void
    onOpenUsers?: () => void
 }
 
@@ -20,6 +30,8 @@ export const Header: React.FC<HeaderProps> = ({
    onPrevMonth,
    onNextMonth,
    onOpenCategories,
+   onOpenPlatforms,
+   onLogout,
    onOpenUsers,
 }) => {
    const isPositive = saldo >= 0
@@ -53,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                      onClick={onOpenUsers}
                      title="Gestionar usuarios"
-                     className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
+                     className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
                   >
                      <Users size={15} />
                   </button>
@@ -61,16 +73,23 @@ export const Header: React.FC<HeaderProps> = ({
                <button
                   onClick={onOpenCategories}
                   title="Gestionar categorías"
-                  className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
+                  className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
                >
                   <Tags size={15} />
                </button>
                <button
-                  onClick={onOpenCategories}
-                  title="Gestionar Plataformas"
-                  className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
+                  onClick={onOpenPlatforms}
+                  title="Gestionar plataformas"
+                  className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
                >
-                  <Tags size={15} />
+                  <CreditCard size={15} />
+               </button>
+               <button
+                  onClick={onLogout}
+                  title="Cerrar sesión"
+                  className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-danger/60 hover:text-danger transition-colors duration-200"
+               >
+                  <LogOut size={15} />
                </button>
             </div>
          </div>

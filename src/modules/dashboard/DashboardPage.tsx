@@ -22,11 +22,13 @@ import {
    Wallet,
    Tags,
    Plus,
+   CreditCard,
    ChevronLeft,
    ChevronRight,
    Users,
    LogOut,
 } from 'lucide-react'
+import { PlatformManager } from '../platforms/PlatformManager'
 
 export function DashboardPage() {
    const { mes, anio, monthName, goToPrevMonth, goToNextMonth } = useMonthSelector()
@@ -40,13 +42,14 @@ export function DashboardPage() {
    } = useMovements(mes, anio)
    const { categorias, createCategoria, updateCategoria, deleteCategoria } =
       useCategories()
-   const { plataformas } = usePlatforms()
+   const { plataformas, createPlataforma, deletePlataforma } = usePlatforms()
    const { config, updatePorcentaje } = useSavingsConfig()
 
    const { logout } = useAuth()
    const { user } = useAuthStore()
    const [showCategoryManager, setShowCategoryManager] = useState(false)
    const [showUserManager, setShowUserManager] = useState(false)
+   const [showPlatformManager, setShowPlatformManager] = useState(false)
    const [formOpen, setFormOpen] = useState(false)
    const [editingMov, setEditingMov] = useState<Movimiento | null>(null)
 
@@ -122,10 +125,10 @@ export function DashboardPage() {
                </button>
 
                <button
-                  onClick={() => setShowCategoryManager(true)}
+                  onClick={() => setShowPlatformManager(true)}
                   className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
                >
-                  <Tags size={14} />
+                  <CreditCard size={14} />
                   Plataformas
                </button>
 
@@ -156,6 +159,8 @@ export function DashboardPage() {
                onPrevMonth={goToPrevMonth}
                onNextMonth={goToNextMonth}
                onOpenCategories={() => setShowCategoryManager(true)}
+               onOpenPlatforms={() => setShowPlatformManager(true)}
+               onLogout={logout}
                onOpenUsers={() => setShowUserManager(true)}
             />
          </div>
@@ -236,6 +241,14 @@ export function DashboardPage() {
          )}
 
          {showUserManager && <UserManager onClose={() => setShowUserManager(false)} />}
+         {showPlatformManager && (
+            <PlatformManager
+               plataformas={plataformas}
+               onCreate={createPlataforma}
+               onDelete={deletePlataforma}
+               onClose={() => setShowPlatformManager(false)}
+            />
+         )}
       </div>
    )
 }
