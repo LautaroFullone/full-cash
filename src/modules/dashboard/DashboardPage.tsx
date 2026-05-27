@@ -5,32 +5,21 @@ import { useCategories } from '@/modules/categories/hooks/useCategories'
 import { CategoryManager } from '@/modules/categories/CategoryManager'
 import { useMovements } from '@/modules/movements/hooks/useMovements'
 import { usePlatforms } from '@/modules/platforms/hooks/usePlatforms'
-import { useSavingsConfig } from './hooks/useSavingsConfig'
-import { MonthYearPicker } from './components/MonthYearPicker'
-import { useMonthSelector } from './hooks/useMonthSelector'
+import { PlatformManager } from '../platforms/PlatformManager'
 import { MovementsFolder } from './components/MovementsFolder'
+import { useSavingsConfig } from './hooks/useSavingsConfig'
+import { useMonthSelector } from './hooks/useMonthSelector'
+import { MonthSelector } from './components/MonthSelector'
 import { UserManager } from '@/modules/admin/UserManager'
+import type { TipoMovimiento } from '@/models/categoria'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
-import type { TipoMovimiento } from '@/models/categoria'
-import { PrimaryButton } from '@/components'
 import { SavingsBar } from './components/SavingsBar'
+import { AppHeader } from './components/AppHeader'
 import { useAuthStore } from '@/stores/authStore'
-import { Header } from './components/Header'
 import { Skeleton } from '@/components'
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
-import {
-   Wallet,
-   Tags,
-   Plus,
-   CreditCard,
-   ChevronLeft,
-   ChevronRight,
-   Users,
-   LogOut,
-} from 'lucide-react'
-import { PlatformManager } from '../platforms/PlatformManager'
 
 export function DashboardPage() {
    const { mes, anio, monthName, goToPrevMonth, goToNextMonth, goToMonth } =
@@ -62,118 +51,46 @@ export function DashboardPage() {
 
    return (
       <div className="min-h-dvh">
-         {/* Desktop Topbar */}
-         <header
-            className="hidden lg:flex items-center justify-between sticky top-0 z-30 h-16 px-10 border-b border-white/6"
-            style={{
-               background: 'rgba(0, 42, 38, 0.92)',
-               backdropFilter: 'blur(16px)',
-               WebkitBackdropFilter: 'blur(16px)',
-            }}
-         >
-            <div className="flex items-center gap-2.5">
-               <div
-                  className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
-                  style={{
-                     background:
-                        'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
-                  }}
-               >
-                  <Wallet size={18} color="#002a26" strokeWidth={2.5} />
-               </div>
-               <div>
-                  <div className="font-heading text-base font-black tracking-[-0.3px] text-white">
-                     Full Cash
-                  </div>
-                  <p className="text-[11px] text-text-muted">Finanzas personales</p>
-               </div>
-            </div>
+         <AppHeader
+            isAdmin={user?.role === 'ADMIN'}
+            onOpenCategories={() => setShowCategoryManager(true)}
+            onOpenPlatforms={() => setShowPlatformManager(true)}
+            onLogout={logout}
+            onOpenUsers={() => setShowUserManager(true)}
+            onNewMovement={() => setFormOpen(true)}
+         />
 
-            <div className="flex items-center gap-1.5 bg-surface border border-border rounded-full p-[5px]">
-               <button
-                  onClick={goToPrevMonth}
-                  aria-label="Mes anterior"
-                  className="w-7.5 h-7.5 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors"
-               >
-                  <ChevronLeft size={15} />
-               </button>
-
-               <MonthYearPicker
-                  mes={mes}
-                  anio={anio}
-                  monthName={monthName}
-                  onSelect={goToMonth}
-               />
-
-               <button
-                  onClick={goToNextMonth}
-                  aria-label="Mes siguiente"
-                  className="w-7.5 h-7.5 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors"
-               >
-                  <ChevronRight size={15} />
-               </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-               {user?.role === 'ADMIN' && (
-                  <button
-                     onClick={() => setShowUserManager(true)}
-                     className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
-                  >
-                     <Users size={14} />
-                     Usuarios
-                  </button>
-               )}
-
-               <button
-                  onClick={() => setShowCategoryManager(true)}
-                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
-               >
-                  <Tags size={14} />
-                  Categorías
-               </button>
-
-               <button
-                  onClick={() => setShowPlatformManager(true)}
-                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
-               >
-                  <CreditCard size={14} />
-                  Plataformas
-               </button>
-
-               <PrimaryButton
-                  size="sm"
-                  icon={<Plus size={15} strokeWidth={2.5} />}
-                  onClick={() => setFormOpen(true)}
-               >
-                  Nuevo
-               </PrimaryButton>
-               <button
-                  onClick={logout}
-                  title="Cerrar sesión"
-                  className="w-9 h-9 flex items-center justify-center rounded-md border border-border-strong text-text-secondary cursor-pointer hover:border-danger/60 hover:text-danger transition-all duration-200"
-               >
-                  <LogOut size={15} />
-               </button>
-            </div>
-         </header>
-
-         {/* Mobile Header */}
-         <div className="lg:hidden max-w-[520px] mx-auto px-4">
-            <Header
+         <div className="max-w-[520px] lg:max-w-300 mx-auto px-4 lg:px-10 pt-3 lg:pt-8">
+            <MonthSelector
                mes={mes}
                anio={anio}
                monthName={monthName}
-               saldo={saldo}
-               isAdmin={user?.role === 'ADMIN'}
                onPrevMonth={goToPrevMonth}
                onNextMonth={goToNextMonth}
                onSelectMonth={goToMonth}
-               onOpenCategories={() => setShowCategoryManager(true)}
-               onOpenPlatforms={() => setShowPlatformManager(true)}
-               onLogout={logout}
-               onOpenUsers={() => setShowUserManager(true)}
             />
+         </div>
+
+         <div className="lg:hidden max-w-[520px] mx-auto px-4 pt-3">
+            <div
+               className="card p-5 text-center"
+               style={{
+                  background: `linear-gradient(135deg, var(--color-surface), ${isPositive ? 'rgba(229,255,166,0.05)' : 'rgba(255,75,90,0.05)'})`,
+               }}
+            >
+               <p className="text-[10px] text-text-muted mb-1 font-semibold uppercase tracking-[1px]">
+                  Saldo del mes
+               </p>
+               <h2
+                  className={cn(
+                     'font-heading text-4xl font-black tracking-[-1px] transition-colors duration-300',
+                     isPositive ? 'text-accent' : 'text-danger'
+                  )}
+               >
+                  {isPositive ? '+' : ''}
+                  {formatCurrency(saldo)}
+               </h2>
+            </div>
          </div>
 
          {/* Content */}
@@ -191,6 +108,7 @@ export function DashboardPage() {
                      <p className="text-[11px] text-text-muted mb-2.5 font-semibold uppercase tracking-[1.5px]">
                         Saldo del mes
                      </p>
+
                      <h2
                         className={cn(
                            'font-heading text-5xl font-black tracking-[-2px] transition-colors duration-300',
@@ -255,6 +173,7 @@ export function DashboardPage() {
          )}
 
          {showUserManager && <UserManager onClose={() => setShowUserManager(false)} />}
+
          {showPlatformManager && (
             <PlatformManager
                plataformas={plataformas}

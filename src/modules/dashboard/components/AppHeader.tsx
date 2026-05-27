@@ -1,0 +1,142 @@
+import { PrimaryButton } from '@/components'
+import { Wallet, Tags, Users, CreditCard, LogOut, Plus } from 'lucide-react'
+
+interface AppHeaderProps {
+   isAdmin?: boolean
+   onOpenCategories: () => void
+   onOpenPlatforms: () => void
+   onLogout: () => void
+   onOpenUsers?: () => void
+   onNewMovement: () => void
+}
+
+const Logo: React.FC = () => (
+   <div className="flex items-center gap-2.5">
+      <div
+         className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
+         style={{
+            background:
+               'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
+         }}
+      >
+         <Wallet size={18} color="#002a26" strokeWidth={2.5} />
+      </div>
+      <div>
+         <div className="font-heading text-base font-black tracking-[-0.3px] text-white">
+            Full Cash
+         </div>
+         <p className="text-[11px] text-text-muted">Finanzas personales</p>
+      </div>
+   </div>
+)
+
+export const AppHeader: React.FC<AppHeaderProps> = ({
+   isAdmin,
+   onOpenCategories,
+   onOpenPlatforms,
+   onLogout,
+   onOpenUsers,
+   onNewMovement,
+}) => {
+   return (
+      <>
+         {/* Desktop */}
+         <header
+            className="hidden lg:flex items-center justify-between sticky top-0 z-30 h-16 px-10 border-b border-white/6"
+            style={{
+               background: 'rgba(0, 42, 38, 0.92)',
+               backdropFilter: 'blur(16px)',
+               WebkitBackdropFilter: 'blur(16px)',
+            }}
+         >
+            <Logo />
+
+            <div className="flex items-center gap-2">
+               {isAdmin && (
+                  <button
+                     onClick={onOpenUsers}
+                     className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+                  >
+                     <Users size={14} />
+                     Usuarios
+                  </button>
+               )}
+
+               <button
+                  onClick={onOpenCategories}
+                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+               >
+                  <Tags size={14} />
+                  Categorías
+               </button>
+
+               <button
+                  onClick={onOpenPlatforms}
+                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+               >
+                  <CreditCard size={14} />
+                  Plataformas
+               </button>
+
+               <PrimaryButton
+                  size="sm"
+                  icon={<Plus size={15} strokeWidth={2.5} />}
+                  onClick={onNewMovement}
+               >
+                  Nuevo
+               </PrimaryButton>
+
+               <button
+                  onClick={onLogout}
+                  title="Cerrar sesión"
+                  className="w-9 h-9 flex items-center justify-center rounded-md border border-border-strong text-text-secondary cursor-pointer hover:border-danger/60 hover:text-danger transition-all duration-200"
+               >
+                  <LogOut size={15} />
+               </button>
+            </div>
+         </header>
+
+         {/* Mobile */}
+         <div className="lg:hidden max-w-[520px] mx-auto px-4">
+            <header className="animate-fade-in pt-5 flex flex-col gap-3">
+               <div className="flex items-center justify-between">
+                  <Logo />
+
+                  <div className="flex items-center gap-1.5">
+                     {isAdmin && (
+                        <button
+                           onClick={onOpenUsers}
+                           title="Gestionar usuarios"
+                           className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
+                        >
+                           <Users size={15} />
+                        </button>
+                     )}
+                     <button
+                        onClick={onOpenCategories}
+                        title="Gestionar categorías"
+                        className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
+                     >
+                        <Tags size={15} />
+                     </button>
+                     <button
+                        onClick={onOpenPlatforms}
+                        title="Gestionar plataformas"
+                        className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
+                     >
+                        <CreditCard size={15} />
+                     </button>
+                     <button
+                        onClick={onLogout}
+                        title="Cerrar sesión"
+                        className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-danger/60 hover:text-danger transition-colors duration-200"
+                     >
+                        <LogOut size={15} />
+                     </button>
+                  </div>
+               </div>
+            </header>
+         </div>
+      </>
+   )
+}
