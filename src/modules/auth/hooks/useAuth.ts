@@ -1,9 +1,11 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/authStore'
 import { postLogin } from '../services/postLogin'
 import { getMe } from '../services/getMe'
 
 export function useAuth() {
    const { setUser, setIsLoading } = useAuthStore()
+   const queryClient = useQueryClient()
 
    async function init() {
       const token = localStorage.getItem('token')
@@ -31,6 +33,7 @@ export function useAuth() {
    function logout() {
       localStorage.removeItem('token')
       setUser(null)
+      queryClient.clear()
    }
 
    return { init, login, logout }
