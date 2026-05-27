@@ -1,3 +1,5 @@
+import { EditMovementForm } from '@/modules/movements/components/EditMovementForm'
+import type { Movimiento } from '@/modules/movements/services/getMovimientos'
 import { MovementForm } from '@/modules/movements/components/MovementForm'
 import { useCategories } from '@/modules/categories/hooks/useCategories'
 import { CategoryManager } from '@/modules/categories/CategoryManager'
@@ -28,8 +30,14 @@ import {
 
 export function DashboardPage() {
    const { mes, anio, monthName, goToPrevMonth, goToNextMonth } = useMonthSelector()
-   const { movimientos, resumen, loading, createMovimiento, deleteMovimiento } =
-      useMovements(mes, anio)
+   const {
+      movimientos,
+      resumen,
+      loading,
+      createMovimiento,
+      deleteMovimiento,
+      updateMovimiento,
+   } = useMovements(mes, anio)
    const { categorias, createCategoria, updateCategoria, deleteCategoria } =
       useCategories()
    const { plataformas } = usePlatforms()
@@ -40,6 +48,7 @@ export function DashboardPage() {
    const [showCategoryManager, setShowCategoryManager] = useState(false)
    const [showUserManager, setShowUserManager] = useState(false)
    const [formOpen, setFormOpen] = useState(false)
+   const [editingMov, setEditingMov] = useState<Movimiento | null>(null)
 
    const saldo = resumen?.saldo ?? 0
    const isPositive = saldo >= 0
@@ -103,6 +112,7 @@ export function DashboardPage() {
                      Usuarios
                   </button>
                )}
+
                <button
                   onClick={() => setShowCategoryManager(true)}
                   className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
@@ -110,6 +120,15 @@ export function DashboardPage() {
                   <Tags size={14} />
                   Categorías
                </button>
+
+               <button
+                  onClick={() => setShowCategoryManager(true)}
+                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+               >
+                  <Tags size={14} />
+                  Plataformas
+               </button>
+
                <PrimaryButton
                   size="sm"
                   icon={<Plus size={15} strokeWidth={2.5} />}
@@ -167,14 +186,14 @@ export function DashboardPage() {
                      </h2>
                   </div>
                   {/*
-                  {config && (
-                     <SavingsBar
-                        totalIngresos={resumen?.totalIngresos ?? 0}
-                        totalEgresos={resumen?.totalEgresos ?? 0}
-                        porcentajeAhorro={config.porcentajeAhorro}
-                        onUpdatePorcentaje={updatePorcentaje}
-                     />
-                  )} */}
+                     {config && (
+                        <SavingsBar
+                           totalIngresos={resumen?.totalIngresos ?? 0}
+                           totalEgresos={resumen?.totalEgresos ?? 0}
+                           porcentajeAhorro={config.porcentajeAhorro}
+                           onUpdatePorcentaje={updatePorcentaje}
+                        />
+                     )} */}
                </aside>
 
                <main className="mt-4 lg:mt-0">
@@ -183,6 +202,7 @@ export function DashboardPage() {
                      totalIngresos={resumen?.totalIngresos ?? 0}
                      totalEgresos={resumen?.totalEgresos ?? 0}
                      onDelete={deleteMovimiento}
+                     onEdit={setEditingMov}
                   />
                </main>
             </div>
@@ -195,6 +215,14 @@ export function DashboardPage() {
             isOpen={formOpen}
             onClose={() => setFormOpen(false)}
             onOpen={() => setFormOpen(true)}
+         />
+
+         <EditMovementForm
+            movimiento={editingMov}
+            categorias={categorias}
+            plataformas={plataformas}
+            onUpdate={updateMovimiento}
+            onClose={() => setEditingMov(null)}
          />
 
          {showCategoryManager && (

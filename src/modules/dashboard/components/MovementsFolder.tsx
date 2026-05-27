@@ -12,6 +12,7 @@ interface MovementsFolderProps {
    totalIngresos: number
    totalEgresos: number
    onDelete: (id: string) => Promise<unknown> | void
+   onEdit: (mov: Movimiento) => void
 }
 
 const FOLDER_BG: Record<TipoMovimiento, string> = {
@@ -24,6 +25,7 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
    totalIngresos,
    totalEgresos,
    onDelete,
+   onEdit,
 }) => {
    const [activeTab, setActiveTab] = useState<TipoMovimiento>('EGRESO')
 
@@ -104,6 +106,8 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
                movimientos={filtered}
                tipo={activeTab}
                onDelete={onDelete}
+               onEdit={onEdit}
+               actionVariant={activeTab === 'EGRESO' ? 'sheet' : 'inline'}
                bare
             />
          </div>

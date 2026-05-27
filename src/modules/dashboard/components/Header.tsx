@@ -25,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
    const isPositive = saldo >= 0
 
    return (
-      <header className="animate-fade-in pt-5 pb-4 flex flex-col gap-3">
+      <header className="animate-fade-in pt-5 flex flex-col gap-3">
          {/* Fila 1: logo + botones de acción */}
          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -61,6 +61,13 @@ export const Header: React.FC<HeaderProps> = ({
                <button
                   onClick={onOpenCategories}
                   title="Gestionar categorías"
+                  className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
+               >
+                  <Tags size={15} />
+               </button>
+               <button
+                  onClick={onOpenCategories}
+                  title="Gestionar Plataformas"
                   className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-all duration-200"
                >
                   <Tags size={15} />
