@@ -206,7 +206,6 @@ export function DashboardPage() {
                      movimientos={movimientos}
                      totalIngresos={resumen?.totalIngresos ?? 0}
                      totalEgresos={resumen?.totalEgresos ?? 0}
-                     onDelete={deleteMovimiento}
                      onEdit={setEditingMov}
                   />
                </main>
@@ -227,6 +226,7 @@ export function DashboardPage() {
             categorias={categorias}
             plataformas={plataformas}
             onUpdate={updateMovimiento}
+            onDelete={deleteMovimiento}
             onClose={() => setEditingMov(null)}
          />
 
