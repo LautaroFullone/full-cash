@@ -87,9 +87,18 @@ export const MovementForm: React.FC<MovementFormProps> = ({
 
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault()
-      if (!concepto.trim()) { setError('Ingresá un concepto'); return }
-      if (!monto || monto <= 0) { setError('Ingresá un monto válido'); return }
-      if (!categoriaId) { setError('Seleccioná una categoría'); return }
+      if (!concepto.trim()) {
+         setError('Ingresá un concepto')
+         return
+      }
+      if (!monto || monto <= 0) {
+         setError('Ingresá un monto válido')
+         return
+      }
+      if (!categoriaId) {
+         setError('Seleccioná una categoría')
+         return
+      }
       try {
          setLoading(true)
          setError('')
@@ -117,7 +126,8 @@ export const MovementForm: React.FC<MovementFormProps> = ({
          <button
             className="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full border-none flex items-center justify-center z-40 cursor-pointer transition-transform duration-200 hover:scale-[1.06] active:scale-[0.96]"
             style={{
-               background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
+               background:
+                  'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
                boxShadow: '0 4px 20px rgba(229,255,166,0.3)',
             }}
             onClick={handleOpen}
@@ -139,7 +149,12 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                      'modal-sheet bg-surface overflow-y-auto',
                      closing ? 'animate-slide-down' : 'animate-slide-up'
                   )}
-                  style={{ maxHeight: '92dvh', paddingLeft: '20px', paddingRight: '20px', paddingBottom: '40px' }}
+                  style={{
+                     maxHeight: '92dvh',
+                     paddingLeft: '20px',
+                     paddingRight: '20px',
+                     paddingBottom: '40px',
+                  }}
                   onClick={(e) => e.stopPropagation()}
                >
                   {/* Drag handle — solo mobile */}
@@ -147,7 +162,9 @@ export const MovementForm: React.FC<MovementFormProps> = ({
 
                   {/* Header del modal */}
                   <div className="flex items-center justify-between mb-6">
-                     <h2 className="text-lg font-bold text-wrap-balance">Nuevo movimiento</h2>
+                     <h2 className="text-lg font-bold text-wrap-balance">
+                        Nuevo movimiento
+                     </h2>
                      {/* w-10 h-10 = 40×40px hit area mínimo */}
                      <button
                         onClick={handleClose}
@@ -166,7 +183,10 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                               <button
                                  key={t}
                                  type="button"
-                                 onClick={() => { setTipo(t); setCategoriaId('') }}
+                                 onClick={() => {
+                                    setTipo(t)
+                                    setCategoriaId('')
+                                 }}
                                  className={cn(
                                     'flex items-center justify-center gap-2 py-3 border-none text-sm font-bold font-body cursor-pointer transition-colors duration-200 active:scale-[0.96]',
                                     tipo === t
@@ -176,10 +196,11 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                                        : 'bg-background text-text-muted hover:text-text-secondary'
                                  )}
                               >
-                                 {t === 'INGRESO'
-                                    ? <TrendingUp size={15} strokeWidth={2.5} />
-                                    : <TrendingDown size={15} strokeWidth={2.5} />
-                                 }
+                                 {t === 'INGRESO' ? (
+                                    <TrendingUp size={15} strokeWidth={2.5} />
+                                 ) : (
+                                    <TrendingDown size={15} strokeWidth={2.5} />
+                                 )}
                                  {t === 'INGRESO' ? 'Ingreso' : 'Gasto'}
                               </button>
                            ))}
@@ -190,7 +211,9 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                      <div
                         className={cn(
                            'rounded-md px-5 py-6 border transition-colors duration-300',
-                           tipo === 'INGRESO' ? 'bg-accent/6 border-accent/20' : 'bg-danger/6 border-danger/20'
+                           tipo === 'INGRESO'
+                              ? 'bg-accent/6 border-accent/20'
+                              : 'bg-danger/6 border-danger/20'
                         )}
                      >
                         <p className="text-[10px] font-bold text-text-muted uppercase tracking-[1px] text-center mb-4">
@@ -220,7 +243,8 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         <FormLabel>Categoría</FormLabel>
                         {filteredCategorias.length === 0 ? (
                            <p className="text-[13px] text-text-muted py-2">
-                              No hay categorías de {tipo === 'INGRESO' ? 'ingreso' : 'gasto'}.
+                              No hay categorías de{' '}
+                              {tipo === 'INGRESO' ? 'ingreso' : 'gasto'}.
                            </p>
                         ) : (
                            <div className="flex flex-wrap gap-2">
@@ -274,7 +298,11 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         disabled={loading}
                         className="mt-1 py-3.75 border-none rounded-md font-heading text-[15px] font-bold bg-accent text-background-deep flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer hover:bg-accent-dim active:scale-[0.98] transition-[background-color,opacity,transform] duration-200"
                      >
-                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+                        {loading ? (
+                           <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                           <Plus size={18} />
+                        )}
                         Guardar movimiento
                      </button>
                   </form>

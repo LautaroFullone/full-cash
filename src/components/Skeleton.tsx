@@ -5,9 +5,7 @@ interface SkeletonProps {
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({ className }) => (
-   <div
-      className={cn('rounded-md bg-surface-elevated animate-pulse', className)}
-   />
+   <div className={cn('rounded-md bg-surface-elevated animate-pulse', className)} />
 )
 
 export const DashboardSkeleton: React.FC = () => (

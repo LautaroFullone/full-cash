@@ -1,4 +1,5 @@
 {
+   "editor.detectIndentation": true,
    "prisma.pinToPrisma6": true,
    "workbench.colorCustomizations": {
       "activityBar.activeBackground": "#006e8b",

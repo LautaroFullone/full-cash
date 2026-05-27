@@ -274,7 +274,12 @@ interface EmojiPickerProps {
    onSelect: (emoji: string) => void
 }
 
-export function EmojiPicker({ selected, usedEmojis = [], autoFocusSearch = false, onSelect }: EmojiPickerProps) {
+export function EmojiPicker({
+   selected,
+   usedEmojis = [],
+   autoFocusSearch = false,
+   onSelect,
+}: EmojiPickerProps) {
    const [search, setSearch] = useState('')
 
    const filteredGroups = search.trim()

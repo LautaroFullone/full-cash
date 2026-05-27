@@ -1,3 +1,8 @@
+---
+paths:
+   - '**/*.{ts,tsx}'
+---
+
 # Convenciones de TypeScript
 
 ## Funciones
@@ -7,18 +12,18 @@ Siempre usar arrow functions con `const`. Nunca usar la keyword `function`.
 ```ts
 // ✅ correcto
 const formatAmount = (amount: number) => {
-  return amount * 100
+   return amount * 100
 }
 
 // ❌ incorrecto
 function formatAmount(amount: number) {
-  return amount * 100
+   return amount * 100
 }
 ```
 
 ## Componentes
 
-Usar `const` + `React.FC`. Si recibe props, tipar con `React.FC<NombreProps>`.
+Usar `const` + `React.FC`. Si recibe props, tipar con `React.FC<NombßreProps>`.
 
 ```ts
 // ✅ sin props
@@ -49,11 +54,11 @@ No anotar el tipo de retorno explícitamente. Dejar que TypeScript lo infiera.
 ```ts
 // ✅ correcto
 const getUser = (id: string) => {
-  return fetchAPI<User>(`/users/${id}`)
+   return fetchAPI<User>(`/users/${id}`)
 }
 
 // ❌ incorrecto
 const getUser = (id: string): Promise<User> => {
-  return fetchAPI<User>(`/users/${id}`)
+   return fetchAPI<User>(`/users/${id}`)
 }
 ```

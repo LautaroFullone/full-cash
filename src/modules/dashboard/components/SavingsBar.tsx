@@ -16,7 +16,9 @@ export const SavingsBar: React.FC<SavingsBarProps> = ({
    onUpdatePorcentaje,
 }) => {
    const [editing, setEditing] = useState(false)
-   const [tempPorcentaje, setTempPorcentaje] = useState(Math.round(porcentajeAhorro * 100))
+   const [tempPorcentaje, setTempPorcentaje] = useState(
+      Math.round(porcentajeAhorro * 100)
+   )
 
    const montoRecomendado = totalIngresos * porcentajeAhorro
    const ahorroReal = totalIngresos - totalEgresos
@@ -91,7 +93,9 @@ export const SavingsBar: React.FC<SavingsBarProps> = ({
          <div className="flex justify-between text-[13px]">
             <span className="text-text-muted">
                Ahorro real:{' '}
-               <span className={`font-semibold tabular-nums ${ahorroReal >= 0 ? 'text-accent' : 'text-danger'}`}>
+               <span
+                  className={`font-semibold tabular-nums ${ahorroReal >= 0 ? 'text-accent' : 'text-danger'}`}
+               >
                   {formatCurrency(ahorroReal)}
                </span>
             </span>

@@ -66,7 +66,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({ value, onChange }) => {
          >
             <CalendarDays
                size={16}
-               className={cn('shrink-0 transition-colors duration-200', open ? 'text-accent' : 'text-text-muted')}
+               className={cn(
+                  'shrink-0 transition-colors duration-200',
+                  open ? 'text-accent' : 'text-text-muted'
+               )}
             />
             <span className="flex-1 capitalize">{displayLabel}</span>
             <ChevronDown
@@ -140,7 +143,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({ value, onChange }) => {
                                     : isToday
                                       ? 'border-border-strong text-accent font-bold bg-transparent hover:bg-white/6'
                                       : 'border-transparent hover:bg-white/6',
-                                 !isSelected && (isCurrentMonth ? 'text-text-secondary' : 'text-text-muted opacity-30')
+                                 !isSelected &&
+                                    (isCurrentMonth
+                                       ? 'text-text-secondary'
+                                       : 'text-text-muted opacity-30')
                               )}
                            >
                               {format(day, 'd')}

@@ -42,7 +42,9 @@ export const Header: React.FC<HeaderProps> = ({
                   <h1 className="font-heading text-lg font-black tracking-[-0.5px] leading-tight">
                      Full Cash
                   </h1>
-                  <p className="text-[11px] text-text-muted leading-tight">Finanzas personales</p>
+                  <p className="text-[11px] text-text-muted leading-tight">
+                     Finanzas personales
+                  </p>
                </div>
             </div>
 
