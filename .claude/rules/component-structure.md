@@ -1,5 +1,15 @@
 # Estructura de Componentes
 
+## Checklist — aplicar en cada componente
+
+- [ ] Un componente por archivo (salvo excepciones explícitas abajo)
+- [ ] `.map()` con lógica → extraer a componente propio
+- [ ] Solo la interfaz de props inline; el resto a `models/`
+- [ ] Skeleton propio → al final del mismo archivo
+- [ ] Constantes estáticas → `utils/` del módulo
+
+---
+
 ## Un componente por archivo
 
 Cada componente React debe vivir en su propio archivo `.tsx`, nombrado igual que el componente (PascalCase).
