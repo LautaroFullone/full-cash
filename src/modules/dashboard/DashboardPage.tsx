@@ -60,7 +60,7 @@ export function DashboardPage() {
             onNewMovement={() => setFormOpen(true)}
          />
 
-         <div className="max-w-[520px] lg:max-w-300 mx-auto px-4 lg:px-10 pt-3 lg:pt-8">
+         <div className="max-w-[520px] lg:max-w-300 mx-auto px-4 lg:px-10 pt-5 lg:pt-8">
             <MonthSelector
                mes={mes}
                anio={anio}

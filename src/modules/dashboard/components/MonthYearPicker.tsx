@@ -64,7 +64,7 @@ export const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
             ref={triggerRef}
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="flex-1 flex items-center justify-center font-heading text-[13px] font-semibold capitalize text-white cursor-pointer border-none bg-transparent hover:text-accent transition-colors duration-200"
+            className="flex-1 flex items-center justify-center font-heading text-base font-semibold capitalize text-white cursor-pointer border-none bg-transparent hover:text-accent transition-colors duration-200"
          >
             {monthName} {anio}
          </button>
@@ -99,9 +99,11 @@ export const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
                         >
                            <ChevronLeft size={14} />
                         </button>
+
                         <span className="font-heading font-bold text-sm text-white">
                            {viewAnio}
                         </span>
+
                         <button
                            type="button"
                            onClick={() => setViewAnio((y) => y + 1)}

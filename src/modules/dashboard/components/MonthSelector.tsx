@@ -26,12 +26,14 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
       >
          <ChevronLeft size={16} />
       </button>
+
       <MonthYearPicker
          mes={mes}
          anio={anio}
          monthName={monthName}
          onSelect={onSelectMonth}
       />
+
       <button
          onClick={onNextMonth}
          aria-label="Mes siguiente"

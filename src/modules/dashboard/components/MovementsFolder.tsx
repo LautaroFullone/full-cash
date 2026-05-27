@@ -42,7 +42,9 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
                total: m.monto,
             })
       })
+
       const total = Array.from(map.values()).reduce((s, x) => s + x.total, 0)
+
       return Array.from(map.entries())
          .map(([categoriaId, data]) => ({
             categoriaId,

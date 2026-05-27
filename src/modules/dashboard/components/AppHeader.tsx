@@ -13,19 +13,19 @@ interface AppHeaderProps {
 const Logo: React.FC = () => (
    <div className="flex items-center gap-2.5">
       <div
-         className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
+         className="w-10 h-10 lg:w-9 lg:h-9 rounded-md flex items-center justify-center shrink-0"
          style={{
             background:
                'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
          }}
       >
-         <Wallet size={18} color="#002a26" strokeWidth={2.5} />
+         <Wallet size={20} color="#002a26" strokeWidth={2.5} />
       </div>
       <div>
-         <div className="font-heading text-base font-black tracking-[-0.3px] text-white">
+         <div className="font-heading text-lg  font-black tracking-[-0.3px] text-white leading-tight">
             Full Cash
          </div>
-         <p className="text-[11px] text-text-muted">Finanzas personales</p>
+         <p className="text-sm text-text-muted leading-tight">Finanzas personales</p>
       </div>
    </div>
 )
@@ -80,7 +80,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
                <PrimaryButton
                   size="sm"
-                  icon={<Plus size={15} strokeWidth={2.5} />}
+                  icon={<Plus size={18} strokeWidth={2.5} />}
                   onClick={onNewMovement}
                >
                   Nuevo
@@ -91,7 +91,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                   title="Cerrar sesión"
                   className="w-9 h-9 flex items-center justify-center rounded-md border border-border-strong text-text-secondary cursor-pointer hover:border-danger/60 hover:text-danger transition-all duration-200"
                >
-                  <LogOut size={15} />
+                  <LogOut size={18} />
                </button>
             </div>
          </header>
@@ -102,36 +102,36 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                <div className="flex items-center justify-between">
                   <Logo />
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                      {isAdmin && (
                         <button
                            onClick={onOpenUsers}
                            title="Gestionar usuarios"
-                           className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
+                           className="w-10 h-10 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
                         >
-                           <Users size={15} />
+                           <Users size={18} />
                         </button>
                      )}
                      <button
                         onClick={onOpenCategories}
                         title="Gestionar categorías"
-                        className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
+                        className="w-10 h-10 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
                      >
-                        <Tags size={15} />
+                        <Tags size={18} />
                      </button>
                      <button
                         onClick={onOpenPlatforms}
                         title="Gestionar plataformas"
-                        className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
+                        className="w-10 h-10 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200"
                      >
-                        <CreditCard size={15} />
+                        <CreditCard size={18} />
                      </button>
                      <button
                         onClick={onLogout}
                         title="Cerrar sesión"
-                        className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-danger/60 hover:text-danger transition-colors duration-200"
+                        className="w-10 h-10 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center hover:border-danger/60 hover:text-danger transition-colors duration-200"
                      >
-                        <LogOut size={15} />
+                        <LogOut size={18} />
                      </button>
                   </div>
                </div>
