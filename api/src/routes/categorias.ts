@@ -14,7 +14,6 @@ const createCategoriaSchema = z.object({
 })
 
 // GET /api/categorias
-// Returns global categories (not hidden by user) + user's own
 router.get('/', async (req, res) => {
    try {
       const userId = (req as AuthRequest).user.id
@@ -27,13 +26,26 @@ router.get('/', async (req, res) => {
 
       const categorias = await prisma.categoria.findMany({
          where: {
-            OR: [{ userId }, { userId: null }],
-            ...(hiddenIds.length > 0 ? { id: { notIn: hiddenIds } } : {}),
+            OR: [
+               { userId },
+               { userId: null, isDefault: true },
+               {
+                  userId: null,
+                  isDefault: false,
+                  ...(hiddenIds.length > 0 ? { id: { notIn: hiddenIds } } : {}),
+               },
+            ],
          },
          orderBy: { nombre: 'asc' },
+         include: { _count: { select: { movimientos: true } } },
       })
 
-      res.json(categorias)
+      res.json(
+         categorias.map(({ _count, ...cat }) => ({
+            ...cat,
+            movimientoCount: _count.movimientos,
+         }))
+      )
    } catch (error) {
       logError('GET /api/categorias', error)
       res.status(500).json({ error: 'Error interno del servidor' })
@@ -53,7 +65,7 @@ router.post('/', async (req, res) => {
       }
 
       const categoria = await prisma.categoria.create({ data: { ...data, userId } })
-      res.status(201).json(categoria)
+      res.status(201).json({ ...categoria, movimientoCount: 0 })
    } catch (error) {
       if (error instanceof z.ZodError) {
          res.status(400).json({ error: 'Datos inválidos', details: error.errors })
@@ -78,7 +90,10 @@ router.put('/:id', async (req, res) => {
       }
 
       const categoria = await prisma.categoria.update({ where: { id }, data })
-      res.json(categoria)
+      const movimientoCount = await prisma.movimiento.count({
+         where: { categoriaId: id },
+      })
+      res.json({ ...categoria, movimientoCount })
    } catch (error) {
       if (error instanceof z.ZodError) {
          res.status(400).json({ error: 'Datos inválidos', details: error.errors })
@@ -90,8 +105,9 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE /api/categorias/:id
+// Default categories → blocked
 // Global (userId=null) → hide for this user
-// User's own → actually delete
+// User's own → reassign movements to default, then delete
 router.delete('/:id', async (req, res) => {
    try {
       const userId = (req as unknown as AuthRequest).user.id
@@ -104,27 +120,35 @@ router.delete('/:id', async (req, res) => {
          res.status(404).json({ error: 'Categoría no encontrada' })
          return
       }
+      if (existing.isDefault) {
+         res.status(400).json({ error: 'Esta categoría no se puede eliminar' })
+         return
+      }
 
       if (existing.userId === null) {
-         // Global category — hide it for this user
          await prisma.userCategoriaHidden.upsert({
             where: { userId_categoriaId: { userId, categoriaId: id } },
             update: {},
             create: { userId, categoriaId: id },
          })
          res.json({ success: true, hidden: true })
-      } else {
-         // User's own — check usage, then delete
-         const count = await prisma.movimiento.count({ where: { categoriaId: id } })
-         if (count > 0) {
-            res.status(400).json({
-               error: `No se puede eliminar: la categoría tiene ${count} movimiento(s) asociado(s)`,
-            })
-            return
-         }
-         await prisma.categoria.delete({ where: { id } })
-         res.json({ success: true, hidden: false })
+         return
       }
+
+      const defaultCat = await prisma.categoria.findFirst({
+         where: { userId: null, isDefault: true, tipo: existing.tipo },
+      })
+      if (!defaultCat) {
+         res.status(500).json({ error: 'Categoría por defecto no encontrada' })
+         return
+      }
+
+      await prisma.movimiento.updateMany({
+         where: { categoriaId: id, userId },
+         data: { categoriaId: defaultCat.id },
+      })
+      await prisma.categoria.delete({ where: { id } })
+      res.json({ success: true, hidden: false })
    } catch (error) {
       logError(`DELETE /api/categorias/${req.params.id}`, error)
       res.status(500).json({ error: 'Error interno del servidor' })

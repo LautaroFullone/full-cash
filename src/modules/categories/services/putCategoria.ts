@@ -1,9 +1,10 @@
+import type { Categoria, TipoMovimiento } from '@/models/categoria'
 import { fetchAPI } from '@/lib/fetchAPI'
-import type { Categoria } from '@/models/categoria'
 
 export interface PutCategoriaBody {
    nombre?: string
    icono?: string
+   tipo?: TipoMovimiento
 }
 
 export function putCategoria(id: string, body: PutCategoriaBody) {

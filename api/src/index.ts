@@ -69,11 +69,35 @@ app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
    res.status(500).json({ error: 'Error interno del servidor' })
 })
 
+const DEFAULT_CATEGORIES = [
+   { nombre: 'Otros gastos', tipo: 'EGRESO' as const, icono: '📦' },
+   { nombre: 'Otros ingresos', tipo: 'INGRESO' as const, icono: '📦' },
+]
+
+async function seedDefaultCategories() {
+   for (const cat of DEFAULT_CATEGORIES) {
+      const existing = await prisma.categoria.findFirst({
+         where: { nombre: cat.nombre, userId: null },
+      })
+      if (!existing) {
+         await prisma.categoria.create({
+            data: { ...cat, userId: null, isDefault: true },
+         })
+      } else if (!existing.isDefault) {
+         await prisma.categoria.update({
+            where: { id: existing.id },
+            data: { isDefault: true },
+         })
+      }
+   }
+}
+
 app.listen(PORT, async () => {
    logInfo(`Full Cash API running on http://localhost:${PORT}`)
    try {
       await prisma.$connect()
       logInfo('Conexión a la base de datos establecida con éxito.')
+      await seedDefaultCategories()
    } catch (error) {
       logError('startup — prisma.$connect', error)
    }

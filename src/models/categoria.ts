@@ -5,8 +5,10 @@ export interface Categoria {
    nombre: string
    tipo: TipoMovimiento
    icono: string
+   isDefault: boolean
    createdAt: string
    userId: string | null
+   movimientoCount?: number
 }
 
 export const CATEGORY_COLORS = [

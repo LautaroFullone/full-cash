@@ -1,14 +1,14 @@
-import { Plus, Trash2, Loader2, CreditCard, X } from 'lucide-react'
+import { ConfirmModal, EntityManager } from '@/components'
+import { PlatformRow } from './components/PlatformRow'
 import type { Plataforma } from '@/models/plataforma'
-import { EntityManager } from '@/components'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
-import { cn } from '@/utils/cn'
 
 interface PlatformManagerProps {
    plataformas: Plataforma[]
    onClose: () => void
-   onCreate: (nombre: string) => Promise<unknown>
-   onDelete: (id: string) => Promise<unknown>
+   onCreate: (nombre: string) => Promise<void> | void
+   onDelete: (id: string) => Promise<void> | void
 }
 
 export const PlatformManager: React.FC<PlatformManagerProps> = ({
@@ -17,130 +17,157 @@ export const PlatformManager: React.FC<PlatformManagerProps> = ({
    onCreate,
    onDelete,
 }) => {
-   const [addingNew, setAddingNew] = useState(false)
+   const [view, setView] = useState<'list' | 'create'>('list')
    const [nombre, setNombre] = useState('')
    const [saving, setSaving] = useState(false)
+   const [formError, setFormError] = useState('')
    const [deletingId, setDeletingId] = useState<string | null>(null)
    const [deleteError, setDeleteError] = useState<string | null>(null)
+   const [confirmPlataforma, setConfirmPlataforma] = useState<Plataforma | null>(null)
+   const [confirming, setConfirming] = useState(false)
 
-   const handleCreate = async () => {
-      if (!nombre.trim()) return
-      setSaving(true)
-      await onCreate(nombre.trim())
+   const handleStartCreate = () => {
       setNombre('')
-      setAddingNew(false)
-      setSaving(false)
+      setFormError('')
+      setView('create')
    }
 
-   const handleDelete = async (id: string) => {
-      setDeleteError(null)
-      setDeletingId(id)
+   const handleCancelForm = () => {
+      setView('list')
+      setNombre('')
+      setFormError('')
+   }
+
+   const handleCreate = async () => {
+      const trimmed = nombre.trim()
+      const duplicate = plataformas.some(
+         (p) => p.nombre.toLowerCase() === trimmed.toLowerCase()
+      )
+      if (duplicate) {
+         setFormError('Ya existe una plataforma con ese nombre')
+         return
+      }
+      setFormError('')
+      setSaving(true)
       try {
-         await onDelete(id)
+         await onCreate(trimmed)
+         handleCancelForm()
       } catch (err) {
-         setDeleteError(
-            err instanceof Error
-               ? err.message
-               : 'No se puede eliminar: tiene movimientos asociados'
-         )
+         setFormError(err instanceof Error ? err.message : 'Error al crear plataforma')
       } finally {
-         setDeletingId(null)
+         setSaving(false)
       }
    }
 
-   const description = `${plataformas.length} ${plataformas.length === 1 ? 'plataforma' : 'plataformas'}`
+   const handleDeleteClick = (plat: Plataforma) => {
+      setDeleteError(null)
+      setConfirmPlataforma(plat)
+   }
+
+   const handleDelete = async (id: string) => {
+      setDeletingId(id)
+      setConfirming(true)
+      try {
+         await onDelete(id)
+         setConfirmPlataforma(null)
+      } catch (err) {
+         setDeleteError(err instanceof Error ? err.message : 'Error al eliminar')
+         setConfirmPlataforma(null)
+      } finally {
+         setDeletingId(null)
+         setConfirming(false)
+      }
+   }
+
+   const formDisabled = !nombre.trim()
+
+   const primaryBtn =
+      view === 'list'
+         ? { icon: Plus, label: 'Nueva plataforma', onClick: handleStartCreate }
+         : {
+              label: 'Crear',
+              loading: saving,
+              disabled: formDisabled,
+              onClick: handleCreate,
+           }
+
+   const secondaryBtn =
+      view === 'create' ? { label: 'Cancelar', onClick: handleCancelForm } : undefined
+
+   const confirmCount = confirmPlataforma?.movimientoCount ?? 0
+   const confirmDescription =
+      confirmCount > 0
+         ? `Tiene ${confirmCount} movimiento${confirmCount !== 1 ? 's' : ''}. Quedarán sin plataforma asignada.`
+         : 'Esta acción no puede deshacerse.'
 
    return (
-      <EntityManager
-         title="Plataformas"
-         description={description}
-         onClose={onClose}
-         primaryBtn={
-            !addingNew
-               ? {
-                    icon: Plus,
-                    label: 'Nueva plataforma',
-                    onClick: () => setAddingNew(true),
-                 }
-               : undefined
-         }
-      >
-         {deleteError && (
-            <div className="px-3.5 py-2.5 rounded-md bg-danger/10 border border-danger/30 mb-3 text-[13px] text-danger">
-               {deleteError}
-            </div>
-         )}
-
-         <div className="flex flex-col gap-1.5">
-            {plataformas.map((plat) => (
-               <div
-                  key={plat.id}
-                  className={cn(
-                     'flex items-center gap-3 px-3 py-2.5 rounded-md border border-transparent transition-all duration-150 hover:bg-white/3 hover:border-border',
-                     deletingId === plat.id && 'opacity-40'
-                  )}
-               >
-                  <div className="w-9 h-9 rounded-sm bg-white/5 flex items-center justify-center shrink-0">
-                     <CreditCard size={16} className="text-text-muted" />
-                  </div>
-                  <span className="flex-1 text-sm font-medium text-white">
-                     {plat.nombre}
-                  </span>
-                  <button
-                     onClick={() => handleDelete(plat.id)}
-                     disabled={!!deletingId}
-                     className="w-7.5 h-7.5 rounded-xs border-none bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:bg-danger/10 hover:text-danger transition-all duration-150"
-                  >
-                     {deletingId === plat.id ? (
-                        <Loader2 size={13} className="animate-spin" />
-                     ) : (
-                        <Trash2 size={13} />
-                     )}
-                  </button>
-               </div>
-            ))}
-
-            {addingNew && (
-               <div className="flex gap-2 items-center p-3 bg-accent/4 rounded-md border border-accent/20">
-                  <input
-                     value={nombre}
-                     onChange={(e) => setNombre(e.target.value)}
-                     className="flex-1 text-sm"
-                     placeholder="Nombre de la plataforma..."
-                     onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleCreate()
-                        if (e.key === 'Escape') {
-                           setAddingNew(false)
-                           setNombre('')
+      <>
+         <EntityManager
+            title={view === 'list' ? 'Plataformas' : 'Nueva plataforma'}
+            description={
+               view === 'list'
+                  ? `${plataformas.length} ${plataformas.length === 1 ? 'plataforma' : 'plataformas'}`
+                  : undefined
+            }
+            onClose={onClose}
+            primaryBtn={primaryBtn}
+            secondaryBtn={secondaryBtn}
+         >
+            {view === 'create' ? (
+               <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1.5">
+                     <label className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                        Nombre
+                     </label>
+                     <input
+                        type="text"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        placeholder="Nombre de la plataforma"
+                        autoFocus
+                        onKeyDown={(e) =>
+                           e.key === 'Enter' && !formDisabled && handleCreate()
                         }
-                     }}
-                     autoFocus
-                  />
-                  <button
-                     type="button"
-                     onClick={handleCreate}
-                     disabled={saving || !nombre.trim()}
-                     className="w-9 h-9 rounded-sm border-none bg-accent text-background flex items-center justify-center disabled:opacity-50 cursor-pointer"
-                  >
-                     {saving ? (
-                        <Loader2 size={14} className="animate-spin" />
-                     ) : (
-                        <Plus size={14} />
-                     )}
-                  </button>
-                  <button
-                     type="button"
-                     onClick={() => {
-                        setAddingNew(false)
-                        setNombre('')
-                     }}
-                     className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center cursor-pointer"
-                  >
-                     <X size={14} />
-                  </button>
+                     />
+                  </div>
+                  {formError && <p className="text-danger text-[13px]">{formError}</p>}
                </div>
+            ) : (
+               <>
+                  {deleteError && (
+                     <div className="px-3.5 py-2.5 rounded-md bg-danger/10 border border-danger/30 mb-3 text-[13px] text-danger">
+                        {deleteError}
+                     </div>
+                  )}
+
+                  {plataformas.length === 0 ? (
+                     <p className="text-center text-[13px] text-text-muted py-6">
+                        No tenés plataformas creadas
+                     </p>
+                  ) : (
+                     <div className="flex flex-col gap-2">
+                        {plataformas.map((plat) => (
+                           <PlatformRow
+                              key={plat.id}
+                              plataforma={plat}
+                              isDeleting={deletingId === plat.id}
+                              onDelete={handleDeleteClick}
+                           />
+                        ))}
+                     </div>
+                  )}
+               </>
             )}
-         </div>
-      </EntityManager>
+         </EntityManager>
+         <ConfirmModal
+            open={confirmPlataforma !== null}
+            onCancel={() => setConfirmPlataforma(null)}
+            onConfirm={() => handleDelete(confirmPlataforma!.id)}
+            title="¿Eliminar plataforma?"
+            description={confirmDescription}
+            confirmLabel="Eliminar"
+            loading={confirming}
+         />
+      </>
    )
 }

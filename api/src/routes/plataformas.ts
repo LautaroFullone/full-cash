@@ -18,8 +18,14 @@ router.get('/', async (req, res) => {
       const plataformas = await prisma.plataforma.findMany({
          where: { userId },
          orderBy: { nombre: 'asc' },
+         include: { _count: { select: { movimientos: true } } },
       })
-      res.json(plataformas)
+      res.json(
+         plataformas.map(({ _count, ...plat }) => ({
+            ...plat,
+            movimientoCount: _count.movimientos,
+         }))
+      )
    } catch (error) {
       logError('GET /api/plataformas', error)
       res.status(500).json({ error: 'Error interno del servidor' })
@@ -32,7 +38,7 @@ router.post('/', async (req, res) => {
       const userId = (req as AuthRequest).user.id
       const data = createPlataformaSchema.parse(req.body)
       const plataforma = await prisma.plataforma.create({ data: { ...data, userId } })
-      res.status(201).json(plataforma)
+      res.status(201).json({ ...plataforma, movimientoCount: 0 })
    } catch (error) {
       if (error instanceof z.ZodError) {
          res.status(400).json({ error: 'Datos inválidos', details: error.errors })
@@ -44,6 +50,7 @@ router.post('/', async (req, res) => {
 })
 
 // DELETE /api/plataformas/:id
+// Movements with this platform → plataformaId set to null (platform is optional)
 router.delete('/:id', async (req, res) => {
    try {
       const userId = (req as unknown as AuthRequest).user.id
@@ -55,13 +62,10 @@ router.delete('/:id', async (req, res) => {
          return
       }
 
-      const count = await prisma.movimiento.count({ where: { plataformaId: id } })
-      if (count > 0) {
-         res.status(400).json({
-            error: `No se puede eliminar: la plataforma tiene ${count} movimiento(s) asociado(s)`,
-         })
-         return
-      }
+      await prisma.movimiento.updateMany({
+         where: { plataformaId: id },
+         data: { plataformaId: null },
+      })
       await prisma.plataforma.delete({ where: { id } })
       res.json({ success: true })
    } catch (error) {
