@@ -1,3 +1,5 @@
+import { MonthYearPicker } from './MonthYearPicker'
+import { formatCurrency } from '@/utils/formatCurrency'
 import {
    ChevronLeft,
    ChevronRight,
@@ -7,15 +9,16 @@ import {
    CreditCard,
    LogOut,
 } from 'lucide-react'
-import { formatCurrency } from '@/utils/formatCurrency'
 
 interface HeaderProps {
+   mes: number
    anio: number
    monthName: string
    saldo: number
    isAdmin?: boolean
    onPrevMonth: () => void
    onNextMonth: () => void
+   onSelectMonth: (mes: number, anio: number) => void
    onOpenCategories: () => void
    onOpenPlatforms: () => void
    onLogout: () => void
@@ -23,12 +26,14 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
+   mes,
    anio,
    monthName,
    saldo,
    isAdmin,
    onPrevMonth,
    onNextMonth,
+   onSelectMonth,
    onOpenCategories,
    onOpenPlatforms,
    onLogout,
@@ -103,9 +108,12 @@ export const Header: React.FC<HeaderProps> = ({
             >
                <ChevronLeft size={16} />
             </button>
-            <span className="flex-1 font-heading text-sm font-semibold capitalize text-center text-white">
-               {monthName} {anio}
-            </span>
+            <MonthYearPicker
+               mes={mes}
+               anio={anio}
+               monthName={monthName}
+               onSelect={onSelectMonth}
+            />
             <button
                onClick={onNextMonth}
                aria-label="Mes siguiente"

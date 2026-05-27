@@ -19,6 +19,7 @@ interface MovementFormProps {
    plataformas: Plataforma[]
    onSubmit: (data: PostMovimientoBody) => Promise<void> | void
    isOpen?: boolean
+   initialTipo?: TipoMovimiento
    onClose?: () => void
    onOpen?: () => void
 }
@@ -30,11 +31,12 @@ export const MovementForm: React.FC<MovementFormProps> = ({
    plataformas,
    onSubmit,
    isOpen: controlledOpen,
+   initialTipo = 'EGRESO',
    onClose: controlledClose,
    onOpen: controlledOnOpen,
 }) => {
    const [internalOpen, setInternalOpen] = useState(false)
-   const [tipo, setTipo] = useState<TipoMovimiento>('EGRESO')
+   const [tipo, setTipo] = useState<TipoMovimiento>(initialTipo)
    const [concepto, setConcepto] = useState('')
    const [monto, setMonto] = useState<number | ''>('')
    const [categoriaId, setCategoriaId] = useState('')
@@ -55,8 +57,10 @@ export const MovementForm: React.FC<MovementFormProps> = ({
          clearTimeout(timerRef.current)
          setMounted(true)
          setClosing(false)
+         setTipo(initialTipo)
+         setCategoriaId('')
       }
-   }, [isOpen])
+   }, [isOpen, initialTipo])
 
    // Cleanup on unmount
    useEffect(() => () => clearTimeout(timerRef.current), [])

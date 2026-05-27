@@ -19,9 +19,14 @@ export function useMonthSelector() {
       } else setMes(mes + 1)
    }
 
+   const goToMonth = (newMes: number, newAnio: number) => {
+      setMes(newMes)
+      setAnio(newAnio)
+   }
+
    const monthName = new Date(anio, mes - 1).toLocaleDateString('es-AR', {
       month: 'long',
    })
 
-   return { mes, anio, monthName, goToPrevMonth, goToNextMonth }
+   return { mes, anio, monthName, goToPrevMonth, goToNextMonth, goToMonth }
 }

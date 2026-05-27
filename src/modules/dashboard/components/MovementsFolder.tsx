@@ -6,13 +6,15 @@ import type { Movimiento } from '@/modules/movements/services/getMovimientos'
 import type { TipoMovimiento } from '@/models/categoria'
 import { CategoryChart } from './CategoryChart'
 import { FolderTab } from './FolderTab'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { cn } from '@/utils/cn'
 
 interface MovementsFolderProps {
    movimientos: Movimiento[]
    totalIngresos: number
    totalEgresos: number
+   activeTab: TipoMovimiento
+   onTabChange: (tab: TipoMovimiento) => void
    onEdit: (mov: Movimiento) => void
 }
 
@@ -20,10 +22,10 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
    movimientos,
    totalIngresos,
    totalEgresos,
+   activeTab,
+   onTabChange,
    onEdit,
 }) => {
-   const [activeTab, setActiveTab] = useState<TipoMovimiento>('EGRESO')
-
    const filtered = useMemo(
       () => movimientos.filter((m) => m.tipo === activeTab),
       [movimientos, activeTab]
@@ -66,7 +68,7 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
                iconBgClass="bg-accent/15"
                active={activeTab === 'INGRESO'}
                side="left"
-               onClick={() => setActiveTab('INGRESO')}
+               onClick={() => onTabChange('INGRESO')}
             />
             <FolderTab
                label="Egresos"
@@ -77,7 +79,7 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
                iconBgClass="bg-danger/15"
                active={activeTab === 'EGRESO'}
                side="right"
-               onClick={() => setActiveTab('EGRESO')}
+               onClick={() => onTabChange('EGRESO')}
             />
          </div>
 

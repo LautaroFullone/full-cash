@@ -6,11 +6,13 @@ import { CategoryManager } from '@/modules/categories/CategoryManager'
 import { useMovements } from '@/modules/movements/hooks/useMovements'
 import { usePlatforms } from '@/modules/platforms/hooks/usePlatforms'
 import { useSavingsConfig } from './hooks/useSavingsConfig'
+import { MonthYearPicker } from './components/MonthYearPicker'
 import { useMonthSelector } from './hooks/useMonthSelector'
 import { MovementsFolder } from './components/MovementsFolder'
 import { UserManager } from '@/modules/admin/UserManager'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
+import type { TipoMovimiento } from '@/models/categoria'
 import { PrimaryButton } from '@/components'
 import { SavingsBar } from './components/SavingsBar'
 import { useAuthStore } from '@/stores/authStore'
@@ -31,7 +33,8 @@ import {
 import { PlatformManager } from '../platforms/PlatformManager'
 
 export function DashboardPage() {
-   const { mes, anio, monthName, goToPrevMonth, goToNextMonth } = useMonthSelector()
+   const { mes, anio, monthName, goToPrevMonth, goToNextMonth, goToMonth } =
+      useMonthSelector()
    const {
       movimientos,
       resumen,
@@ -50,6 +53,7 @@ export function DashboardPage() {
    const [showCategoryManager, setShowCategoryManager] = useState(false)
    const [showUserManager, setShowUserManager] = useState(false)
    const [showPlatformManager, setShowPlatformManager] = useState(false)
+   const [activeTab, setActiveTab] = useState<TipoMovimiento>('EGRESO')
    const [formOpen, setFormOpen] = useState(false)
    const [editingMov, setEditingMov] = useState<Movimiento | null>(null)
 
@@ -93,9 +97,14 @@ export function DashboardPage() {
                >
                   <ChevronLeft size={15} />
                </button>
-               <span className="font-heading text-[13px] font-semibold capitalize min-w-[110px] text-center text-white">
-                  {monthName} {anio}
-               </span>
+
+               <MonthYearPicker
+                  mes={mes}
+                  anio={anio}
+                  monthName={monthName}
+                  onSelect={goToMonth}
+               />
+
                <button
                   onClick={goToNextMonth}
                   aria-label="Mes siguiente"
@@ -152,12 +161,14 @@ export function DashboardPage() {
          {/* Mobile Header */}
          <div className="lg:hidden max-w-[520px] mx-auto px-4">
             <Header
+               mes={mes}
                anio={anio}
                monthName={monthName}
                saldo={saldo}
                isAdmin={user?.role === 'ADMIN'}
                onPrevMonth={goToPrevMonth}
                onNextMonth={goToNextMonth}
+               onSelectMonth={goToMonth}
                onOpenCategories={() => setShowCategoryManager(true)}
                onOpenPlatforms={() => setShowPlatformManager(true)}
                onLogout={logout}
@@ -206,6 +217,8 @@ export function DashboardPage() {
                      movimientos={movimientos}
                      totalIngresos={resumen?.totalIngresos ?? 0}
                      totalEgresos={resumen?.totalEgresos ?? 0}
+                     activeTab={activeTab}
+                     onTabChange={setActiveTab}
                      onEdit={setEditingMov}
                   />
                </main>
@@ -217,6 +230,7 @@ export function DashboardPage() {
             plataformas={plataformas}
             onSubmit={createMovimiento}
             isOpen={formOpen}
+            initialTipo={activeTab}
             onClose={() => setFormOpen(false)}
             onOpen={() => setFormOpen(true)}
          />
