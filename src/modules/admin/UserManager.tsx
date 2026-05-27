@@ -1,11 +1,11 @@
-import { X, Plus, Trash2, Loader2, UserCircle2 } from 'lucide-react'
+import { EntityManager, Skeleton } from '@/components'
 import type { AdminUser } from './services/getUsers'
 import { deleteUser } from './services/deleteUser'
-import { PrimaryButton } from '@/components'
+import { UserRow } from './components/UserRow'
 import { getUsers } from './services/getUsers'
 import { postUser } from './services/postUser'
 import { useState, useEffect } from 'react'
-import { cn } from '@/utils/cn'
+import { Plus } from 'lucide-react'
 
 interface Props {
    onClose: () => void
@@ -31,16 +31,17 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
          .finally(() => setLoading(false))
    }, [])
 
-   async function handleCreate() {
+   const handleCreate = async () => {
       setFormError('')
+      if (users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) {
+         setFormError('Ya existe un usuario con ese email')
+         return
+      }
       setCreating(true)
       try {
-         const user = await postUser({ nombre, email, password })
+         const user = await postUser({ nombre, email: email.trim(), password })
          setUsers((prev) => [...prev, user])
-         setNombre('')
-         setEmail('')
-         setPassword('')
-         setShowForm(false)
+         handleCancelForm()
       } catch (err) {
          setFormError(err instanceof Error ? err.message : 'Error al crear usuario')
       } finally {
@@ -48,7 +49,7 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
       }
    }
 
-   async function handleDelete(id: string) {
+   const handleDelete = async (id: string) => {
       setDeletingId(id)
       try {
          await deleteUser(id)
@@ -60,133 +61,116 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
       }
    }
 
+   const handleCancelForm = () => {
+      setShowForm(false)
+      setFormError('')
+      setNombre('')
+      setEmail('')
+      setPassword('')
+   }
+
    return (
-      <div className="modal-overlay fixed inset-0 bg-black/70 backdrop-blur-lg z-60 flex justify-center">
-         <div className="modal-sheet animate-slide-up bg-surface flex flex-col">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-               <h2 className="font-heading text-base font-bold text-white">
-                  Gestión de usuarios
-               </h2>
-               <button
-                  onClick={onClose}
-                  className="w-8 h-8 flex items-center justify-center rounded-md text-text-muted hover:text-white hover:bg-white/8 transition-colors"
-               >
-                  <X size={18} />
-               </button>
-            </div>
+      <EntityManager
+         title={showForm ? 'Nuevo usuario' : 'Usuarios'}
+         description={
+            showForm || loading ? undefined : `${users.length} usuarios registrados`
+         }
+         onClose={onClose}
+         primaryBtn={
+            showForm
+               ? {
+                    label: 'Crear',
+                    loading: creating,
+                    disabled: !nombre || !email || !password,
+                    onClick: handleCreate,
+                 }
+               : {
+                    icon: Plus,
+                    label: 'Crear usuario',
+                    onClick: () => setShowForm(true),
+                 }
+         }
+         secondaryBtn={
+            showForm ? { label: 'Cancelar', onClick: handleCancelForm } : undefined
+         }
+      >
+         {showForm ? (
+            <div className="flex flex-col gap-4">
+               <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                     Nombre
+                  </label>
 
-            <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
-               {error && <p className="text-danger text-sm text-center">{error}</p>}
-
-               {loading ? (
-                  <div className="flex justify-center py-8">
-                     <Loader2 size={24} className="text-accent animate-spin" />
-                  </div>
-               ) : (
-                  <div className="flex flex-col gap-2">
-                     {users.map((user) => (
-                        <div
-                           key={user.id}
-                           className={cn(
-                              'flex items-center gap-3 px-4 py-3 rounded-lg bg-background border border-border transition-opacity',
-                              deletingId === user.id && 'opacity-40'
-                           )}
-                        >
-                           <UserCircle2 size={28} className="text-text-muted shrink-0" />
-                           <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-white truncate">
-                                 {user.nombre}
-                              </p>
-                              <p className="text-xs text-text-muted truncate">
-                                 {user.email}
-                              </p>
-                           </div>
-                           <span
-                              className={cn(
-                                 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full',
-                                 user.role === 'ADMIN'
-                                    ? 'bg-accent/15 text-accent'
-                                    : 'bg-white/8 text-text-secondary'
-                              )}
-                           >
-                              {user.role}
-                           </span>
-                           {user.role !== 'ADMIN' && (
-                              <button
-                                 onClick={() => handleDelete(user.id)}
-                                 disabled={deletingId === user.id}
-                                 className="w-7 h-7 flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
-                              >
-                                 <Trash2 size={14} />
-                              </button>
-                           )}
-                        </div>
-                     ))}
-                  </div>
-               )}
-
-               {showForm && (
-                  <div className="card p-4 flex flex-col gap-3 mt-2">
-                     <p className="text-sm font-semibold text-white">Nuevo usuario</p>
-                     <input
-                        type="text"
-                        value={nombre}
-                        onChange={(e) => setNombre(e.target.value)}
-                        placeholder="Nombre"
-                        className="h-10 px-3 rounded-md bg-background border border-border text-white text-sm placeholder:text-text-muted outline-none focus:border-accent transition-colors"
-                     />
-                     <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email"
-                        className="h-10 px-3 rounded-md bg-background border border-border text-white text-sm placeholder:text-text-muted outline-none focus:border-accent transition-colors"
-                     />
-                     <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Contraseña"
-                        className="h-10 px-3 rounded-md bg-background border border-border text-white text-sm placeholder:text-text-muted outline-none focus:border-accent transition-colors"
-                     />
-                     {formError && <p className="text-danger text-xs">{formError}</p>}
-                     <div className="flex gap-2">
-                        <button
-                           onClick={() => {
-                              setShowForm(false)
-                              setFormError('')
-                           }}
-                           className="flex-1 h-9 rounded-md border border-border text-text-secondary text-sm cursor-pointer hover:border-border-strong hover:text-white transition-colors"
-                        >
-                           Cancelar
-                        </button>
-                        <PrimaryButton
-                           size="sm"
-                           loading={creating}
-                           disabled={!nombre || !email || !password}
-                           className="flex-1"
-                           onClick={handleCreate}
-                        >
-                           Crear
-                        </PrimaryButton>
-                     </div>
-                  </div>
-               )}
-            </div>
-
-            {!showForm && (
-               <div className="px-5 py-4 border-t border-border">
-                  <PrimaryButton
-                     size="md"
-                     fullWidth
-                     icon={<Plus size={15} strokeWidth={2.5} />}
-                     onClick={() => setShowForm(true)}
-                  >
-                     Crear usuario
-                  </PrimaryButton>
+                  <input
+                     type="text"
+                     value={nombre}
+                     onChange={(e) => setNombre(e.target.value)}
+                     placeholder="Ej. María García"
+                     autoFocus
+                  />
                </div>
-            )}
-         </div>
-      </div>
+
+               <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                     Email
+                  </label>
+
+                  <input
+                     type="email"
+                     value={email}
+                     onChange={(e) => setEmail(e.target.value)}
+                     placeholder="correo@ejemplo.com"
+                     onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+                  />
+               </div>
+
+               <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                     Contraseña
+                  </label>
+
+                  <input
+                     type="password"
+                     value={password}
+                     onChange={(e) => setPassword(e.target.value)}
+                     placeholder="Mínimo 6 caracteres"
+                     onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+                  />
+               </div>
+
+               {formError && <p className="text-danger text-[13px]">{formError}</p>}
+            </div>
+         ) : (
+            <>
+               {error && <p className="text-danger text-sm text-center mb-2">{error}</p>}
+
+               <div className="flex flex-col gap-2">
+                  {loading
+                     ? Array.from({ length: 4 }, (_, i) => <UserRowSkeleton key={i} />)
+                     : users.map((user) => (
+                          <UserRow
+                             key={user.id}
+                             user={user}
+                             isDeleting={deletingId === user.id}
+                             onDelete={handleDelete}
+                          />
+                       ))}
+               </div>
+            </>
+         )}
+      </EntityManager>
    )
 }
+
+const UserRowSkeleton: React.FC = () => (
+   <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-background border border-border">
+      <Skeleton className="w-7 h-7 rounded-full shrink-0" />
+
+      <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+         <Skeleton className="h-3.5 w-28" />
+         <Skeleton className="h-3 w-44" />
+      </div>
+
+      <Skeleton className="h-5 w-10 rounded-full" />
+   </div>
+)
