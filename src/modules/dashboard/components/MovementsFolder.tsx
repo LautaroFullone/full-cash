@@ -1,9 +1,11 @@
 import { MovementList } from '@/modules/movements/components/MovementList'
+import { FOLDER_BG } from '../utils/folderColors'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 import { formatCurrency } from '@/utils/formatCurrency'
 import type { Movimiento } from '@/modules/movements/services/getMovimientos'
 import type { TipoMovimiento } from '@/models/categoria'
 import { CategoryChart } from './CategoryChart'
+import { FolderTab } from './FolderTab'
 import { useMemo, useState } from 'react'
 import { cn } from '@/utils/cn'
 
@@ -12,11 +14,6 @@ interface MovementsFolderProps {
    totalIngresos: number
    totalEgresos: number
    onEdit: (mov: Movimiento) => void
-}
-
-const FOLDER_BG: Record<TipoMovimiento, string> = {
-   INGRESO: 'color-mix(in srgb, var(--color-surface) 82%, var(--color-accent) 18%)',
-   EGRESO: 'color-mix(in srgb, var(--color-surface) 82%, var(--color-danger) 18%)',
 }
 
 export const MovementsFolder: React.FC<MovementsFolderProps> = ({
@@ -59,8 +56,6 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
          className="animate-slide-up [animation-delay:0.1s] [animation-fill-mode:backwards]"
          style={{ '--folder-bg': FOLDER_BG[activeTab] } as React.CSSProperties}
       >
-         {/* Tabs row — horizontal gap matches --radius-lg (16px) so the
-             inverse-radius pseudo fits exactly within it. */}
          <div className="grid grid-cols-2 gap-4">
             <FolderTab
                label="Ingresos"
@@ -86,11 +81,6 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
             />
          </div>
 
-         {/* Body — sits 16px below the tabs row (= --radius-lg). The active
-             tab's box-shadow extends its bg through this gap; the inactive
-             tab is left floating with a transparent gap. The body's corner
-             opposite the active tab is rounded; the one under it stays flat
-             so it merges flush with the active tab's extended bg. */}
          <div
             className={cn(
                'mt-4 p-5 flex flex-col gap-5 rounded-b-lg transition-colors duration-200',
@@ -105,71 +95,3 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
       </div>
    )
 }
-
-interface FolderTabProps {
-   label: string
-   value: string
-   icon: React.ReactNode
-   accentClass: string
-   bubbleClass: string
-   iconBgClass: string
-   active: boolean
-   side: 'left' | 'right'
-   onClick: () => void
-}
-
-const FolderTab: React.FC<FolderTabProps> = ({
-   label,
-   value,
-   icon,
-   accentClass,
-   bubbleClass,
-   iconBgClass,
-   active,
-   side,
-   onClick,
-}) => (
-   <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      data-active={active}
-      data-side={side}
-      className="folder-tab p-5"
-   >
-      {/* Decorative bubble — clipped by an inner wrapper that inherits the
-          tab's border-radius. Kept separate from the button itself so the
-          button can stay `overflow: visible` (otherwise the inverse-radius
-          ::after pseudo would be clipped). */}
-      <div className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none">
-         <div
-            className={cn(
-               'absolute -top-2.5 -right-2.5 w-[60px] h-[60px] rounded-full',
-               bubbleClass
-            )}
-         />
-      </div>
-      <div className="relative flex items-center gap-2 mb-3">
-         <div
-            className={cn(
-               'w-8 h-8 rounded-sm flex items-center justify-center',
-               iconBgClass,
-               accentClass
-            )}
-         >
-            {icon}
-         </div>
-         <span className="text-xs font-semibold text-text-muted uppercase tracking-[0.5px]">
-            {label}
-         </span>
-      </div>
-      <p
-         className={cn(
-            'relative font-heading text-[22px] font-bold tracking-[-0.5px] tabular-nums',
-            accentClass
-         )}
-      >
-         {value}
-      </p>
-   </button>
-)

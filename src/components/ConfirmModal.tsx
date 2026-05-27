@@ -1,6 +1,6 @@
 import { cn } from '@/utils/cn'
 import {
-   AlertDialog as AlertDialogRoot,
+   AlertDialog,
    AlertDialogContent,
    AlertDialogDescription,
    AlertDialogFooter,
@@ -10,7 +10,7 @@ import {
    AlertDialogAction,
 } from '@/components/ui/alert-dialog'
 
-interface AlertDialogProps {
+interface ConfirmModalProps {
    open: boolean
    onCancel: () => void
    onConfirm: () => void
@@ -21,7 +21,7 @@ interface AlertDialogProps {
    loading?: boolean
 }
 
-export const AlertDialog: React.FC<AlertDialogProps> = ({
+export const ConfirmModal: React.FC<ConfirmModalProps> = ({
    open,
    onCancel,
    onConfirm,
@@ -31,7 +31,7 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
    confirmVariant = 'danger',
    loading = false,
 }) => (
-   <AlertDialogRoot open={open}>
+   <AlertDialog open={open}>
       <AlertDialogContent className="w-[calc(100%-2rem)] max-w-sm bg-surface border border-border-strong rounded-xl p-6 shadow-elevated outline-none">
          <AlertDialogHeader>
             <AlertDialogTitle className="font-heading text-base font-bold text-white text-wrap-balance">
@@ -64,5 +64,5 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
             </AlertDialogAction>
          </AlertDialogFooter>
       </AlertDialogContent>
-   </AlertDialogRoot>
+   </AlertDialog>
 )

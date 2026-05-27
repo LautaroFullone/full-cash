@@ -11,7 +11,7 @@ import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
 import type { PutMovimientoBody } from '../services/putMovimiento'
 import type { Movimiento } from '../services/getMovimientos'
-import { AlertDialog } from '@/components/AlertDialog'
+import { ConfirmModal } from '@/components'
 import type { Plataforma } from '@/models/plataforma'
 import { useState, useEffect, useRef } from 'react'
 import { format } from 'date-fns'
@@ -27,11 +27,7 @@ interface EditMovementFormProps {
    onClose: () => void
 }
 
-const FormLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-   <label className="block text-[11px] font-bold text-text-muted uppercase tracking-[0.8px] mb-1.5">
-      {children}
-   </label>
-)
+import { FormLabel } from './FormLabel'
 
 export const EditMovementForm: React.FC<EditMovementFormProps> = ({
    movimiento,
@@ -301,7 +297,7 @@ export const EditMovementForm: React.FC<EditMovementFormProps> = ({
             </div>
          </div>
 
-         <AlertDialog
+         <ConfirmModal
             open={confirmDelete}
             onCancel={() => setConfirmDelete(false)}
             onConfirm={handleDelete}

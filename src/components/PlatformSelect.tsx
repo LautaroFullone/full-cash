@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { Check, ChevronDown } from 'lucide-react'
+import { PlatformOption } from './PlatformOption'
 import type { Plataforma } from '@/models/plataforma'
+import { ChevronDown } from 'lucide-react'
+import { useState } from 'react'
 import { cn } from '@/utils/cn'
 
 interface PlatformSelectProps {
@@ -66,29 +67,15 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
                <div>
                   <div className="h-px bg-border-strong mx-3.5" />
                   <div className="py-1.5">
-                     {options.map((p) => {
-                        const isSelected = value === p.id
-                        return (
-                           <button
-                              key={p.id}
-                              type="button"
-                              onClick={() => handleSelect(p.id)}
-                              className={cn(
-                                 'w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm font-body cursor-pointer border-none bg-transparent text-left transition-colors duration-100 active:scale-[0.98]',
-                                 isSelected
-                                    ? 'text-accent'
-                                    : 'text-text-secondary hover:text-white hover:bg-white/4'
-                              )}
-                           >
-                              <span className="w-4 shrink-0 flex items-center justify-center">
-                                 {isSelected && (
-                                    <Check size={13} className="text-accent" />
-                                 )}
-                              </span>
-                              {p.nombre}
-                           </button>
-                        )
-                     })}
+                     {options.map((p) => (
+                        <PlatformOption
+                           key={p.id}
+                           id={p.id}
+                           nombre={p.nombre}
+                           isSelected={value === p.id}
+                           onSelect={handleSelect}
+                        />
+                     ))}
                   </div>
                </div>
             </div>

@@ -9,13 +9,13 @@ import { useSavingsConfig } from './hooks/useSavingsConfig'
 import { useMonthSelector } from './hooks/useMonthSelector'
 import { MovementsFolder } from './components/MovementsFolder'
 import { UserManager } from '@/modules/admin/UserManager'
-import { DashboardSkeleton } from '@/components/Skeleton'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { PrimaryButton } from '@/components'
 import { SavingsBar } from './components/SavingsBar'
 import { useAuthStore } from '@/stores/authStore'
 import { Header } from './components/Header'
+import { Skeleton } from '@/components'
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
 import {
@@ -252,3 +252,33 @@ export function DashboardPage() {
       </div>
    )
 }
+
+const DashboardSkeleton: React.FC = () => (
+   <div className="max-w-130 mx-auto px-4 pb-24 flex flex-col gap-4 pt-2">
+      <Skeleton className="h-[88px] rounded-xl" />
+
+      <div className="grid grid-cols-2 gap-3">
+         <Skeleton className="h-[88px]" />
+         <Skeleton className="h-[88px]" />
+      </div>
+
+      <Skeleton className="h-[112px]" />
+
+      <Skeleton className="h-[192px]" />
+
+      <div className="bg-surface border border-border rounded-lg p-5 flex flex-col gap-3">
+         <Skeleton className="h-5 w-32" />
+         <Skeleton className="h-9 rounded-full" />
+         {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3 px-1">
+               <Skeleton className="w-9 h-9 rounded-sm shrink-0" />
+               <div className="flex-1 flex flex-col gap-1.5">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+               </div>
+               <Skeleton className="h-4 w-16" />
+            </div>
+         ))}
+      </div>
+   </div>
+)
