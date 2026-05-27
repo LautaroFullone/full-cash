@@ -11,14 +11,14 @@ router.use(authMiddleware)
 router.use(adminMiddleware)
 
 const createUserSchema = z.object({
-   email: z.string().email('Email inválido'),
-   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
-   nombre: z.string().min(1, 'Nombre es requerido'),
+   email: z.string().email('Email inválido').max(254),
+   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres').max(72),
+   nombre: z.string().min(1, 'Nombre es requerido').max(100),
 })
 
 const updateUserSchema = z.object({
-   nombre: z.string().min(1).optional(),
-   password: z.string().min(6).optional(),
+   nombre: z.string().min(1).max(100).optional(),
+   password: z.string().min(6).max(72).optional(),
 })
 
 // GET /api/admin/users

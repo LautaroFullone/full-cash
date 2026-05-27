@@ -29,7 +29,7 @@ export const FolderTab: React.FC<FolderTabProps> = ({
       aria-pressed={active}
       data-active={active}
       data-side={side}
-      className="folder-tab p-5"
+      className="folder-tab px-4 py-5"
    >
       <div className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none">
          <div
@@ -39,6 +39,7 @@ export const FolderTab: React.FC<FolderTabProps> = ({
             )}
          />
       </div>
+
       <div className="relative flex items-center gap-2 mb-3">
          <div
             className={cn(
@@ -49,13 +50,15 @@ export const FolderTab: React.FC<FolderTabProps> = ({
          >
             {icon}
          </div>
+
          <span className="text-xs font-semibold text-text-muted uppercase tracking-[0.5px]">
             {label}
          </span>
       </div>
+
       <p
          className={cn(
-            'relative font-heading text-[22px] font-bold tracking-[-0.5px] tabular-nums',
+            'relative font-heading text-[22px] font-bold tracking-[-0.5px] tabular-nums text-center',
             accentClass
          )}
       >

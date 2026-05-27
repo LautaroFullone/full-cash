@@ -125,6 +125,7 @@ export const PlatformManager: React.FC<PlatformManagerProps> = ({
                         onChange={(e) => setNombre(e.target.value)}
                         placeholder="Nombre de la plataforma"
                         autoFocus
+                        maxLength={100}
                         onKeyDown={(e) =>
                            e.key === 'Enter' && !formDisabled && handleCreate()
                         }

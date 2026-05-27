@@ -57,6 +57,7 @@ export const LoginPage: React.FC = () => {
                         placeholder="tu@email.com"
                         required
                         autoComplete="email"
+                        maxLength={254}
                         className="h-11 px-3.5 rounded-md bg-background border border-border text-white text-sm placeholder:text-text-muted outline-none focus:border-accent transition-colors"
                      />
                   </div>
@@ -72,6 +73,7 @@ export const LoginPage: React.FC = () => {
                         placeholder="••••••••"
                         required
                         autoComplete="current-password"
+                        maxLength={72}
                         className="h-11 px-3.5 rounded-md bg-background border border-border text-white text-sm placeholder:text-text-muted outline-none focus:border-accent transition-colors"
                      />
                   </div>

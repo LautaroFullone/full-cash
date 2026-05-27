@@ -8,7 +8,7 @@ const router = Router()
 router.use(authMiddleware)
 
 const createMovimientoSchema = z.object({
-   concepto: z.string().min(1),
+   concepto: z.string().min(1).max(100),
    monto: z.number().positive(),
    tipo: z.enum(['INGRESO', 'EGRESO']),
    categoriaId: z.string().min(1),

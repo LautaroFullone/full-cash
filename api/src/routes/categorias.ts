@@ -8,9 +8,9 @@ const router = Router()
 router.use(authMiddleware)
 
 const createCategoriaSchema = z.object({
-   nombre: z.string().min(1, 'Nombre es requerido'),
+   nombre: z.string().min(1, 'Nombre es requerido').max(100),
    tipo: z.enum(['INGRESO', 'EGRESO']),
-   icono: z.string().default('💰'),
+   icono: z.string().max(10).default('💰'),
 })
 
 // GET /api/categorias

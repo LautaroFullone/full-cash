@@ -240,6 +240,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                            value={concepto}
                            onChange={(e) => setConcepto(e.target.value)}
                            placeholder="Ej: Sueldo, Supermercado..."
+                           maxLength={100}
                            className="w-full"
                         />
                      </div>

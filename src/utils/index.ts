@@ -1,3 +1,3 @@
 export { cn } from './cn'
-export { formatCurrency } from './formatCurrency'
+export { formatCurrency, formatCurrencyShort } from './formatCurrency'
 export { formatNumber } from './formatNumber'

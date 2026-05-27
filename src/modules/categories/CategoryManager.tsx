@@ -209,6 +209,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
                            onChange={(e) => setFormNombre(e.target.value)}
                            placeholder="Nombre de la categoría"
                            autoFocus
+                           maxLength={100}
                            onKeyDown={(e) =>
                               e.key === 'Enter' && !formDisabled && handleFormSubmit()
                            }

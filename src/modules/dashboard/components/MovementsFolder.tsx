@@ -1,7 +1,7 @@
 import { MovementList } from '@/modules/movements/components/MovementList'
 import { FOLDER_BG } from '../utils/folderColors'
 import { TrendingUp, TrendingDown } from 'lucide-react'
-import { formatCurrency } from '@/utils/formatCurrency'
+import { formatCurrencyShort } from '@/utils'
 import type { Movimiento } from '@/modules/movements/services/getMovimientos'
 import type { TipoMovimiento } from '@/models/categoria'
 import { CategoryChart } from './CategoryChart'
@@ -61,7 +61,7 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
          <div className="grid grid-cols-2 gap-4">
             <FolderTab
                label="Ingresos"
-               value={formatCurrency(totalIngresos)}
+               value={formatCurrencyShort(totalIngresos)}
                icon={<TrendingUp size={16} />}
                accentClass="text-accent"
                bubbleClass="bg-accent/12"
@@ -70,9 +70,14 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
                side="left"
                onClick={() => onTabChange('INGRESO')}
             />
+
             <FolderTab
                label="Egresos"
-               value={`-${formatCurrency(totalEgresos)}`}
+               value={
+                  totalEgresos >= 10_000_000
+                     ? formatCurrencyShort(-totalEgresos)
+                     : `-${formatCurrencyShort(totalEgresos)}`
+               }
                icon={<TrendingDown size={16} />}
                accentClass="text-danger"
                bubbleClass="bg-danger/12"
@@ -91,7 +96,9 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
             style={{ backgroundColor: 'var(--folder-bg)' }}
          >
             <CategoryChart distribucion={distribucion} tipo={activeTab} bare />
+
             <div className="h-px bg-white/6" />
+
             <MovementList movimientos={filtered} tipo={activeTab} onEdit={onEdit} bare />
          </div>
       </div>

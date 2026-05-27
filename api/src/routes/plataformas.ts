@@ -8,7 +8,7 @@ const router = Router()
 router.use(authMiddleware)
 
 const createPlataformaSchema = z.object({
-   nombre: z.string().min(1, 'Nombre es requerido'),
+   nombre: z.string().min(1, 'Nombre es requerido').max(100),
 })
 
 // GET /api/plataformas
