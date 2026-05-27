@@ -29,19 +29,31 @@ type Grupo = {
 
 interface MovementRowProps {
    mov: Movimiento
+   color: string
    deletingId: string | null
    onDeleteClick: (id: string) => void
 }
 
-const MovementRow: React.FC<MovementRowProps> = ({ mov, deletingId, onDeleteClick }) => (
+const MovementRow: React.FC<MovementRowProps> = ({
+   mov,
+   color,
+   deletingId,
+   onDeleteClick,
+}) => (
    <div
       className={cn(
-         'flex items-center p-3 gap-3 rounded-md transition-colors duration-150 hover:bg-white/3',
+         'relative flex items-center py-2 gap-2 rounded-r-sm transition-colors duration-150 hover:bg-white/3',
          deletingId === mov.id && 'opacity-40 pointer-events-none'
       )}
    >
+      {/* Conector horizontal ─ que parte del hilo vertical */}
+      <div
+         className="absolute -left-3 top-1/2 w-2.5 h-px rounded-full"
+         style={{ backgroundColor: `${color}90` }}
+      />
+
       <div className="flex-1 min-w-0">
-         <p className="text-sm font-medium text-white truncate">{mov.concepto}</p>
+         <p className="text-[13px] font-medium text-white truncate">{mov.concepto}</p>
          {mov.plataforma && (
             <div className="flex items-center mt-0.5">
                <span className="text-[10px] font-medium text-text-muted border border-border-strong rounded-full px-1.5 py-px leading-none">
@@ -51,10 +63,10 @@ const MovementRow: React.FC<MovementRowProps> = ({ mov, deletingId, onDeleteClic
          )}
       </div>
 
-      <div className="flex flex-col items-end gap-0.5 shrink-0">
+      <div className="flex flex-col items-end gap-0 shrink-0">
          <span
             className={cn(
-               'font-heading text-sm font-bold tabular-nums',
+               'font-heading text-[13px] font-bold tabular-nums',
                mov.tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
             )}
          >
@@ -68,9 +80,9 @@ const MovementRow: React.FC<MovementRowProps> = ({ mov, deletingId, onDeleteClic
 
       <button
          onClick={() => onDeleteClick(mov.id)}
-         className="w-10 h-10 rounded-sm border-none bg-transparent text-text-muted flex items-center justify-center shrink-0 opacity-40 hover:opacity-100 hover:text-danger transition-[opacity,color] duration-150 active:scale-[0.96]"
+         className="w-8 h-8 rounded-sm border-none bg-transparent text-text-muted flex items-center justify-center shrink-0 opacity-30 hover:opacity-100 hover:text-danger transition-[opacity,color] duration-150 active:scale-[0.96]"
       >
-         <Trash2 size={14} />
+         <Trash2 size={13} />
       </button>
    </div>
 )
@@ -98,7 +110,7 @@ const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
          <button
             type="button"
             onClick={onToggle}
-            className="w-full flex items-center p-3 gap-3 rounded-md hover:bg-white/3 transition-colors duration-150 cursor-pointer"
+            className="w-full flex items-center py-2 gap-3 rounded-md hover:bg-white/3 transition-colors duration-150 cursor-pointer"
          >
             <div className="w-9.5 h-9.5 rounded-sm shrink-0 flex items-center justify-center bg-white/5">
                <CategoryIcon icono={grupo.icono} size={18} />
@@ -145,15 +157,21 @@ const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
             )}
          >
             <div className="overflow-hidden">
-               <div className="pl-12 pr-2 pb-2 flex flex-col gap-0.5">
-                  {grupo.items.map((mov) => (
-                     <MovementRow
-                        key={mov.id}
-                        mov={mov}
-                        deletingId={deletingId}
-                        onDeleteClick={onDeleteClick}
-                     />
-                  ))}
+               <div className="px-3 pb-3">
+                  <div
+                     className="pl-3 flex flex-col border-l-[1.5px]"
+                     style={{ borderColor: `${color}40` }}
+                  >
+                     {grupo.items.map((mov) => (
+                        <MovementRow
+                           key={mov.id}
+                           mov={mov}
+                           color={color}
+                           deletingId={deletingId}
+                           onDeleteClick={onDeleteClick}
+                        />
+                     ))}
+                  </div>
                </div>
             </div>
          </div>
