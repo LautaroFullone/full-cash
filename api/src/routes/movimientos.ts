@@ -115,6 +115,17 @@ router.post('/', async (req, res) => {
    try {
       const userId = (req as AuthRequest).user.id
       const data = createMovimientoSchema.parse(req.body)
+
+      if (data.plataformaId) {
+         const plataforma = await prisma.plataforma.findFirst({
+            where: { id: data.plataformaId, userId },
+         })
+         if (!plataforma) {
+            res.status(400).json({ error: 'Plataforma no válida' })
+            return
+         }
+      }
+
       const movimiento = await prisma.movimiento.create({
          data: {
             userId,
@@ -149,6 +160,15 @@ router.put('/:id', async (req, res) => {
       if (!existing) {
          res.status(404).json({ error: 'Movimiento no encontrado' })
          return
+      }
+      if (data.plataformaId) {
+         const plataforma = await prisma.plataforma.findFirst({
+            where: { id: data.plataformaId, userId },
+         })
+         if (!plataforma) {
+            res.status(400).json({ error: 'Plataforma no válida' })
+            return
+         }
       }
 
       const updateData: Record<string, unknown> = { ...data }

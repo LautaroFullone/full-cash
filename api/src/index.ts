@@ -28,7 +28,15 @@ const app = express()
 const PORT = process.env.PORT || 3001
 const isDev = process.env.NODE_ENV !== 'production'
 
-app.use(cors())
+const allowedOrigins = process.env.CORS_ORIGINS
+   ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+   : true
+
+app.use(
+   cors({
+      origin: allowedOrigins,
+   })
+)
 app.use(express.json())
 app.use(morgan(isDev ? 'dev' : 'combined'))
 

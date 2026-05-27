@@ -1,4 +1,4 @@
-import { ConfirmModal, EntityManager, Skeleton } from '@/components'
+import { ConfirmModal, EntityManager, Skeleton, toast } from '@/components'
 import type { AdminUser } from './services/getUsers'
 import { deleteUser } from './services/deleteUser'
 import { UserRow } from './components/UserRow'
@@ -64,7 +64,7 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
          setUsers((prev) => prev.filter((u) => u.id !== confirmUserId))
          setConfirmUserId(null)
       } catch {
-         // silently ignore
+         toast.error('Error al eliminar el usuario')
       } finally {
          setDeletingId(null)
          setConfirming(false)

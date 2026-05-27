@@ -1,5 +1,6 @@
 import { authMiddleware, AuthRequest } from '../middleware/auth.js'
 import { logError } from '../lib/logger.js'
+import rateLimit from 'express-rate-limit'
 import prisma from '../lib/prisma.js'
 import { Router } from 'express'
 import jwt from 'jsonwebtoken'
@@ -8,13 +9,21 @@ import { z } from 'zod'
 
 const router = Router()
 
+const loginLimiter = rateLimit({
+   windowMs: 15 * 60 * 1000,
+   limit: 10,
+   message: { error: 'Demasiados intentos, intentá nuevamente en 15 minutos' },
+   standardHeaders: true,
+   legacyHeaders: false,
+})
+
 const loginSchema = z.object({
    email: z.string().email().max(254),
    password: z.string().min(1).max(72),
 })
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
    try {
       const { email, password } = loginSchema.parse(req.body)
 
