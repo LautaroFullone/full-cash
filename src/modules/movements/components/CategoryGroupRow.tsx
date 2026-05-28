@@ -23,7 +23,7 @@ export const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
    onToggle,
    onEditClick,
 }) => {
-   const color = getCategoryColor(grupo.categoriaId)
+   const color = getCategoryColor(grupo.colorIndex)
    return (
       <div>
          <button

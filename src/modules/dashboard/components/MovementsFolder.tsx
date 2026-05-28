@@ -32,13 +32,14 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
    )
 
    const distribucion = useMemo(() => {
-      const map = new Map<string, { nombre: string; total: number }>()
+      const map = new Map<string, { nombre: string; colorIndex: number; total: number }>()
       filtered.forEach((m) => {
          const cur = map.get(m.categoriaId)
          if (cur) cur.total += m.monto
          else
             map.set(m.categoriaId, {
                nombre: m.categoria?.nombre ?? '—',
+               colorIndex: m.categoria?.colorIndex ?? 0,
                total: m.monto,
             })
       })
@@ -49,6 +50,7 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
          .map(([categoriaId, data]) => ({
             categoriaId,
             categoriaNombre: data.nombre,
+            colorIndex: data.colorIndex,
             total: data.total,
             porcentaje: total > 0 ? (data.total / total) * 100 : 0,
          }))

@@ -37,7 +37,7 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
 
    const chartData = distribucion.map((item) => ({
       ...item,
-      color: getCategoryColor(item.categoriaId),
+      color: getCategoryColor(item.colorIndex),
    }))
 
    return (

@@ -31,7 +31,13 @@ export const MovementList: React.FC<MovementListProps> = ({
    const grupos = useMemo<Grupo[]>(() => {
       const map = new Map<
          string,
-         { nombre: string; icono: string; total: number; items: Movimiento[] }
+         {
+            nombre: string
+            icono: string
+            colorIndex: number
+            total: number
+            items: Movimiento[]
+         }
       >()
       const grandTotal = movimientos.reduce((s, m) => s + m.monto, 0)
 
@@ -44,6 +50,7 @@ export const MovementList: React.FC<MovementListProps> = ({
             map.set(m.categoriaId, {
                nombre: m.categoria?.nombre ?? '—',
                icono: m.categoria?.icono ?? '💰',
+               colorIndex: m.categoria?.colorIndex ?? 0,
                total: m.monto,
                items: [m],
             })
@@ -55,6 +62,7 @@ export const MovementList: React.FC<MovementListProps> = ({
             categoriaId,
             nombre: data.nombre,
             icono: data.icono,
+            colorIndex: data.colorIndex,
             total: data.total,
             porcentaje: grandTotal > 0 ? (data.total / grandTotal) * 100 : 0,
             items: data.items.sort(

@@ -1,4 +1,9 @@
 import { authMiddleware, AuthRequest } from '../middleware/auth.js'
+import {
+   backfillColorIndices,
+   COLOR_COUNT,
+   pickAvailableColor,
+} from '../lib/categoryColors.js'
 import { logError } from '../lib/logger.js'
 import prisma from '../lib/prisma.js'
 import { Router } from 'express'
@@ -17,6 +22,8 @@ const createCategoriaSchema = z.object({
 router.get('/', async (req, res) => {
    try {
       const userId = (req as AuthRequest).user.id
+
+      const colorMap = await backfillColorIndices(userId)
 
       const hidden = await prisma.userCategoriaHidden.findMany({
          where: { userId },
@@ -43,6 +50,7 @@ router.get('/', async (req, res) => {
       res.json(
          categorias.map(({ _count, ...cat }) => ({
             ...cat,
+            colorIndex: colorMap.get(cat.id) ?? cat.colorIndex,
             movimientoCount: _count.movimientos,
          }))
       )
@@ -58,13 +66,30 @@ router.post('/', async (req, res) => {
       const userId = (req as AuthRequest).user.id
       const data = createCategoriaSchema.parse(req.body)
 
-      const count = await prisma.categoria.count({ where: { userId } })
-      if (count >= 20) {
-         res.status(400).json({ error: 'Límite de 20 categorías propias alcanzado' })
+      const sameTipo = await prisma.categoria.findMany({
+         where: { tipo: data.tipo, OR: [{ userId }, { userId: null }] },
+         select: { colorIndex: true },
+      })
+      const usados = new Set(
+         sameTipo.map((c) => c.colorIndex).filter((v): v is number => v !== null)
+      )
+
+      if (usados.size >= COLOR_COUNT) {
+         res.status(400).json({
+            error: `Límite de ${COLOR_COUNT} categorías alcanzado para este tipo`,
+         })
          return
       }
 
-      const categoria = await prisma.categoria.create({ data: { ...data, userId } })
+      const colorIndex = pickAvailableColor(usados)
+      if (colorIndex === null) {
+         res.status(400).json({ error: 'No hay colores disponibles' })
+         return
+      }
+
+      const categoria = await prisma.categoria.create({
+         data: { ...data, userId, colorIndex },
+      })
       res.status(201).json({ ...categoria, movimientoCount: 0 })
    } catch (error) {
       if (error instanceof z.ZodError) {

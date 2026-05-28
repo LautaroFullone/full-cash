@@ -3,6 +3,7 @@ import { fetchAPI } from '@/lib/fetchAPI'
 export interface DistribucionCategoria {
    categoriaId: string
    categoriaNombre: string
+   colorIndex: number
    total: number
    porcentaje: number
 }

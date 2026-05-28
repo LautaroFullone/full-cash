@@ -1,4 +1,5 @@
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
+import { CATEGORY_LIMIT_PER_TIPO } from '@/models/categoria'
 import type { PostCategoriaBody } from './services/postCategoria'
 import type { PutCategoriaBody } from './services/putCategoria'
 import { ConfirmModal, EntityManager } from '@/components'
@@ -126,7 +127,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
 
    const filtered = categorias.filter((c) => c.tipo === tab)
    const usedEmojis = categorias.map((c) => c.icono).filter(Boolean)
-   const atLimit = categorias.filter((c) => c.userId !== null).length >= 20
+   const atLimit = filtered.length >= CATEGORY_LIMIT_PER_TIPO
    const formDisabled = !formNombre.trim() || !formIcono
    const handleFormSubmit = view === 'create' ? handleCreate : handleSaveEdit
 
@@ -304,7 +305,8 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
 
                   {atLimit && (
                      <p className="text-center text-[12px] text-text-muted py-1 mt-1">
-                        Límite de 20 categorías propias alcanzado
+                        Límite de {CATEGORY_LIMIT_PER_TIPO} categorías de{' '}
+                        {tab === 'INGRESO' ? 'ingreso' : 'gasto'} alcanzado
                      </p>
                   )}
                </>

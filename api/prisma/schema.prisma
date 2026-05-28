@@ -38,6 +38,7 @@ model Categoria {
   icono       String                @default("💰")
   isDefault   Boolean               @default(false)
   createdAt   DateTime              @default(now())
+  colorIndex  Int?                  // null = sin asignar (se completa lazy en GET)
   userId      String?               // null = global/shared
   user        User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   movimientos Movimiento[]

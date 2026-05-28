@@ -1,4 +1,5 @@
 import { authMiddleware, AuthRequest } from '../middleware/auth.js'
+import { backfillColorIndices } from '../lib/categoryColors.js'
 import { logError } from '../lib/logger.js'
 import prisma from '../lib/prisma.js'
 import { Router } from 'express'
@@ -64,6 +65,8 @@ router.get('/resumen', async (req, res) => {
       const startDate = new Date(anio, mes - 1, 1)
       const endDate = new Date(anio, mes, 1)
 
+      const colorMap = await backfillColorIndices(userId)
+
       const movimientos = await prisma.movimiento.findMany({
          where: { userId, fecha: { gte: startDate, lt: endDate } },
          include: { categoria: true },
@@ -72,11 +75,15 @@ router.get('/resumen', async (req, res) => {
       const totalIngresos = movimientos
          .filter((m) => m.tipo === 'INGRESO')
          .reduce((s, m) => s + m.monto, 0)
+
       const totalEgresos = movimientos
          .filter((m) => m.tipo === 'EGRESO')
          .reduce((s, m) => s + m.monto, 0)
 
-      const categoriaMap = new Map<string, { nombre: string; total: number }>()
+      const categoriaMap = new Map<
+         string,
+         { nombre: string; colorIndex: number | null; total: number }
+      >()
       movimientos
          .filter((m) => m.tipo === 'EGRESO')
          .forEach((m) => {
@@ -85,6 +92,7 @@ router.get('/resumen', async (req, res) => {
             else
                categoriaMap.set(m.categoriaId, {
                   nombre: m.categoria.nombre,
+                  colorIndex: colorMap.get(m.categoriaId) ?? m.categoria.colorIndex,
                   total: m.monto,
                })
          })
@@ -93,6 +101,7 @@ router.get('/resumen', async (req, res) => {
          .map(([categoriaId, data]) => ({
             categoriaId,
             categoriaNombre: data.nombre,
+            colorIndex: data.colorIndex ?? 0,
             total: data.total,
             porcentaje: totalEgresos > 0 ? (data.total / totalEgresos) * 100 : 0,
          }))
