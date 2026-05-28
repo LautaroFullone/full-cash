@@ -86,7 +86,7 @@ export const PlatformManager: React.FC<PlatformManagerProps> = ({
          ? { icon: Plus, label: 'Nueva plataforma', onClick: handleStartCreate }
          : {
               label: 'Crear',
-              loading: saving,
+              isLoading: saving,
               disabled: formDisabled,
               onClick: handleCreate,
            }
@@ -97,8 +97,8 @@ export const PlatformManager: React.FC<PlatformManagerProps> = ({
    const confirmCount = confirmPlataforma?.movimientoCount ?? 0
    const confirmDescription =
       confirmCount > 0
-         ? `Tiene ${confirmCount} movimiento${confirmCount !== 1 ? 's' : ''}. Quedarán sin plataforma asignada.`
-         : 'Esta acción no puede deshacerse.'
+         ? `Tiene ${confirmCount} movimiento${confirmCount !== 1 ? 's' : ''} asociado${confirmCount !== 1 ? 's' : ''}. Los movimientos no se eliminarán pero quedarán sin plataforma asignada. Esta acción no puede deshacerse.`
+         : 'Se eliminará esta plataforma de tu lista. Los movimientos existentes no se verán afectados. Esta acción no puede deshacerse.'
 
    return (
       <>
@@ -167,7 +167,7 @@ export const PlatformManager: React.FC<PlatformManagerProps> = ({
             title="¿Eliminar plataforma?"
             description={confirmDescription}
             confirmLabel="Eliminar"
-            loading={confirming}
+            isLoading={confirming}
          />
       </>
    )

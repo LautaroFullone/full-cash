@@ -24,7 +24,7 @@ export function usePlatforms() {
 
    return {
       plataformas: query.data ?? [],
-      loading: query.isLoading,
+      isLoading: query.isLoading,
       createPlataforma: (nombre: string) => createMutation.mutateAsync(nombre),
       deletePlataforma: (id: string) => deleteMutation.mutateAsync(id),
    }

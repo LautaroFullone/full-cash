@@ -9,7 +9,7 @@ interface PrimaryButtonProps extends Omit<
    size?: 'sm' | 'md' | 'lg'
    fullWidth?: boolean
    icon?: React.ReactNode
-   loading?: boolean
+   isLoading?: boolean
 }
 
 const SIZE_CLASSES: Record<NonNullable<PrimaryButtonProps['size']>, string> = {
@@ -23,13 +23,13 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
    size = 'md',
    fullWidth = false,
    icon,
-   loading = false,
+   isLoading = false,
    disabled,
    className,
    ...props
 }) => (
    <button
-      disabled={disabled || loading}
+      disabled={disabled || isLoading}
       className={cn(
          'rounded-md bg-accent text-background-deep font-heading font-bold',
          'cursor-pointer hover:bg-accent-dim transition-colors',
@@ -41,7 +41,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       )}
       {...props}
    >
-      {loading ? <Loader2 size={13} className="animate-spin" /> : (icon ?? null)}
+      {isLoading ? <Loader2 size={13} className="animate-spin" /> : (icon ?? null)}
       {children}
    </button>
 )

@@ -62,7 +62,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
    const [categoriaId, setCategoriaId] = useState('')
    const [plataformaId, setPlataformaId] = useState('')
    const [fecha, setFecha] = useState(format(new Date(), 'yyyy-MM-dd'))
-   const [loading, setLoading] = useState(false)
+   const [isLoading, setIsLoading] = useState(false)
    const [error, setError] = useState('')
    const [confirmDelete, setConfirmDelete] = useState(false)
    const [mounted, setMounted] = useState(false)
@@ -135,7 +135,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
          return
       }
       try {
-         setLoading(true)
+         setIsLoading(true)
          setError('')
          if (isEditMode && movimiento) {
             await onUpdate!(movimiento.id, {
@@ -165,7 +165,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
             isEditMode ? 'Error al guardar los cambios' : 'Error al guardar el movimiento'
          )
       } finally {
-         setLoading(false)
+         setIsLoading(false)
       }
    }
 
@@ -348,7 +348,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                      <PrimaryButton
                         size="lg"
                         fullWidth
-                        loading={loading}
+                        isLoading={isLoading}
                         icon={isEditMode ? <Check size={18} /> : <Plus size={18} />}
                         type="submit"
                         className="mt-1 active:scale-[0.98] transition-[background-color,opacity,transform] duration-200"
@@ -377,7 +377,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                onCancel={() => setConfirmDelete(false)}
                onConfirm={handleDelete}
                title="¿Eliminar movimiento?"
-               description="Esta acción no se puede deshacer."
+               description="Se eliminará este movimiento de forma permanente y dejará de contar en los totales del mes. Esta acción no puede deshacerse."
                confirmLabel="Eliminar"
                confirmVariant="danger"
             />

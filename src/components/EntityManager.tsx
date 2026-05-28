@@ -7,7 +7,7 @@ interface PrimaryBtnConfig {
    label: string
    onClick: () => void
    disabled?: boolean
-   loading?: boolean
+   isLoading?: boolean
 }
 
 interface SecondaryBtnConfig {
@@ -103,7 +103,7 @@ export const EntityManager: React.FC<EntityManagerProps> = ({
                         }
                         onClick={primaryBtn.onClick}
                         disabled={primaryBtn.disabled}
-                        loading={primaryBtn.loading}
+                        isLoading={primaryBtn.isLoading}
                         fullWidth={!hasBoth}
                         className={cn(hasBoth && 'flex-1')}
                      >

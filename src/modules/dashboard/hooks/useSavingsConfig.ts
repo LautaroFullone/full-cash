@@ -17,7 +17,7 @@ export function useSavingsConfig() {
 
    return {
       config: query.data ?? null,
-      loading: query.isLoading,
+      isLoading: query.isLoading,
       updatePorcentaje: (value: number) => updateMutation.mutateAsync(value),
    }
 }

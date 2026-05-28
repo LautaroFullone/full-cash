@@ -26,7 +26,7 @@ export function DashboardPage() {
    const {
       movimientos,
       resumen,
-      loading,
+      isLoading,
       createMovimiento,
       deleteMovimiento,
       updateMovimiento,
@@ -93,7 +93,7 @@ export function DashboardPage() {
          </div>
 
          {/* Content */}
-         {loading ? (
+         {isLoading ? (
             <DashboardSkeleton />
          ) : (
             <div className="max-w-130 lg:max-w-300 mx-auto px-4 lg:px-10 pb-24 lg:pb-12 lg:pt-8 lg:grid lg:grid-cols-[340px_1fr] lg:gap-6 lg:items-start">

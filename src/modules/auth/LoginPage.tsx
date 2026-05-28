@@ -8,7 +8,7 @@ export const LoginPage: React.FC = () => {
    const [email, setEmail] = useState('')
    const [password, setPassword] = useState('')
    const [error, setError] = useState('')
-   const [loading, setLoading] = useState(false)
+   const [isLoading, setIsLoading] = useState(false)
 
    async function handleSubmit(e: FormEvent) {
       e.preventDefault()
@@ -83,11 +83,11 @@ export const LoginPage: React.FC = () => {
                   <PrimaryButton
                      size="lg"
                      fullWidth
-                     loading={loading}
+                     isLoading={isLoading}
                      type="submit"
                      className="mt-1"
                   >
-                     {loading ? 'Ingresando...' : 'Ingresar'}
+                     {isLoading ? 'Ingresando...' : 'Ingresar'}
                   </PrimaryButton>
                </form>
             </div>

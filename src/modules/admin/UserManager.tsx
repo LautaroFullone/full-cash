@@ -13,7 +13,7 @@ interface Props {
 
 export const UserManager: React.FC<Props> = ({ onClose }) => {
    const [users, setUsers] = useState<AdminUser[]>([])
-   const [loading, setLoading] = useState(true)
+   const [isLoading, setIsLoading] = useState(true)
    const [showForm, setShowForm] = useState(false)
    const [deletingId, setDeletingId] = useState<string | null>(null)
    const [confirmUserId, setConfirmUserId] = useState<string | null>(null)
@@ -30,7 +30,7 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
       getUsers()
          .then(setUsers)
          .catch(() => setError('No se pudieron cargar los usuarios'))
-         .finally(() => setLoading(false))
+         .finally(() => setIsLoading(false))
    }, [])
 
    const handleCreate = async () => {
@@ -86,14 +86,14 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
          <EntityManager
             title={showForm ? 'Nuevo usuario' : 'Usuarios'}
             description={
-               showForm || loading ? undefined : `${users.length} usuarios registrados`
+               showForm || isLoading ? undefined : `${users.length} usuarios registrados`
             }
             onClose={onClose}
             primaryBtn={
                showForm
                   ? {
                        label: 'Crear',
-                       loading: creating,
+                       isLoading: creating,
                        disabled: !nombre || !email || !password,
                        onClick: handleCreate,
                     }
@@ -163,7 +163,7 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
                   )}
 
                   <div className="flex flex-col gap-2">
-                     {loading
+                     {isLoading
                         ? Array.from({ length: 4 }, (_, i) => <UserRowSkeleton key={i} />)
                         : users.map((user) => (
                              <UserRow
@@ -188,7 +188,7 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
                   : undefined
             }
             confirmLabel="Eliminar"
-            loading={confirming}
+            isLoading={confirming}
          />
       </>
    )

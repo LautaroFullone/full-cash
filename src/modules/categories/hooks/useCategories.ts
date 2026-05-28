@@ -33,7 +33,7 @@ export function useCategories() {
 
    return {
       categorias: query.data ?? [],
-      loading: query.isLoading,
+      isLoading: query.isLoading,
       createCategoria: (data: PostCategoriaBody) => createMutation.mutateAsync(data),
       updateCategoria: (id: string, data: PutCategoriaBody) =>
          updateMutation.mutateAsync({ id, data }),

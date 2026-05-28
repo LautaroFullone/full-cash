@@ -148,7 +148,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
               }
          : {
               label: view === 'create' ? 'Crear' : 'Guardar',
-              loading: saving,
+              isLoading: saving,
               disabled: formDisabled,
               onClick: handleFormSubmit,
            }
@@ -164,10 +164,10 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
 
    const confirmDescription = confirmCategoria
       ? confirmCategoria.userId === null
-         ? 'Esta categoría dejará de aparecer en tu lista.'
+         ? 'Esta categoría global dejará de aparecer en tu lista al cargar movimientos. Podrás volver a mostrarla más adelante desde la gestión de categorías.'
          : (confirmCategoria.movimientoCount ?? 0) > 0
-           ? `Tiene ${confirmCategoria.movimientoCount} movimiento${confirmCategoria.movimientoCount !== 1 ? 's' : ''}. Se reasignarán a "${confirmCategoria.tipo === 'EGRESO' ? 'Otros gastos' : 'Otros ingresos'}".`
-           : 'Esta acción no puede deshacerse.'
+           ? `Tiene ${confirmCategoria.movimientoCount} movimiento${confirmCategoria.movimientoCount !== 1 ? 's' : ''} asociado${confirmCategoria.movimientoCount !== 1 ? 's' : ''}. Se reasignarán automáticamente a "${confirmCategoria.tipo === 'EGRESO' ? 'Otros gastos' : 'Otros ingresos'}". Esta acción no puede deshacerse.`
+           : 'Se eliminará esta categoría de tu lista de forma permanente. Esta acción no puede deshacerse.'
       : undefined
 
    const confirmLabel = confirmCategoria?.userId === null ? 'Ocultar' : 'Eliminar'
@@ -317,7 +317,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
             title={confirmTitle}
             description={confirmDescription}
             confirmLabel={confirmLabel}
-            loading={confirming}
+            isLoading={confirming}
          />
       </>
    )

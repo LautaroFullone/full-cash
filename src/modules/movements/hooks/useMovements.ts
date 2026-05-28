@@ -46,7 +46,7 @@ export function useMovements(mes: number, anio: number) {
    return {
       movimientos: movimientosQuery.data ?? [],
       resumen: resumenQuery.data ?? null,
-      loading: movimientosQuery.isLoading || resumenQuery.isLoading,
+      isLoading: movimientosQuery.isLoading || resumenQuery.isLoading,
       error: movimientosQuery.error?.message ?? resumenQuery.error?.message ?? null,
       createMovimiento: (data: PostMovimientoBody) => createMutation.mutateAsync(data),
       deleteMovimiento: (id: string) => deleteMutation.mutateAsync(id),

@@ -1,13 +1,10 @@
+import { Loader2 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import {
    AlertDialog,
    AlertDialogContent,
    AlertDialogDescription,
-   AlertDialogFooter,
-   AlertDialogHeader,
    AlertDialogTitle,
-   AlertDialogCancel,
-   AlertDialogAction,
 } from '@/components/ui/alert-dialog'
 
 interface ConfirmModalProps {
@@ -18,7 +15,7 @@ interface ConfirmModalProps {
    description?: string
    confirmLabel?: string
    confirmVariant?: 'danger' | 'accent'
-   loading?: boolean
+   isLoading?: boolean
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -29,40 +26,47 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
    description,
    confirmLabel = 'Confirmar',
    confirmVariant = 'danger',
-   loading = false,
+   isLoading = false,
 }) => (
    <AlertDialog open={open}>
-      <AlertDialogContent className="w-[calc(100%-2rem)] max-w-sm bg-surface border border-border-strong rounded-xl p-6 shadow-elevated outline-none">
-         <AlertDialogHeader>
-            <AlertDialogTitle className="font-heading text-base font-bold text-white text-wrap-balance">
+      <AlertDialogContent className="w-[calc(100%-2rem)] max-w-sm bg-surface border border-border-strong rounded-xl p-0 gap-0 shadow-elevated outline-none overflow-hidden">
+         <div className="px-5 py-4 border-b border-border">
+            <AlertDialogTitle className="font-heading text-base font-bold text-white text-left">
                {title}
             </AlertDialogTitle>
-            {description && (
-               <AlertDialogDescription className="text-sm text-text-muted text-wrap-pretty">
+         </div>
+
+         {description && (
+            <div className="px-5 py-4">
+               <AlertDialogDescription className="text-[13px] text-text-muted text-left text-wrap-pretty">
                   {description}
                </AlertDialogDescription>
-            )}
-         </AlertDialogHeader>
-         <AlertDialogFooter className="flex-row gap-2 justify-end sm:space-x-0">
-            <AlertDialogCancel
+            </div>
+         )}
+
+         <div className="px-5 py-4 border-t border-border flex gap-2">
+            <button
                onClick={onCancel}
-               className="mt-0 h-9 px-4 rounded-md border border-border-strong bg-transparent text-text-secondary text-sm font-medium hover:border-border hover:text-white hover:bg-transparent transition-colors duration-150 active:scale-[0.96]"
+               disabled={isLoading}
+               className="flex-1 h-10 rounded-md border border-border text-text-secondary text-sm cursor-pointer hover:border-border-strong hover:text-white transition-colors bg-transparent disabled:opacity-60 disabled:cursor-not-allowed"
             >
                Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
+            </button>
+
+            <button
                onClick={onConfirm}
-               disabled={loading}
+               disabled={isLoading}
                className={cn(
-                  'h-9 px-4 rounded-md border-none text-sm font-bold font-heading cursor-pointer transition-colors duration-150 active:scale-[0.96] disabled:opacity-60',
+                  'flex-1 h-10 rounded-md font-heading font-bold text-sm cursor-pointer transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed',
                   confirmVariant === 'danger'
                      ? 'bg-danger text-white hover:bg-danger-dim'
                      : 'bg-accent text-background-deep hover:bg-accent-dim'
                )}
             >
+               {isLoading && <Loader2 size={13} className="animate-spin" />}
                {confirmLabel}
-            </AlertDialogAction>
-         </AlertDialogFooter>
+            </button>
+         </div>
       </AlertDialogContent>
    </AlertDialog>
 )
