@@ -46,7 +46,7 @@ export function DashboardPage() {
    const [editingMov, setEditingMov] = useState<Movimiento | null>(null)
 
    const saldo = resumen?.saldo ?? 0
-   const isPositive = saldo >= 0
+   const isPositive = saldo > 0
 
    return (
       <div className="min-h-dvh">
@@ -83,10 +83,14 @@ export function DashboardPage() {
                <h2
                   className={cn(
                      'font-heading text-4xl font-black tracking-[-1px] transition-colors duration-300',
-                     isPositive ? 'text-accent' : 'text-danger'
+                     saldo === 0
+                        ? 'text-text-secondary'
+                        : isPositive
+                          ? 'text-accent'
+                          : 'text-danger'
                   )}
                >
-                  {isPositive ? '+' : ''}
+                  {saldo !== 0 && (isPositive ? '+' : '')}
                   {formatCurrency(saldo)}
                </h2>
             </div>
@@ -111,10 +115,14 @@ export function DashboardPage() {
                      <h2
                         className={cn(
                            'font-heading text-5xl font-black tracking-[-2px] transition-colors duration-300',
-                           isPositive ? 'text-accent' : 'text-danger'
+                           saldo === 0
+                              ? 'text-text-secondary'
+                              : isPositive
+                                ? 'text-accent'
+                                : 'text-danger'
                         )}
                      >
-                        {isPositive ? '+' : ''}
+                        {saldo !== 0 && (isPositive ? '+' : '')}
                         {formatCurrency(saldo)}
                      </h2>
                   </div>
