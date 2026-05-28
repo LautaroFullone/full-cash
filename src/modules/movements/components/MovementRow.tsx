@@ -38,7 +38,7 @@ export const MovementRow: React.FC<MovementRowProps> = ({
 
             {mov.plataforma && (
                <div className="flex items-center mt-0.5">
-                  <span className="text-[10px] font-medium text-text-muted border border-border-strong rounded-full px-1.5 py-px leading-none">
+                  <span className="text-xs font-medium text-text-muted border border-border-strong rounded-full px-1.5 py-px leading-none">
                      {mov.plataforma.nombre}
                   </span>
                </div>
@@ -55,7 +55,8 @@ export const MovementRow: React.FC<MovementRowProps> = ({
                {mov.tipo === 'INGRESO' ? '+' : '-'}
                {formatCurrency(mov.monto)}
             </span>
-            <span className="text-[10px] text-text-muted tabular-nums">
+
+            <span className="text-xs text-text-muted tabular-nums">
                {format(new Date(mov.fecha), 'd MMM', { locale: es })}
             </span>
          </div>
