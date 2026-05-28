@@ -1,7 +1,8 @@
 import { PrimaryButton } from '@/components'
-import { FormEvent, useState } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { Wallet } from 'lucide-react'
+import { useState } from 'react'
+import type { SubmitEvent } from 'react'
 
 export const LoginPage: React.FC = () => {
    const { login } = useAuth()
@@ -10,12 +11,12 @@ export const LoginPage: React.FC = () => {
    const [error, setError] = useState('')
    const [isLoading, setIsLoading] = useState(false)
 
-   async function handleSubmit(e: FormEvent) {
+   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault()
       setError('')
       setIsLoading(true)
       try {
-         await login(email, password)
+         await login({ email, password })
       } catch (err) {
          setError(err instanceof Error ? err.message : 'Error al iniciar sesión')
       } finally {

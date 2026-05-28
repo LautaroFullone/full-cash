@@ -1,10 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import type { PostCategoriaBody } from '../services/postCategoria'
+import type { PutCategoriaBody } from '../services/putCategoria'
+import { deleteCategoria } from '../services/deleteCategoria'
 import { getCategorias } from '../services/getCategorias'
 import { postCategoria } from '../services/postCategoria'
 import { putCategoria } from '../services/putCategoria'
-import { deleteCategoria } from '../services/deleteCategoria'
-import type { PostCategoriaBody } from '../services/postCategoria'
-import type { PutCategoriaBody } from '../services/putCategoria'
+
+export interface UpdateCategoriaArgs {
+   id: string
+   data: PutCategoriaBody
+}
 
 export function useCategories() {
    const qc = useQueryClient()
@@ -15,28 +20,28 @@ export function useCategories() {
       staleTime: 5 * 60_000,
    })
 
-   const createMutation = useMutation({
-      mutationFn: postCategoria,
-      onSuccess: () => qc.invalidateQueries({ queryKey: ['categorias'] }),
+   const invalidate = () => qc.invalidateQueries({ queryKey: ['categorias'] })
+
+   const { mutateAsync: createCategoria } = useMutation({
+      mutationFn: (data: PostCategoriaBody) => postCategoria(data),
+      onSuccess: invalidate,
    })
 
-   const updateMutation = useMutation({
-      mutationFn: ({ id, data }: { id: string; data: PutCategoriaBody }) =>
-         putCategoria(id, data),
-      onSuccess: () => qc.invalidateQueries({ queryKey: ['categorias'] }),
+   const { mutateAsync: updateCategoria } = useMutation({
+      mutationFn: ({ id, data }: UpdateCategoriaArgs) => putCategoria(id, data),
+      onSuccess: invalidate,
    })
 
-   const deleteMutation = useMutation({
+   const { mutateAsync: removeCategoria } = useMutation({
       mutationFn: deleteCategoria,
-      onSuccess: () => qc.invalidateQueries({ queryKey: ['categorias'] }),
+      onSuccess: invalidate,
    })
 
    return {
       categorias: query.data ?? [],
       isLoading: query.isLoading,
-      createCategoria: (data: PostCategoriaBody) => createMutation.mutateAsync(data),
-      updateCategoria: (id: string, data: PutCategoriaBody) =>
-         updateMutation.mutateAsync({ id, data }),
-      deleteCategoria: (id: string) => deleteMutation.mutateAsync(id),
+      createCategoria,
+      updateCategoria,
+      deleteCategoria: removeCategoria,
    }
 }

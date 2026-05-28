@@ -1,10 +1,7 @@
 import { ConfirmModal, EntityManager, Skeleton, toast } from '@/components'
-import type { AdminUser } from './services/getUsers'
-import { deleteUser } from './services/deleteUser'
 import { UserRow } from './components/UserRow'
-import { getUsers } from './services/getUsers'
-import { postUser } from './services/postUser'
-import { useState, useEffect } from 'react'
+import { useUsers } from './hooks/useUsers'
+import { useState } from 'react'
 import { Plus } from 'lucide-react'
 
 interface Props {
@@ -12,26 +9,23 @@ interface Props {
 }
 
 export const UserManager: React.FC<Props> = ({ onClose }) => {
-   const [users, setUsers] = useState<AdminUser[]>([])
-   const [isLoading, setIsLoading] = useState(true)
+   const {
+      users,
+      isLoading,
+      isError,
+      createUser,
+      isCreating,
+      deleteUser,
+      deletingUserId,
+   } = useUsers()
+
    const [showForm, setShowForm] = useState(false)
-   const [deletingId, setDeletingId] = useState<string | null>(null)
    const [confirmUserId, setConfirmUserId] = useState<string | null>(null)
-   const [confirming, setConfirming] = useState(false)
-   const [error, setError] = useState('')
 
    const [nombre, setNombre] = useState('')
    const [email, setEmail] = useState('')
    const [password, setPassword] = useState('')
-   const [creating, setCreating] = useState(false)
    const [formError, setFormError] = useState('')
-
-   useEffect(() => {
-      getUsers()
-         .then(setUsers)
-         .catch(() => setError('No se pudieron cargar los usuarios'))
-         .finally(() => setIsLoading(false))
-   }, [])
 
    const handleCreate = async () => {
       setFormError('')
@@ -39,15 +33,11 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
          setFormError('Ya existe un usuario con ese email')
          return
       }
-      setCreating(true)
       try {
-         const user = await postUser({ nombre, email: email.trim(), password })
-         setUsers((prev) => [...prev, user])
+         await createUser({ nombre, email: email.trim(), password })
          handleCancelForm()
       } catch (err) {
          setFormError(err instanceof Error ? err.message : 'Error al crear usuario')
-      } finally {
-         setCreating(false)
       }
    }
 
@@ -57,17 +47,11 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
 
    const handleConfirmDelete = async () => {
       if (!confirmUserId) return
-      setConfirming(true)
-      setDeletingId(confirmUserId)
       try {
          await deleteUser(confirmUserId)
-         setUsers((prev) => prev.filter((u) => u.id !== confirmUserId))
          setConfirmUserId(null)
       } catch {
          toast.error('Error al eliminar el usuario')
-      } finally {
-         setDeletingId(null)
-         setConfirming(false)
       }
    }
 
@@ -93,7 +77,7 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
                showForm
                   ? {
                        label: 'Crear',
-                       isLoading: creating,
+                       isLoading: isCreating,
                        disabled: !nombre || !email || !password,
                        onClick: handleCreate,
                     }
@@ -158,8 +142,10 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
                </div>
             ) : (
                <>
-                  {error && (
-                     <p className="text-danger text-sm text-center mb-2">{error}</p>
+                  {isError && (
+                     <p className="text-danger text-sm text-center mb-2">
+                        No se pudieron cargar los usuarios
+                     </p>
                   )}
 
                   <div className="flex flex-col gap-2">
@@ -169,7 +155,7 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
                              <UserRow
                                 key={user.id}
                                 user={user}
-                                isDeleting={deletingId === user.id}
+                                isDeleting={deletingUserId === user.id}
                                 onDelete={handleDelete}
                              />
                           ))}
@@ -188,7 +174,7 @@ export const UserManager: React.FC<Props> = ({ onClose }) => {
                   : undefined
             }
             confirmLabel="Eliminar"
-            isLoading={confirming}
+            isLoading={deletingUserId === confirmUserId}
          />
       </>
    )

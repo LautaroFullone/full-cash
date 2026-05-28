@@ -1,4 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/authStore'
 import { postLogin } from '../services/postLogin'
 import { getMe } from '../services/getMe'
@@ -7,27 +7,28 @@ export function useAuth() {
    const { setUser, setIsLoading } = useAuthStore()
    const queryClient = useQueryClient()
 
-   async function init() {
+   const { mutateAsync: login } = useMutation({
+      mutationFn: postLogin,
+      onSuccess: ({ token, user }) => {
+         localStorage.setItem('token', token)
+         setUser(user)
+      },
+   })
+
+   function init() {
       const token = localStorage.getItem('token')
       if (!token) {
          setIsLoading(false)
          return
       }
-      try {
-         const user = await getMe()
-         setUser(user)
-      } catch {
-         localStorage.removeItem('token')
-         setUser(null)
-      } finally {
-         setIsLoading(false)
-      }
-   }
-
-   async function login(email: string, password: string) {
-      const { token, user } = await postLogin({ email, password })
-      localStorage.setItem('token', token)
-      setUser(user)
+      queryClient
+         .fetchQuery({ queryKey: ['me'], queryFn: getMe })
+         .then(setUser)
+         .catch(() => {
+            localStorage.removeItem('token')
+            setUser(null)
+         })
+         .finally(() => setIsLoading(false))
    }
 
    function logout() {

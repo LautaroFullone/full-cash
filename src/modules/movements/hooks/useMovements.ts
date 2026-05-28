@@ -1,11 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getMovimientos } from '../services/getMovimientos'
+import type { PutMovimientoBody } from '../services/putMovimiento'
 import { getResumenMensual } from '../services/getResumenMensual'
+import { deleteMovimiento } from '../services/deleteMovimiento'
+import { getMovimientos } from '../services/getMovimientos'
 import { postMovimiento } from '../services/postMovimiento'
 import { putMovimiento } from '../services/putMovimiento'
-import { deleteMovimiento } from '../services/deleteMovimiento'
-import type { PostMovimientoBody } from '../services/postMovimiento'
-import type { PutMovimientoBody } from '../services/putMovimiento'
+
+export interface UpdateMovimientoArgs {
+   id: string
+   data: PutMovimientoBody
+}
 
 export function useMovements(mes: number, anio: number) {
    const qc = useQueryClient()
@@ -29,17 +33,18 @@ export function useMovements(mes: number, anio: number) {
       qc.invalidateQueries({ queryKey: keys.resumen })
    }
 
-   const createMutation = useMutation({
+   const { mutateAsync: createMovimiento } = useMutation({
       mutationFn: postMovimiento,
       onSuccess: invalidate,
    })
-   const deleteMutation = useMutation({
+
+   const { mutateAsync: removeMovimiento } = useMutation({
       mutationFn: deleteMovimiento,
       onSuccess: invalidate,
    })
-   const updateMutation = useMutation({
-      mutationFn: ({ id, data }: { id: string; data: PutMovimientoBody }) =>
-         putMovimiento(id, data),
+
+   const { mutateAsync: updateMovimiento } = useMutation({
+      mutationFn: ({ id, data }: UpdateMovimientoArgs) => putMovimiento(id, data),
       onSuccess: invalidate,
    })
 
@@ -48,9 +53,8 @@ export function useMovements(mes: number, anio: number) {
       resumen: resumenQuery.data ?? null,
       isLoading: movimientosQuery.isLoading || resumenQuery.isLoading,
       error: movimientosQuery.error?.message ?? resumenQuery.error?.message ?? null,
-      createMovimiento: (data: PostMovimientoBody) => createMutation.mutateAsync(data),
-      deleteMovimiento: (id: string) => deleteMutation.mutateAsync(id),
-      updateMovimiento: (id: string, data: PutMovimientoBody) =>
-         updateMutation.mutateAsync({ id, data }),
+      createMovimiento,
+      updateMovimiento,
+      deleteMovimiento: removeMovimiento,
    }
 }

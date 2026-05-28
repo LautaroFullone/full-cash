@@ -12,12 +12,12 @@ export function usePlatforms() {
       staleTime: 5 * 60_000,
    })
 
-   const createMutation = useMutation({
+   const { mutateAsync: createPlataforma } = useMutation({
       mutationFn: postPlataforma,
       onSuccess: () => qc.invalidateQueries({ queryKey: ['plataformas'] }),
    })
 
-   const deleteMutation = useMutation({
+   const { mutateAsync: removePlataforma } = useMutation({
       mutationFn: deletePlataforma,
       onSuccess: () => qc.invalidateQueries({ queryKey: ['plataformas'] }),
    })
@@ -25,7 +25,7 @@ export function usePlatforms() {
    return {
       plataformas: query.data ?? [],
       isLoading: query.isLoading,
-      createPlataforma: (nombre: string) => createMutation.mutateAsync(nombre),
-      deletePlataforma: (id: string) => deleteMutation.mutateAsync(id),
+      createPlataforma,
+      deletePlataforma: removePlataforma,
    }
 }

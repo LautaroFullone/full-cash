@@ -10,7 +10,7 @@ export function useSavingsConfig() {
       queryFn: getConfiguracion,
    })
 
-   const updateMutation = useMutation({
+   const { mutateAsync: updatePorcentaje } = useMutation({
       mutationFn: putConfiguracion,
       onSuccess: () => qc.invalidateQueries({ queryKey: ['configuracion'] }),
    })
@@ -18,6 +18,6 @@ export function useSavingsConfig() {
    return {
       config: query.data ?? null,
       isLoading: query.isLoading,
-      updatePorcentaje: (value: number) => updateMutation.mutateAsync(value),
+      updatePorcentaje,
    }
 }

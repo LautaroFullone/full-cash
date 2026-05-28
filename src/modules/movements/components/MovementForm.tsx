@@ -37,7 +37,7 @@ interface MovementFormProps {
    onOpen?: () => void
    // Edit mode — presence of movimiento determines mode
    movimiento?: Movimiento | null
-   onUpdate?: (id: string, data: PutMovimientoBody) => Promise<unknown> | void
+   onUpdate?: (args: { id: string; data: PutMovimientoBody }) => Promise<unknown> | void
    onDelete?: (id: string) => Promise<unknown> | void
 }
 
@@ -138,13 +138,16 @@ export const MovementForm: React.FC<MovementFormProps> = ({
          setIsLoading(true)
          setError('')
          if (isEditMode && movimiento) {
-            await onUpdate!(movimiento.id, {
-               concepto: concepto.trim(),
-               monto: Number(monto),
-               tipo,
-               categoriaId,
-               plataformaId: plataformaId || null,
-               fecha: new Date(fecha + 'T12:00:00').toISOString(),
+            await onUpdate!({
+               id: movimiento.id,
+               data: {
+                  concepto: concepto.trim(),
+                  monto: Number(monto),
+                  tipo,
+                  categoriaId,
+                  plataformaId: plataformaId || null,
+                  fecha: new Date(fecha + 'T12:00:00').toISOString(),
+               },
             })
             toast.success('Movimiento actualizado')
          } else {

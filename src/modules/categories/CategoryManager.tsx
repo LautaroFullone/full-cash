@@ -1,7 +1,7 @@
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
+import type { UpdateCategoriaArgs } from './hooks/useCategories'
 import { CATEGORY_LIMIT_PER_TIPO } from '@/models/categoria'
 import type { PostCategoriaBody } from './services/postCategoria'
-import type { PutCategoriaBody } from './services/putCategoria'
 import { ConfirmModal, EntityManager } from '@/components'
 import { EmojiPicker } from './components/EmojiPicker'
 import { CategoryRow } from './components/CategoryRow'
@@ -13,7 +13,7 @@ interface CategoryManagerProps {
    categorias: Categoria[]
    onClose: () => void
    onCreate: (data: PostCategoriaBody) => Promise<void> | void
-   onUpdate: (id: string, data: PutCategoriaBody) => Promise<void> | void
+   onUpdate: (args: UpdateCategoriaArgs) => Promise<void> | void
    onDelete: (id: string) => Promise<void> | void
 }
 
@@ -85,10 +85,13 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
       setFormError('')
       setSaving(true)
       try {
-         await onUpdate(editingCategoria.id, {
-            nombre: formNombre.trim(),
-            icono: formIcono,
-            tipo: formTipo,
+         await onUpdate({
+            id: editingCategoria.id,
+            data: {
+               nombre: formNombre.trim(),
+               icono: formIcono,
+               tipo: formTipo,
+            },
          })
          handleCancelForm()
       } catch (err) {
