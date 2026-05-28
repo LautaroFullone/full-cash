@@ -51,14 +51,14 @@ export const FolderTab: React.FC<FolderTabProps> = ({
             {icon}
          </div>
 
-         <span className="text-xs font-semibold text-text-muted uppercase tracking-[0.5px]">
+         <span className="text-sm font-semibold text-text-muted uppercase tracking-[0.5px]">
             {label}
          </span>
       </div>
 
       <p
          className={cn(
-            'relative font-heading text-[22px] font-bold tracking-[-0.5px] tabular-nums text-center',
+            'relative font-heading text-2xl lg:text-3xl font-bold tracking-[-0.5px] tabular-nums text-center',
             accentClass
          )}
       >

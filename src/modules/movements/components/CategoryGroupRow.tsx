@@ -41,9 +41,10 @@ export const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
                      className="w-2 h-2 rounded-full shrink-0"
                      style={{ backgroundColor: color }}
                   />
-                  <p className="text-sm font-medium text-white">{grupo.nombre}</p>
+                  <p className="text-base font-medium text-white">{grupo.nombre}</p>
                </div>
-               <p className="text-xs text-text-muted tabular-nums">
+
+               <p className="text-sm text-text-muted tabular-nums">
                   {grupo.porcentaje >= 1
                      ? `${Math.round(grupo.porcentaje)}%`
                      : `${grupo.porcentaje.toFixed(1)}%`}
@@ -52,11 +53,12 @@ export const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
 
             <span
                className={cn(
-                  'font-heading text-sm font-bold tabular-nums shrink-0',
+                  'font-heading text-base font-bold tabular-nums shrink-0',
                   tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
                )}
             >
                {tipo === 'INGRESO' ? '+' : '-'}
+
                {formatCurrency(grupo.total)}
             </span>
 

@@ -1,30 +1,45 @@
-import { TrendingUp, TrendingDown, AlertCircle, Plus, X, Loader2 } from 'lucide-react'
-import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
-import type { PostMovimientoBody } from '../services/postMovimiento'
-import type { Categoria, TipoMovimiento } from '@/models/categoria'
 import {
+   TrendingUp,
+   TrendingDown,
+   AlertCircle,
+   Plus,
+   X,
+   Check,
+   Trash2,
+} from 'lucide-react'
+import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
+import type { Categoria, TipoMovimiento } from '@/models/categoria'
+import type { PostMovimientoBody } from '../services/postMovimiento'
+import type { PutMovimientoBody } from '../services/putMovimiento'
+import type { Movimiento } from '../services/getMovimientos'
+import type { Plataforma } from '@/models/plataforma'
+import { useState, useEffect, useRef } from 'react'
+import { FormLabel } from './FormLabel'
+import { format } from 'date-fns'
+import { cn } from '@/utils/cn'
+import {
+   ConfirmModal,
    CurrencyInput,
    DatePicker,
    PlatformSelect,
    PrimaryButton,
    toast,
 } from '@/components'
-import type { Plataforma } from '@/models/plataforma'
-import { format } from 'date-fns'
-import { useState, useEffect, useRef } from 'react'
-import { cn } from '@/utils/cn'
 
 interface MovementFormProps {
    categorias: Categoria[]
    plataformas: Plataforma[]
-   onSubmit: (data: PostMovimientoBody) => Promise<void> | void
+   // Create mode
+   onSubmit?: (data: PostMovimientoBody) => Promise<void> | void
    isOpen?: boolean
    initialTipo?: TipoMovimiento
    onClose?: () => void
    onOpen?: () => void
+   // Edit mode — presence of movimiento determines mode
+   movimiento?: Movimiento | null
+   onUpdate?: (id: string, data: PutMovimientoBody) => Promise<unknown> | void
+   onDelete?: (id: string) => Promise<unknown> | void
 }
-
-import { FormLabel } from './FormLabel'
 
 export const MovementForm: React.FC<MovementFormProps> = ({
    categorias,
@@ -32,9 +47,14 @@ export const MovementForm: React.FC<MovementFormProps> = ({
    onSubmit,
    isOpen: controlledOpen,
    initialTipo = 'EGRESO',
-   onClose: controlledClose,
+   onClose,
    onOpen: controlledOnOpen,
+   movimiento = null,
+   onUpdate,
+   onDelete,
 }) => {
+   const isEditMode = movimiento !== null
+
    const [internalOpen, setInternalOpen] = useState(false)
    const [tipo, setTipo] = useState<TipoMovimiento>(initialTipo)
    const [concepto, setConcepto] = useState('')
@@ -44,25 +64,34 @@ export const MovementForm: React.FC<MovementFormProps> = ({
    const [fecha, setFecha] = useState(format(new Date(), 'yyyy-MM-dd'))
    const [loading, setLoading] = useState(false)
    const [error, setError] = useState('')
-
-   // Exit animation state
+   const [confirmDelete, setConfirmDelete] = useState(false)
    const [mounted, setMounted] = useState(false)
    const [closing, setClosing] = useState(false)
-   const timerRef = useRef<ReturnType<typeof setTimeout>>()
+   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
    const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
 
    useEffect(() => {
-      if (isOpen) {
+      if (movimiento) {
+         clearTimeout(timerRef.current)
+         setMounted(true)
+         setClosing(false)
+         setTipo(movimiento.tipo)
+         setConcepto(movimiento.concepto)
+         setMonto(movimiento.monto)
+         setCategoriaId(movimiento.categoriaId)
+         setPlataformaId(movimiento.plataformaId ?? '')
+         setFecha(format(new Date(movimiento.fecha), 'yyyy-MM-dd'))
+         setError('')
+      } else if (!isEditMode && isOpen) {
          clearTimeout(timerRef.current)
          setMounted(true)
          setClosing(false)
          setTipo(initialTipo)
          setCategoriaId('')
       }
-   }, [isOpen, initialTipo])
+   }, [movimiento, isOpen, isEditMode, initialTipo])
 
-   // Cleanup on unmount
    useEffect(() => () => clearTimeout(timerRef.current), [])
 
    const handleOpen = () => {
@@ -75,7 +104,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
       timerRef.current = setTimeout(() => {
          setMounted(false)
          setClosing(false)
-         if (controlledClose) controlledClose()
+         if (onClose) onClose()
          else setInternalOpen(false)
       }, 250)
    }
@@ -108,39 +137,66 @@ export const MovementForm: React.FC<MovementFormProps> = ({
       try {
          setLoading(true)
          setError('')
-         await onSubmit({
-            concepto: concepto.trim(),
-            monto: Number(monto),
-            tipo,
-            categoriaId,
-            plataformaId: plataformaId || undefined,
-            fecha: new Date(fecha + 'T12:00:00').toISOString(),
-         })
-         toast.success('Movimiento guardado')
-         resetForm()
+         if (isEditMode && movimiento) {
+            await onUpdate!(movimiento.id, {
+               concepto: concepto.trim(),
+               monto: Number(monto),
+               tipo,
+               categoriaId,
+               plataformaId: plataformaId || null,
+               fecha: new Date(fecha + 'T12:00:00').toISOString(),
+            })
+            toast.success('Movimiento actualizado')
+         } else {
+            await onSubmit!({
+               concepto: concepto.trim(),
+               monto: Number(monto),
+               tipo,
+               categoriaId,
+               plataformaId: plataformaId || undefined,
+               fecha: new Date(fecha + 'T12:00:00').toISOString(),
+            })
+            toast.success('Movimiento guardado')
+            resetForm()
+         }
          handleClose()
       } catch {
-         setError('Error al guardar el movimiento')
+         setError(
+            isEditMode ? 'Error al guardar los cambios' : 'Error al guardar el movimiento'
+         )
       } finally {
          setLoading(false)
       }
    }
 
+   const handleDelete = async () => {
+      if (!movimiento) return
+      setConfirmDelete(false)
+      try {
+         await onDelete!(movimiento.id)
+         toast.success('Movimiento eliminado')
+         handleClose()
+      } catch {
+         toast.error('Error al eliminar el movimiento')
+      }
+   }
+
    return (
       <>
-         {/* FAB — solo mobile */}
-         <button
-            className="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full border-none flex items-center justify-center z-40 cursor-pointer transition-transform duration-200 hover:scale-[1.06] active:scale-[0.96]"
-            style={{
-               background:
-                  'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
-               boxShadow: '0 4px 20px rgba(229,255,166,0.3)',
-            }}
-            onClick={handleOpen}
-            aria-label="Nuevo movimiento"
-         >
-            <Plus size={24} color="#003a34" strokeWidth={2.5} />
-         </button>
+         {!isEditMode && (
+            <button
+               className="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full border-none flex items-center justify-center z-40 cursor-pointer transition-transform duration-200 hover:scale-[1.06] active:scale-[0.96]"
+               style={{
+                  background:
+                     'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
+                  boxShadow: '0 4px 20px rgba(229,255,166,0.3)',
+               }}
+               onClick={handleOpen}
+               aria-label="Nuevo movimiento"
+            >
+               <Plus size={24} color="#003a34" strokeWidth={2.5} />
+            </button>
+         )}
 
          {mounted && (
             <div
@@ -163,15 +219,12 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                   }}
                   onClick={(e) => e.stopPropagation()}
                >
-                  {/* Drag handle — solo mobile */}
                   <div className="lg:hidden w-12 h-1 rounded-full bg-border-strong mx-auto mt-3 mb-5" />
 
-                  {/* Header del modal */}
                   <div className="flex items-center justify-between mb-6">
                      <h2 className="text-lg font-bold text-wrap-balance">
-                        Nuevo movimiento
+                        {isEditMode ? 'Editar movimiento' : 'Nuevo movimiento'}
                      </h2>
-                     {/* w-10 h-10 = 40×40px hit area mínimo */}
                      <button
                         onClick={handleClose}
                         className="w-10 h-10 flex items-center justify-center rounded-sm bg-transparent border border-border-strong text-text-muted cursor-pointer hover:border-border hover:text-white transition-colors duration-150"
@@ -181,7 +234,6 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                   </div>
 
                   <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
-                     {/* Tipo */}
                      <div>
                         <FormLabel>Tipo</FormLabel>
                         <div className="grid grid-cols-2 rounded-md overflow-hidden border border-border-strong">
@@ -213,7 +265,6 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         </div>
                      </div>
 
-                     {/* Monto — misma jerarquía visual que Tipo */}
                      <div
                         className={cn(
                            'rounded-md px-5 py-6 border transition-colors duration-300',
@@ -233,7 +284,6 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         />
                      </div>
 
-                     {/* Concepto */}
                      <div>
                         <FormLabel>Concepto</FormLabel>
                         <input
@@ -245,7 +295,6 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         />
                      </div>
 
-                     {/* Categoría */}
                      <div>
                         <FormLabel>Categoría</FormLabel>
                         {filteredCategorias.length === 0 ? (
@@ -275,7 +324,6 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         )}
                      </div>
 
-                     {/* Plataforma */}
                      <div>
                         <FormLabel>Plataforma (opcional)</FormLabel>
                         <PlatformSelect
@@ -285,13 +333,11 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         />
                      </div>
 
-                     {/* Fecha */}
                      <div>
                         <FormLabel>Fecha</FormLabel>
                         <DatePicker value={fecha} onChange={setFecha} />
                      </div>
 
-                     {/* Error */}
                      {error && (
                         <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-danger/10 border border-danger/20">
                            <AlertCircle size={14} className="text-danger shrink-0" />
@@ -299,20 +345,42 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         </div>
                      )}
 
-                     {/* Submit */}
                      <PrimaryButton
                         size="lg"
                         fullWidth
                         loading={loading}
-                        icon={<Plus size={18} />}
+                        icon={isEditMode ? <Check size={18} /> : <Plus size={18} />}
                         type="submit"
                         className="mt-1 active:scale-[0.98] transition-[background-color,opacity,transform] duration-200"
                      >
-                        Guardar movimiento
+                        {isEditMode ? 'Guardar cambios' : 'Guardar movimiento'}
                      </PrimaryButton>
+
+                     {isEditMode && (
+                        <button
+                           type="button"
+                           onClick={() => setConfirmDelete(true)}
+                           className="w-full h-11 rounded-md border-none bg-danger/12 flex items-center justify-center gap-2 text-sm font-medium cursor-pointer text-danger hover:bg-danger/18 transition-[background-color] duration-150"
+                        >
+                           <Trash2 size={14} />
+                           Eliminar movimiento
+                        </button>
+                     )}
                   </form>
                </div>
             </div>
+         )}
+
+         {isEditMode && (
+            <ConfirmModal
+               open={confirmDelete}
+               onCancel={() => setConfirmDelete(false)}
+               onConfirm={handleDelete}
+               title="¿Eliminar movimiento?"
+               description="Esta acción no se puede deshacer."
+               confirmLabel="Eliminar"
+               confirmVariant="danger"
+            />
          )}
       </>
    )

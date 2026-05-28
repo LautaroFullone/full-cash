@@ -1,4 +1,3 @@
-import { EditMovementForm } from '@/modules/movements/components/EditMovementForm'
 import type { Movimiento } from '@/modules/movements/services/getMovimientos'
 import { MovementForm } from '@/modules/movements/components/MovementForm'
 import { useCategories } from '@/modules/categories/hooks/useCategories'
@@ -78,7 +77,7 @@ export function DashboardPage() {
                   background: `linear-gradient(135deg, var(--color-surface), ${isPositive ? 'rgba(229,255,166,0.05)' : 'rgba(255,75,90,0.05)'})`,
                }}
             >
-               <p className="text-[10px] text-text-muted mb-1 font-semibold uppercase tracking-[1px]">
+               <p className="text-xs text-text-muted mb-1 font-semibold uppercase tracking-[1px]">
                   Saldo del mes
                </p>
                <h2
@@ -153,10 +152,10 @@ export function DashboardPage() {
             onOpen={() => setFormOpen(true)}
          />
 
-         <EditMovementForm
-            movimiento={editingMov}
+         <MovementForm
             categorias={categorias}
             plataformas={plataformas}
+            movimiento={editingMov}
             onUpdate={updateMovimiento}
             onDelete={deleteMovimiento}
             onClose={() => setEditingMov(null)}

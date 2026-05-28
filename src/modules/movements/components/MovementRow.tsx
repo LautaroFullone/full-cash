@@ -34,9 +34,8 @@ export const MovementRow: React.FC<MovementRowProps> = ({
          />
 
          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-medium text-white line-clamp-2">
-               {mov.concepto}
-            </p>
+            <p className="text-sm font-medium text-white line-clamp-2">{mov.concepto}</p>
+
             {mov.plataforma && (
                <div className="flex items-center mt-0.5">
                   <span className="text-[10px] font-medium text-text-muted border border-border-strong rounded-full px-1.5 py-px leading-none">
@@ -49,7 +48,7 @@ export const MovementRow: React.FC<MovementRowProps> = ({
          <div className="flex flex-col items-end gap-0 shrink-0">
             <span
                className={cn(
-                  'font-heading text-[13px] font-semibold tabular-nums',
+                  'font-heading text-sm font-semibold tabular-nums',
                   mov.tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
                )}
             >
