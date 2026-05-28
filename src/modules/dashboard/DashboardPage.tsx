@@ -52,6 +52,7 @@ export function DashboardPage() {
       <div className="min-h-dvh">
          <AppHeader
             isAdmin={user?.role === 'ADMIN'}
+            userName={user?.nombre}
             onOpenCategories={() => setShowCategoryManager(true)}
             onOpenPlatforms={() => setShowPlatformManager(true)}
             onLogout={logout}

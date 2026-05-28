@@ -1,9 +1,11 @@
 import { PrimaryButton } from '@/components'
-import { Wallet, Tags, Users, CreditCard, LogOut, Plus } from 'lucide-react'
+import { Tags, Users, CreditCard, LogOut, Plus } from 'lucide-react'
+import { getGreeting } from '../utils/getGreeting'
 import { Logo } from './Logo'
 
 interface AppHeaderProps {
    isAdmin?: boolean
+   userName?: string
    onOpenCategories: () => void
    onOpenPlatforms: () => void
    onLogout: () => void
@@ -13,12 +15,16 @@ interface AppHeaderProps {
 
 export const AppHeader: React.FC<AppHeaderProps> = ({
    isAdmin,
+   userName,
    onOpenCategories,
    onOpenPlatforms,
    onLogout,
    onOpenUsers,
    onNewMovement,
 }) => {
+   const firstName = userName?.split(' ')[0]
+   const greeting = firstName ? `${getGreeting()}, ${firstName}!` : null
+
    return (
       <>
          {/* Desktop */}
@@ -31,6 +37,10 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             }}
          >
             <Logo />
+
+            {greeting && (
+               <p className="text-sm text-text-secondary font-medium">{greeting}</p>
+            )}
 
             <div className="flex items-center gap-2">
                {isAdmin && (
@@ -81,7 +91,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
          <div className="lg:hidden max-w-[520px] mx-auto px-4">
             <header className="animate-fade-in pt-5 flex flex-col gap-3">
                <div className="flex items-center justify-between">
-                  <Logo />
+                  <Logo subtitle={greeting ?? undefined} />
 
                   <div className="flex items-center gap-2">
                      {isAdmin && (
