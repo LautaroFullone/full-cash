@@ -1,5 +1,6 @@
 import { PrimaryButton } from '@/components'
 import { Wallet, Tags, Users, CreditCard, LogOut, Plus } from 'lucide-react'
+import { Logo } from './Logo'
 
 interface AppHeaderProps {
    isAdmin?: boolean
@@ -9,26 +10,6 @@ interface AppHeaderProps {
    onOpenUsers?: () => void
    onNewMovement: () => void
 }
-
-const Logo: React.FC = () => (
-   <div className="flex items-center gap-2.5">
-      <div
-         className="w-10 h-10 lg:w-9 lg:h-9 rounded-md flex items-center justify-center shrink-0"
-         style={{
-            background:
-               'linear-gradient(135deg, var(--color-accent), var(--color-accent-dim))',
-         }}
-      >
-         <Wallet size={20} color="#002a26" strokeWidth={2.5} />
-      </div>
-      <div>
-         <div className="font-heading text-lg  font-black tracking-[-0.3px] text-white leading-tight">
-            Full Cash
-         </div>
-         <p className="text-sm text-text-muted leading-tight">Finanzas personales</p>
-      </div>
-   </div>
-)
 
 export const AppHeader: React.FC<AppHeaderProps> = ({
    isAdmin,
@@ -112,6 +93,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                            <Users size={18} />
                         </button>
                      )}
+
                      <button
                         onClick={onOpenCategories}
                         title="Gestionar categorías"
@@ -119,6 +101,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                      >
                         <Tags size={18} />
                      </button>
+
                      <button
                         onClick={onOpenPlatforms}
                         title="Gestionar plataformas"
@@ -126,6 +109,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                      >
                         <CreditCard size={18} />
                      </button>
+
                      <button
                         onClick={onLogout}
                         title="Cerrar sesión"
