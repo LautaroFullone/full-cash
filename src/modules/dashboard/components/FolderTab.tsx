@@ -51,7 +51,7 @@ export const FolderTab: React.FC<FolderTabProps> = ({
             {icon}
          </div>
 
-         <span className="text-sm font-semibold text-text-muted uppercase tracking-[0.5px]">
+         <span className="text-xs font-semibold text-text-muted uppercase tracking-[0.5px]">
             {label}
          </span>
       </div>

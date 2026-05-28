@@ -148,17 +148,14 @@ export function DashboardPage() {
             onSubmit={createMovimiento}
             isOpen={formOpen}
             initialTipo={activeTab}
-            onClose={() => setFormOpen(false)}
             onOpen={() => setFormOpen(true)}
-         />
-
-         <MovementForm
-            categorias={categorias}
-            plataformas={plataformas}
+            onClose={() => {
+               setFormOpen(false)
+               setEditingMov(null)
+            }}
             movimiento={editingMov}
             onUpdate={updateMovimiento}
             onDelete={deleteMovimiento}
-            onClose={() => setEditingMov(null)}
          />
 
          {showCategoryManager && (

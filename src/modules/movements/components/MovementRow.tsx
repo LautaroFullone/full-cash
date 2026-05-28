@@ -52,7 +52,6 @@ export const MovementRow: React.FC<MovementRowProps> = ({
                   mov.tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
                )}
             >
-               {mov.tipo === 'INGRESO' ? '+' : '-'}
                {formatCurrency(mov.monto)}
             </span>
 

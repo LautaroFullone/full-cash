@@ -57,8 +57,6 @@ export const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
                   tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
                )}
             >
-               {tipo === 'INGRESO' ? '+' : '-'}
-
                {formatCurrency(grupo.total)}
             </span>
 
