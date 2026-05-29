@@ -1,3 +1,4 @@
+import type { TipoMovimiento } from '@/models/categoria'
 import type { Movimiento } from '../services/getMovimientos'
 
 export type Grupo = {
@@ -5,6 +6,7 @@ export type Grupo = {
    nombre: string
    icono: string
    colorIndex: number
+   tipo: TipoMovimiento
    total: number
    porcentaje: number
    items: Movimiento[]

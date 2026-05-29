@@ -41,7 +41,7 @@ export function DashboardPage() {
    const [showCategoryManager, setShowCategoryManager] = useState(false)
    const [showUserManager, setShowUserManager] = useState(false)
    const [showPlatformManager, setShowPlatformManager] = useState(false)
-   const [activeTab, setActiveTab] = useState<TipoMovimiento>('EGRESO')
+   const [activeTab, setActiveTab] = useState<TipoMovimiento | null>(null)
    const [formOpen, setFormOpen] = useState(false)
    const [editingMov, setEditingMov] = useState<Movimiento | null>(null)
 
@@ -156,7 +156,7 @@ export function DashboardPage() {
             plataformas={plataformas}
             onSubmit={createMovimiento}
             isOpen={formOpen}
-            initialTipo={activeTab}
+            initialTipo={activeTab ?? 'EGRESO'}
             onOpen={() => setFormOpen(true)}
             onClose={() => {
                setFormOpen(false)

@@ -35,6 +35,7 @@ export const MovementList: React.FC<MovementListProps> = ({
             nombre: string
             icono: string
             colorIndex: number
+            tipo: TipoMovimiento
             total: number
             items: Movimiento[]
          }
@@ -51,6 +52,7 @@ export const MovementList: React.FC<MovementListProps> = ({
                nombre: m.categoria?.nombre ?? '—',
                icono: m.categoria?.icono ?? '💰',
                colorIndex: m.categoria?.colorIndex ?? 0,
+               tipo: m.tipo,
                total: m.monto,
                items: [m],
             })
@@ -63,6 +65,7 @@ export const MovementList: React.FC<MovementListProps> = ({
             nombre: data.nombre,
             icono: data.icono,
             colorIndex: data.colorIndex,
+            tipo: data.tipo,
             total: data.total,
             porcentaje: grandTotal > 0 ? (data.total / grandTotal) * 100 : 0,
             items: data.items.sort(
@@ -99,7 +102,6 @@ export const MovementList: React.FC<MovementListProps> = ({
                   <CategoryGroupRow
                      key={grupo.categoriaId}
                      grupo={grupo}
-                     tipo={tipo}
                      isExpanded={expandedIds.has(grupo.categoriaId)}
                      onToggle={() => toggle(grupo.categoriaId)}
                      onEditClick={onEdit}

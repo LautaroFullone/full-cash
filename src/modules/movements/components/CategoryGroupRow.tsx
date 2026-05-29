@@ -1,7 +1,6 @@
 import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { getCategoryColor } from '@/models/categoria'
-import type { TipoMovimiento } from '@/models/categoria'
 import type { Movimiento } from '../services/getMovimientos'
 import { MovementRow } from './MovementRow'
 import type { Grupo } from '../models/grupo'
@@ -10,7 +9,6 @@ import { cn } from '@/utils/cn'
 
 interface CategoryGroupRowProps {
    grupo: Grupo
-   tipo: TipoMovimiento | undefined
    isExpanded: boolean
    onToggle: () => void
    onEditClick: (mov: Movimiento) => void
@@ -18,7 +16,6 @@ interface CategoryGroupRowProps {
 
 export const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
    grupo,
-   tipo,
    isExpanded,
    onToggle,
    onEditClick,
@@ -54,7 +51,7 @@ export const CategoryGroupRow: React.FC<CategoryGroupRowProps> = ({
             <span
                className={cn(
                   'font-heading text-base font-bold tabular-nums shrink-0',
-                  tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
+                  grupo.tipo === 'INGRESO' ? 'text-accent' : 'text-danger'
                )}
             >
                {formatCurrency(grupo.total)}

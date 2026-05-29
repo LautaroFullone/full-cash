@@ -1,9 +1,11 @@
 import type { Movimiento } from '@/modules/movements/services/getMovimientos'
 import { MovementList } from '@/modules/movements/components/MovementList'
 import { FOLDER_BG, FOLDER_ACCENT } from '../utils/folderColors'
-import { TrendingUp, TrendingDown } from 'lucide-react'
 import type { TipoMovimiento } from '@/models/categoria'
+import { TrendingUp, TrendingDown } from 'lucide-react'
+import { MovementTimeline } from './MovementTimeline'
 import { CategoryChart } from './CategoryChart'
+import { TodoControl } from './TodoControl'
 import { formatCurrency } from '@/utils'
 import { FolderTab } from './FolderTab'
 import { useMemo } from 'react'
@@ -13,8 +15,8 @@ interface MovementsFolderProps {
    movimientos: Movimiento[]
    totalIngresos: number
    totalEgresos: number
-   activeTab: TipoMovimiento
-   onTabChange: (tab: TipoMovimiento) => void
+   activeTab: TipoMovimiento | null
+   onTabChange: (tab: TipoMovimiento | null) => void
    onEdit: (mov: Movimiento) => void
 }
 
@@ -26,9 +28,11 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
    onTabChange,
    onEdit,
 }) => {
+   const isTodos = activeTab === null
+
    const filtered = useMemo(
-      () => movimientos.filter((m) => m.tipo === activeTab),
-      [movimientos, activeTab]
+      () => (isTodos ? movimientos : movimientos.filter((m) => m.tipo === activeTab)),
+      [movimientos, activeTab, isTodos]
    )
 
    const distribucion = useMemo(() => {
@@ -62,11 +66,15 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
          className="animate-slide-up [animation-delay:0.1s] [animation-fill-mode:backwards]"
          style={
             {
-               '--folder-bg': FOLDER_BG[activeTab],
-               '--folder-accent': FOLDER_ACCENT[activeTab],
+               '--folder-bg': isTodos ? 'var(--color-surface)' : FOLDER_BG[activeTab],
+               '--folder-accent': isTodos ? 'transparent' : FOLDER_ACCENT[activeTab],
             } as React.CSSProperties
          }
       >
+         <div className="mb-3">
+            <TodoControl active={isTodos} onClick={() => onTabChange(null)} />
+         </div>
+
          <div className="grid grid-cols-2 gap-4">
             <FolderTab
                label="Ingresos"
@@ -95,16 +103,31 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
 
          <div
             className={cn(
-               'mt-4 p-5 flex flex-col gap-5 rounded-b-lg transition-colors duration-200',
-               activeTab === 'INGRESO' ? 'rounded-tr-lg' : 'rounded-tl-lg'
+               'mt-4 p-5 flex flex-col gap-5 transition-colors duration-200',
+               isTodos
+                  ? 'rounded-lg'
+                  : activeTab === 'INGRESO'
+                    ? 'rounded-b-lg rounded-tr-lg'
+                    : 'rounded-b-lg rounded-tl-lg'
             )}
             style={{ backgroundColor: 'var(--folder-bg)' }}
          >
-            <CategoryChart distribucion={distribucion} tipo={activeTab} bare />
+            {isTodos ? (
+               <MovementTimeline movimientos={filtered} onEdit={onEdit} />
+            ) : (
+               <>
+                  <CategoryChart distribucion={distribucion} tipo={activeTab} bare />
 
-            <div className="h-px bg-white/6" />
+                  <div className="h-px bg-white/6" />
 
-            <MovementList movimientos={filtered} tipo={activeTab} onEdit={onEdit} bare />
+                  <MovementList
+                     movimientos={filtered}
+                     tipo={activeTab}
+                     onEdit={onEdit}
+                     bare
+                  />
+               </>
+            )}
          </div>
       </div>
    )
