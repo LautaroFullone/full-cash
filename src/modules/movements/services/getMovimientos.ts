@@ -4,7 +4,7 @@ import { fetchAPI } from '@/lib/fetchAPI'
 
 export interface Movimiento {
    id: string
-   concepto: string
+   concepto: string | null
    monto: number
    tipo: TipoMovimiento
    categoriaId: string

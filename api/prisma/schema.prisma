@@ -70,7 +70,7 @@ model Plataforma {
 model Movimiento {
   id           String         @id @default(cuid())
   createdAt    DateTime       @default(now())
-  concepto     String
+  concepto     String?
   monto        Float
   tipo         TipoMovimiento
   categoriaId  String

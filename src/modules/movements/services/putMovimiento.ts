@@ -2,7 +2,7 @@ import type { Movimiento } from './getMovimientos'
 import { fetchAPI } from '@/lib/fetchAPI'
 
 export type PutMovimientoBody = Partial<{
-   concepto: string
+   concepto: string | null
    monto: number
    tipo: 'INGRESO' | 'EGRESO'
    categoriaId: string

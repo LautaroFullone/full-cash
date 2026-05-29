@@ -9,7 +9,7 @@ const router = Router()
 router.use(authMiddleware)
 
 const createMovimientoSchema = z.object({
-   concepto: z.string().min(1).max(100),
+   concepto: z.string().max(100).optional().nullable(),
    monto: z.number().positive(),
    tipo: z.enum(['INGRESO', 'EGRESO']),
    categoriaId: z.string().min(1),
@@ -138,7 +138,7 @@ router.post('/', async (req, res) => {
       const movimiento = await prisma.movimiento.create({
          data: {
             userId,
-            concepto: data.concepto,
+            concepto: data.concepto?.trim() || null,
             monto: data.monto,
             tipo: data.tipo,
             categoriaId: data.categoriaId,
@@ -182,6 +182,7 @@ router.put('/:id', async (req, res) => {
 
       const updateData: Record<string, unknown> = { ...data }
       if (data.fecha) updateData.fecha = new Date(data.fecha)
+      if (data.concepto !== undefined) updateData.concepto = data.concepto?.trim() || null
 
       const movimiento = await prisma.movimiento.update({
          where: { id },

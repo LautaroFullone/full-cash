@@ -34,7 +34,13 @@ export const MovementRow: React.FC<MovementRowProps> = ({
          />
 
          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white line-clamp-2">{mov.concepto}</p>
+            {mov.concepto?.trim() ? (
+               <p className="text-sm font-medium text-white line-clamp-2">
+                  {mov.concepto}
+               </p>
+            ) : (
+               <p className="text-sm text-text-muted">—</p>
+            )}
 
             {mov.plataforma && (
                <div className="flex items-center mt-0.5">

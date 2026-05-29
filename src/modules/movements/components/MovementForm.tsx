@@ -122,10 +122,6 @@ export const MovementForm: React.FC<MovementFormProps> = ({
 
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault()
-      if (!concepto.trim()) {
-         setError('Ingresá un concepto')
-         return
-      }
       if (!monto || monto <= 0) {
          setError('Ingresá un monto válido')
          return
@@ -141,7 +137,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
             await onUpdate!({
                id: movimiento.id,
                data: {
-                  concepto: concepto.trim(),
+                  concepto: concepto.trim() || null,
                   monto: Number(monto),
                   tipo,
                   categoriaId,
@@ -152,7 +148,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
             toast.success('Movimiento actualizado')
          } else {
             await onSubmit!({
-               concepto: concepto.trim(),
+               concepto: concepto.trim() || null,
                monto: Number(monto),
                tipo,
                categoriaId,
@@ -288,17 +284,6 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                      </div>
 
                      <div>
-                        <FormLabel>Concepto</FormLabel>
-                        <input
-                           value={concepto}
-                           onChange={(e) => setConcepto(e.target.value)}
-                           placeholder="Ej: Sueldo, Supermercado..."
-                           maxLength={100}
-                           className="w-full"
-                        />
-                     </div>
-
-                     <div>
                         <FormLabel>Categoría</FormLabel>
                         {filteredCategorias.length === 0 ? (
                            <p className="text-[13px] text-text-muted py-2">
@@ -325,6 +310,17 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                               ))}
                            </div>
                         )}
+                     </div>
+
+                     <div>
+                        <FormLabel>Concepto (opcional)</FormLabel>
+                        <input
+                           value={concepto}
+                           onChange={(e) => setConcepto(e.target.value)}
+                           placeholder="Ej: cena con amigos, cuota 3/12..."
+                           maxLength={100}
+                           className="w-full"
+                        />
                      </div>
 
                      <div>
