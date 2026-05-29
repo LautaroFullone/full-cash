@@ -1,10 +1,10 @@
-import { MovementList } from '@/modules/movements/components/MovementList'
-import { FOLDER_BG } from '../utils/folderColors'
-import { TrendingUp, TrendingDown } from 'lucide-react'
-import { formatCurrency } from '@/utils'
 import type { Movimiento } from '@/modules/movements/services/getMovimientos'
+import { MovementList } from '@/modules/movements/components/MovementList'
+import { FOLDER_BG, FOLDER_ACCENT } from '../utils/folderColors'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import type { TipoMovimiento } from '@/models/categoria'
 import { CategoryChart } from './CategoryChart'
+import { formatCurrency } from '@/utils'
 import { FolderTab } from './FolderTab'
 import { useMemo } from 'react'
 import { cn } from '@/utils/cn'
@@ -60,7 +60,12 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
    return (
       <div
          className="animate-slide-up [animation-delay:0.1s] [animation-fill-mode:backwards]"
-         style={{ '--folder-bg': FOLDER_BG[activeTab] } as React.CSSProperties}
+         style={
+            {
+               '--folder-bg': FOLDER_BG[activeTab],
+               '--folder-accent': FOLDER_ACCENT[activeTab],
+            } as React.CSSProperties
+         }
       >
          <div className="grid grid-cols-2 gap-4">
             <FolderTab
