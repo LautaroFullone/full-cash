@@ -2,22 +2,11 @@ import { Toaster as SonnerToaster, toast as sonnerToast } from 'sonner'
 
 export const Toaster: React.FC = () => (
    <SonnerToaster
-      position="bottom-center"
+      gap={10}
       offset={88}
-      toastOptions={{
-         style: {
-            background: 'var(--color-surface-elevated)',
-            border: '1px solid var(--color-border-strong)',
-            color: 'var(--color-text-primary)',
-            fontFamily: 'var(--font-body)',
-            fontSize: '14px',
-            borderRadius: '10px',
-         },
-         classNames: {
-            success: 'border-accent/30',
-            error: 'border-danger/30',
-         },
-      }}
+      className="fc-toaster"
+      position="bottom-center"
+      mobileOffset={{ bottom: 88, left: 16, right: 16 }}
    />
 )
 

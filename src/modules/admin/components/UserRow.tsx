@@ -34,7 +34,7 @@ export const UserRow: React.FC<UserRowProps> = ({ user, isDeleting, onDelete }) 
          <button
             onClick={() => onDelete(user.id)}
             disabled={isDeleting}
-            className="w-7 h-7 flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-danger/10 transition-colors border-none bg-transparent cursor-pointer"
+            className="w-10 h-10 flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-danger/10 transition-colors border-none bg-transparent cursor-pointer"
          >
             <Trash2 size={14} />
          </button>

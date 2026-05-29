@@ -1,5 +1,6 @@
 import { PrimaryButton } from './PrimaryButton'
 import { Loader2, X } from 'lucide-react'
+import { useSwipeToClose } from '@/utils'
 import { cn } from '@/utils/cn'
 
 interface PrimaryBtnConfig {
@@ -38,6 +39,8 @@ export const EntityManager: React.FC<EntityManagerProps> = ({
    const hasFooter = primaryBtn !== undefined || secondaryBtn !== undefined
    const hasBoth = primaryBtn !== undefined && secondaryBtn !== undefined
 
+   const { dragHandlers, sheetStyle } = useSwipeToClose({ onClose, isOpen: true })
+
    return (
       <div
          className="modal-overlay fixed inset-0 bg-black/70 backdrop-blur-lg z-60 flex justify-center"
@@ -45,26 +48,37 @@ export const EntityManager: React.FC<EntityManagerProps> = ({
       >
          <div
             className="modal-sheet animate-slide-up bg-surface flex flex-col"
-            style={{ maxHeight: '88dvh' }}
+            style={{ maxHeight: '88dvh', ...sheetStyle }}
             onClick={(e) => e.stopPropagation()}
          >
-            {/* Drag handle — mobile only */}
-            <div className="lg:hidden w-10 h-1 rounded-full bg-border-strong mx-auto mt-3 mb-1 shrink-0" />
+            {/* Drag area (handle + header) — swipe down to close on mobile */}
+            <div
+               className="shrink-0 lg:touch-auto"
+               style={{ touchAction: 'none' }}
+               {...dragHandlers}
+            >
+               {/* Drag handle — mobile only */}
+               <div className="lg:hidden w-10 h-1 rounded-full bg-border-strong mx-auto mt-3 mb-1" />
 
-            {/* Header */}
-            <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-border">
-               <div>
-                  <h2 className="font-heading text-base font-bold text-white">{title}</h2>
-                  {description && (
-                     <p className="text-[13px] text-text-muted mt-0.5">{description}</p>
-                  )}
+               {/* Header */}
+               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+                  <div>
+                     <h2 className="font-heading text-base font-bold text-white">
+                        {title}
+                     </h2>
+                     {description && (
+                        <p className="text-[13px] text-text-muted mt-0.5">
+                           {description}
+                        </p>
+                     )}
+                  </div>
+                  <button
+                     onClick={onClose}
+                     className="w-10 h-10 flex items-center justify-center rounded-md text-text-muted hover:text-white hover:bg-white/8 transition-colors cursor-pointer border-none bg-transparent"
+                  >
+                     <X size={18} />
+                  </button>
                </div>
-               <button
-                  onClick={onClose}
-                  className="w-8 h-8 flex items-center justify-center rounded-md text-text-muted hover:text-white hover:bg-white/8 transition-colors cursor-pointer border-none bg-transparent"
-               >
-                  <X size={18} />
-               </button>
             </div>
 
             {/* Body */}

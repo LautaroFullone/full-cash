@@ -68,7 +68,7 @@ export const MovementRow: React.FC<MovementRowProps> = ({
 
          <button
             onClick={() => onEditClick(mov)}
-            className="w-8 h-8 rounded-sm border-none bg-transparent text-text-muted flex items-center justify-center shrink-0 hover:opacity-100 hover:bg-white/8 transition-[background-color,opacity] duration-150"
+            className="w-10 h-10 rounded-sm border-none bg-transparent text-text-muted flex items-center justify-center shrink-0 hover:opacity-100 hover:bg-white/8 transition-[background-color,opacity] duration-150"
          >
             <SquarePen size={14} />
          </button>

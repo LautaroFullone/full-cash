@@ -14,6 +14,7 @@ import type { PutMovimientoBody } from '../services/putMovimiento'
 import type { Movimiento } from '../services/getMovimientos'
 import type { Plataforma } from '@/models/plataforma'
 import { useState, useEffect, useRef } from 'react'
+import { useSwipeToClose } from '@/utils'
 import { FormLabel } from './FormLabel'
 import { format } from 'date-fns'
 import { cn } from '@/utils/cn'
@@ -108,6 +109,11 @@ export const MovementForm: React.FC<MovementFormProps> = ({
          else setInternalOpen(false)
       }, 250)
    }
+
+   const { dragHandlers, sheetStyle } = useSwipeToClose({
+      onClose: handleClose,
+      isOpen: mounted && !closing,
+   })
 
    const filteredCategorias = categorias.filter((c) => c.tipo === tipo)
 
@@ -215,21 +221,28 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                      paddingLeft: '20px',
                      paddingRight: '20px',
                      paddingBottom: '40px',
+                     ...sheetStyle,
                   }}
                   onClick={(e) => e.stopPropagation()}
                >
-                  <div className="lg:hidden w-12 h-1 rounded-full bg-border-strong mx-auto mt-3 mb-5" />
+                  <div
+                     className="lg:touch-auto -mx-5"
+                     style={{ touchAction: 'none' }}
+                     {...dragHandlers}
+                  >
+                     <div className="lg:hidden w-12 h-1 rounded-full bg-border-strong mx-auto mt-3 mb-5" />
 
-                  <div className="flex items-center justify-between mb-6">
-                     <h2 className="text-lg font-bold text-wrap-balance">
-                        {isEditMode ? 'Editar movimiento' : 'Nuevo movimiento'}
-                     </h2>
-                     <button
-                        onClick={handleClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-sm bg-transparent border border-border-strong text-text-muted cursor-pointer hover:border-border hover:text-white transition-colors duration-150"
-                     >
-                        <X size={16} />
-                     </button>
+                     <div className="flex items-center justify-between mb-6 px-5">
+                        <h2 className="text-lg font-bold text-wrap-balance">
+                           {isEditMode ? 'Editar movimiento' : 'Nuevo movimiento'}
+                        </h2>
+                        <button
+                           onClick={handleClose}
+                           className="w-10 h-10 flex items-center justify-center rounded-sm bg-transparent border border-border-strong text-text-muted cursor-pointer hover:border-border hover:text-white transition-colors duration-150"
+                        >
+                           <X size={16} />
+                        </button>
+                     </div>
                   </div>
 
                   <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">

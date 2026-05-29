@@ -54,11 +54,17 @@ export const SavingsBar: React.FC<SavingsBarProps> = ({
             {editing ? (
                <div className="flex items-center gap-2">
                   <input
-                     type="number"
-                     min={1}
-                     max={100}
+                     type="text"
+                     inputMode="numeric"
+                     pattern="[0-9]*"
+                     maxLength={3}
                      value={tempPorcentaje}
-                     onChange={(e) => setTempPorcentaje(Number(e.target.value))}
+                     onChange={(e) => {
+                        const onlyDigits = e.target.value.replace(/\D/g, '')
+                        const n =
+                           onlyDigits === '' ? 0 : Math.min(100, Number(onlyDigits))
+                        setTempPorcentaje(n)
+                     }}
                      className="w-[60px] text-center text-[13px] rounded-sm py-1.5 px-2 tabular-nums"
                   />
                   <span className="text-[13px] text-text-muted">%</span>

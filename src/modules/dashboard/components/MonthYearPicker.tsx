@@ -5,6 +5,8 @@ import { MESES } from '../utils/meses'
 import { cn } from '@/utils/cn'
 
 const POPUP_WIDTH = 208 // w-52
+const POPUP_MAX_HEIGHT = 280 // approx altura del popup con month grid + footer
+const VIEWPORT_MARGIN = 8
 
 interface MonthYearPickerProps {
    mes: number
@@ -32,9 +34,17 @@ export const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
       if (!triggerRef.current) return
       const rect = triggerRef.current.getBoundingClientRect()
       const idealLeft = rect.left + rect.width / 2 - POPUP_WIDTH / 2
-      // Clamp so popup stays within viewport
-      const left = Math.max(8, Math.min(idealLeft, window.innerWidth - POPUP_WIDTH - 8))
-      setPopupPos({ top: rect.bottom + 8, left })
+      const left = Math.max(
+         VIEWPORT_MARGIN,
+         Math.min(idealLeft, window.innerWidth - POPUP_WIDTH - VIEWPORT_MARGIN)
+      )
+      // Flip arriba si no entra abajo
+      const spaceBelow = window.innerHeight - rect.bottom
+      const top =
+         spaceBelow < POPUP_MAX_HEIGHT + VIEWPORT_MARGIN
+            ? Math.max(VIEWPORT_MARGIN, rect.top - POPUP_MAX_HEIGHT - 8)
+            : rect.bottom + 8
+      setPopupPos({ top, left })
    }
 
    useEffect(() => {
