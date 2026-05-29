@@ -1,5 +1,5 @@
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
-import type { UpdateCategoriaArgs } from './hooks/useCategories'
+import type { UpdateCategoriaArgs } from './services/putCategoria'
 import { CATEGORY_LIMIT_PER_TIPO } from '@/models/categoria'
 import type { PostCategoriaBody } from './services/postCategoria'
 import { ConfirmModal, EntityManager } from '@/components'

@@ -5,6 +5,5 @@ export interface DeleteCategoriaResponse {
    hidden: boolean
 }
 
-export function deleteCategoria(id: string) {
-   return fetchAPI<DeleteCategoriaResponse>(`/categorias/${id}`, { method: 'DELETE' })
-}
+export const deleteCategoria = (id: string) =>
+   fetchAPI<DeleteCategoriaResponse>(`/categorias/${id}`, { method: 'DELETE' })

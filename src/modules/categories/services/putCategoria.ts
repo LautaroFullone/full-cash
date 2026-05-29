@@ -7,9 +7,13 @@ export interface PutCategoriaBody {
    tipo?: TipoMovimiento
 }
 
-export function putCategoria(id: string, body: PutCategoriaBody) {
-   return fetchAPI<Categoria>(`/categorias/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(body),
-   })
+export interface UpdateCategoriaArgs {
+   id: string
+   data: PutCategoriaBody
 }
+
+export const putCategoria = ({ id, data }: UpdateCategoriaArgs) =>
+   fetchAPI<Categoria>(`/categorias/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+   })

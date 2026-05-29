@@ -6,9 +6,13 @@ export interface PutUserBody {
    password?: string
 }
 
-export function putUser(id: string, body: PutUserBody) {
-   return fetchAPI<AdminUser>(`/admin/users/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(body),
-   })
+export interface UpdateUserArgs {
+   id: string
+   data: PutUserBody
 }
+
+export const putUser = ({ id, data }: UpdateUserArgs) =>
+   fetchAPI<AdminUser>(`/admin/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+   })

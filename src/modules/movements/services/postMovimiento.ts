@@ -10,9 +10,8 @@ export interface PostMovimientoBody {
    fecha: string
 }
 
-export function postMovimiento(body: PostMovimientoBody) {
-   return fetchAPI<Movimiento>('/movimientos', {
+export const postMovimiento = (body: PostMovimientoBody) =>
+   fetchAPI<Movimiento>('/movimientos', {
       method: 'POST',
       body: JSON.stringify(body),
    })
-}

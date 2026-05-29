@@ -37,7 +37,7 @@ import { toast } from 'sonner'
 export const useUsers = () => {
    const queryClient = useQueryClient()
 
-   const usersQuery = useQuery({
+   const { data, isLoading, isError } = useQuery({
       queryKey: [queriesKeys.FETCH_USERS],
       queryFn: getUsers,
       staleTime: 5 * 60_000,
@@ -76,9 +76,9 @@ export const useUsers = () => {
    })
 
    return {
-      users: usersQuery.data?.users ?? [],
-      isLoading: usersQuery.isLoading,
-      isError: usersQuery.isError,
+      users: data?.users ?? [],
+      isLoading,
+      isError,
       createUser,
       isCreating,
       updateUser,
@@ -87,6 +87,24 @@ export const useUsers = () => {
       isDeleting,
    }
 }
+```
+
+**Destructurar inline en la query, no guardarla en una constante.** El patrón:
+
+```ts
+// ✅ destructurar lo que se va a usar
+const { data, isLoading, isError } = useQuery({ ... })
+
+// ❌ guardar todo en una constante y acceder por punto
+const usersQuery = useQuery({ ... })
+// ... después: usersQuery.data, usersQuery.isLoading, etc.
+```
+
+Cuando hay **más de una query en el mismo hook** y los nombres chocarían, renombrar al destructurar con el nombre semántico:
+
+```ts
+const { data: movimientos, isLoading: isLoadingMovimientos } = useQuery({ ... })
+const { data: resumen, isLoading: isLoadingResumen } = useQuery({ ... })
 ```
 
 ## Mutations: destructurar inline con nombre representativo
@@ -377,7 +395,7 @@ Si el parámetro puede ser `undefined`:
 
 ```ts
 export const useUser = (userId: string | undefined) => {
-   const userQuery = useQuery({
+   const { data, isLoading, isError } = useQuery({
       queryKey: [queriesKeys.FETCH_USER, userId],
       queryFn: () => getUser(userId!),
       enabled: !!userId,
@@ -385,9 +403,9 @@ export const useUser = (userId: string | undefined) => {
    })
 
    return {
-      user: userQuery.data?.user,
-      isLoading: userQuery.isLoading,
-      isError: userQuery.isError,
+      user: data?.user,
+      isLoading,
+      isError,
    }
 }
 ```

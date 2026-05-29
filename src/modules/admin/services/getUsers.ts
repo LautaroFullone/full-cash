@@ -8,6 +8,5 @@ export interface AdminUser {
    createdAt: string
 }
 
-export function getUsers() {
-   return fetchAPI<AdminUser[]>('/admin/users')
-}
+export const getUsers = () =>
+   fetchAPI<AdminUser[]>('/admin/users')

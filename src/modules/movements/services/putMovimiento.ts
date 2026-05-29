@@ -10,9 +10,13 @@ export type PutMovimientoBody = Partial<{
    fecha: string
 }>
 
-export function putMovimiento(id: string, body: PutMovimientoBody) {
-   return fetchAPI<Movimiento>(`/movimientos/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(body),
-   })
+export interface UpdateMovimientoArgs {
+   id: string
+   data: PutMovimientoBody
 }
+
+export const putMovimiento = ({ id, data }: UpdateMovimientoArgs) =>
+   fetchAPI<Movimiento>(`/movimientos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+   })

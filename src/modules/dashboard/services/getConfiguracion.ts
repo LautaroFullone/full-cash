@@ -6,6 +6,5 @@ export interface Configuracion {
    userId: string
 }
 
-export function getConfiguracion() {
-   return fetchAPI<Configuracion>('/configuracion')
-}
+export const getConfiguracion = () =>
+   fetchAPI<Configuracion>('/configuracion')

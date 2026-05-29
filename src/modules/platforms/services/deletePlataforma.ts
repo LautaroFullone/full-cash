@@ -1,5 +1,4 @@
 import { fetchAPI } from '@/lib/fetchAPI'
 
-export function deletePlataforma(id: string): Promise<{ success: boolean }> {
-   return fetchAPI(`/plataformas/${id}`, { method: 'DELETE' })
-}
+export const deletePlataforma = (id: string): Promise<{ success: boolean }> =>
+   fetchAPI(`/plataformas/${id}`, { method: 'DELETE' })

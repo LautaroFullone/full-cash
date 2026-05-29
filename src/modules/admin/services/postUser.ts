@@ -7,9 +7,8 @@ export interface PostUserBody {
    nombre: string
 }
 
-export function postUser(body: PostUserBody) {
-   return fetchAPI<AdminUser>('/admin/users', {
+export const postUser = (body: PostUserBody) =>
+   fetchAPI<AdminUser>('/admin/users', {
       method: 'POST',
       body: JSON.stringify(body),
    })
-}

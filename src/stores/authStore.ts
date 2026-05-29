@@ -10,13 +10,19 @@ export interface AuthUser {
 interface AuthStore {
    user: AuthUser | null
    isLoading: boolean
-   setUser: (user: AuthUser | null) => void
-   setIsLoading: (v: boolean) => void
+   actions: {
+      setUser: (user: AuthUser | null) => void
+      setIsLoading: (v: boolean) => void
+      resetStore: () => void
+   }
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
    user: null,
    isLoading: true,
-   setUser: (user) => set({ user }),
-   setIsLoading: (isLoading) => set({ isLoading }),
+   actions: {
+      setUser: (user) => set({ user }),
+      setIsLoading: (isLoading) => set({ isLoading }),
+      resetStore: () => set({ user: null }),
+   },
 }))

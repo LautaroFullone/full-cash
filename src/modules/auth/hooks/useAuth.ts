@@ -1,41 +1,46 @@
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/authStore'
+import { queriesKeys } from '@/lib/react-query'
 import { postLogin } from '../services/postLogin'
+import { toast } from '@/components'
 import { getMe } from '../services/getMe'
 
-export function useAuth() {
-   const { setUser, setIsLoading } = useAuthStore()
+export const useAuth = () => {
+   const authStoreActions = useAuthStore((s) => s.actions)
    const queryClient = useQueryClient()
 
-   const { mutateAsync: login } = useMutation({
+   const { mutateAsync: login, isPending: isLoginPending } = useMutation({
       mutationFn: postLogin,
       onSuccess: ({ token, user }) => {
          localStorage.setItem('token', token)
-         setUser(user)
+         authStoreActions.setUser(user)
+      },
+      onError: (error) => {
+         toast.error(error.message ?? 'No se pudo iniciar sesión')
       },
    })
 
-   function init() {
+   const init = () => {
       const token = localStorage.getItem('token')
       if (!token) {
-         setIsLoading(false)
+         authStoreActions.setIsLoading(false)
          return
       }
       queryClient
-         .fetchQuery({ queryKey: ['me'], queryFn: getMe })
-         .then(setUser)
+         .fetchQuery({ queryKey: [queriesKeys.VERIFY_AUTH], queryFn: getMe })
+         .then(authStoreActions.setUser)
          .catch(() => {
             localStorage.removeItem('token')
-            setUser(null)
+            authStoreActions.setUser(null)
          })
-         .finally(() => setIsLoading(false))
+         .finally(() => authStoreActions.setIsLoading(false))
    }
 
-   function logout() {
+   const logout = () => {
       localStorage.removeItem('token')
-      setUser(null)
+      authStoreActions.resetStore()
       queryClient.clear()
    }
 
-   return { init, login, logout }
+   return { init, login, isLoginPending, logout }
 }

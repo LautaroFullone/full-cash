@@ -20,6 +20,5 @@ export interface GetMovimientosParams {
    anio: number
 }
 
-export function getMovimientos(params: GetMovimientosParams) {
-   return fetchAPI<Movimiento[]>(`/movimientos?mes=${params.mes}&anio=${params.anio}`)
-}
+export const getMovimientos = (params: GetMovimientosParams) =>
+   fetchAPI<Movimiento[]>(`/movimientos?mes=${params.mes}&anio=${params.anio}`)

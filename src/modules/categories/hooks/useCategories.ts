@@ -1,47 +1,58 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { PostCategoriaBody } from '../services/postCategoria'
-import type { PutCategoriaBody } from '../services/putCategoria'
 import { deleteCategoria } from '../services/deleteCategoria'
 import { getCategorias } from '../services/getCategorias'
 import { postCategoria } from '../services/postCategoria'
 import { putCategoria } from '../services/putCategoria'
+import { queriesKeys } from '@/lib/react-query'
+import { toast } from '@/components'
 
-export interface UpdateCategoriaArgs {
-   id: string
-   data: PutCategoriaBody
-}
+export const useCategories = () => {
+   const queryClient = useQueryClient()
 
-export function useCategories() {
-   const qc = useQueryClient()
-
-   const query = useQuery({
-      queryKey: ['categorias'],
+   const { data: categorias, isLoading } = useQuery({
+      queryKey: [queriesKeys.FETCH_CATEGORIAS],
       queryFn: getCategorias,
       staleTime: 5 * 60_000,
    })
 
-   const invalidate = () => qc.invalidateQueries({ queryKey: ['categorias'] })
-
-   const { mutateAsync: createCategoria } = useMutation({
-      mutationFn: (data: PostCategoriaBody) => postCategoria(data),
-      onSuccess: invalidate,
+   const { mutateAsync: createCategoria, isPending: isCreating } = useMutation({
+      mutationFn: postCategoria,
+      onSuccess: () => {
+         queryClient.invalidateQueries({ queryKey: [queriesKeys.FETCH_CATEGORIAS] })
+      },
+      onError: (error) => {
+         toast.error(error.message ?? 'No se pudo crear la categoría')
+      },
    })
 
-   const { mutateAsync: updateCategoria } = useMutation({
-      mutationFn: ({ id, data }: UpdateCategoriaArgs) => putCategoria(id, data),
-      onSuccess: invalidate,
+   const { mutateAsync: updateCategoria, isPending: isUpdating } = useMutation({
+      mutationFn: putCategoria,
+      onSuccess: () => {
+         queryClient.invalidateQueries({ queryKey: [queriesKeys.FETCH_CATEGORIAS] })
+      },
+      onError: (error) => {
+         toast.error(error.message ?? 'No se pudo actualizar la categoría')
+      },
    })
 
-   const { mutateAsync: removeCategoria } = useMutation({
+   const { mutateAsync: removeCategoria, isPending: isDeleting } = useMutation({
       mutationFn: deleteCategoria,
-      onSuccess: invalidate,
+      onSuccess: () => {
+         queryClient.invalidateQueries({ queryKey: [queriesKeys.FETCH_CATEGORIAS] })
+      },
+      onError: (error) => {
+         toast.error(error.message ?? 'No se pudo eliminar la categoría')
+      },
    })
 
    return {
-      categorias: query.data ?? [],
-      isLoading: query.isLoading,
+      categorias: categorias ?? [],
+      isLoading,
       createCategoria,
+      isCreating,
       updateCategoria,
+      isUpdating,
       deleteCategoria: removeCategoria,
+      isDeleting,
    }
 }
