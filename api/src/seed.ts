@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs'
 import prisma from './lib/prisma.js'
 
-const ADMIN_EMAIL = 'lautarofullone.dev@gmail.com'
+const ADMIN_EMAIL = 'lautarofullone@gmail.com'
 const ADMIN_PASSWORD = 'admin123'
 const ADMIN_NOMBRE = 'Lautaro'
 
