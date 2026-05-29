@@ -1,3 +1,4 @@
+export { MovementTypeToggle } from './MovementTypeToggle'
 export { EntityManager } from './EntityManager'
 export { PlatformSelect } from './PlatformSelect'
 export { PrimaryButton } from './PrimaryButton'

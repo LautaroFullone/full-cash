@@ -2,13 +2,12 @@ import type { Categoria, TipoMovimiento } from '@/models/categoria'
 import type { UpdateCategoriaArgs } from './services/putCategoria'
 import { CATEGORY_LIMIT_PER_TIPO } from '@/models/categoria'
 import type { PostCategoriaBody } from './services/postCategoria'
-import { ConfirmModal, EntityManager } from '@/components'
+import { MovementTypeToggle, ConfirmModal, EntityManager } from '@/components'
 import { CategoryIcon } from './components/CategoryIcon'
 import { EmojiPicker } from './components/EmojiPicker'
 import { CategoryRow } from './components/CategoryRow'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
-import { cn } from '@/utils/cn'
 
 interface CategoryManagerProps {
    categorias: Categoria[]
@@ -239,48 +238,26 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
                      <label className="text-xs font-semibold text-text-muted uppercase tracking-wide">
                         Tipo
                      </label>
-                     <div className="flex gap-0.5 bg-background rounded-full p-0.75">
-                        {(['EGRESO', 'INGRESO'] as TipoMovimiento[]).map((t) => (
-                           <button
-                              key={t}
-                              type="button"
-                              onClick={() => setFormTipo(t)}
-                              className={cn(
-                                 'flex-1 py-2 rounded-full border-none text-[13px] font-semibold font-body cursor-pointer transition-all duration-200',
-                                 formTipo === t
-                                    ? t === 'EGRESO'
-                                       ? 'bg-danger/15 text-danger'
-                                       : 'bg-accent/12 text-accent'
-                                    : 'bg-transparent text-text-muted'
-                              )}
-                           >
-                              {t === 'INGRESO' ? '↑ Ingreso' : '↓ Gasto'}
-                           </button>
-                        ))}
-                     </div>
+                     <MovementTypeToggle
+                        variant="soft"
+                        value={formTipo}
+                        onChange={setFormTipo}
+                     />
                   </div>
                   {formError && <p className="text-danger text-[13px]">{formError}</p>}
                </div>
             ) : (
                <>
-                  <div className="flex gap-0.5 bg-background rounded-full p-0.75 mb-4">
-                     {(['EGRESO', 'INGRESO'] as TipoMovimiento[]).map((t) => (
-                        <button
-                           key={t}
-                           onClick={() => handleTabChange(t)}
-                           className={cn(
-                              'flex-1 py-2 rounded-full border-none text-[13px] font-semibold font-body cursor-pointer transition-all duration-200',
-                              tab === t
-                                 ? t === 'EGRESO'
-                                    ? 'bg-danger/15 text-danger'
-                                    : 'bg-accent/12 text-accent'
-                                 : 'bg-transparent text-text-muted'
-                           )}
-                        >
-                           {t === 'INGRESO' ? '↑ Ingresos' : '↓ Gastos'} (
-                           {categorias.filter((c) => c.tipo === t).length})
-                        </button>
-                     ))}
+                  <div className="mb-4">
+                     <MovementTypeToggle
+                        variant="soft"
+                        value={tab}
+                        onChange={handleTabChange}
+                        counts={{
+                           INGRESO: categorias.filter((c) => c.tipo === 'INGRESO').length,
+                           EGRESO: categorias.filter((c) => c.tipo === 'EGRESO').length,
+                        }}
+                     />
                   </div>
 
                   {deleteError && (

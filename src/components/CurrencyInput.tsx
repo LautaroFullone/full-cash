@@ -27,7 +27,6 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
    color = 'accent',
 }) => {
    const inputRef = useRef<HTMLInputElement>(null)
-   const [isFocused, setIsFocused] = useState(false)
    const [displayValue, setDisplayValue] = useState(formatDisplay(value))
 
    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,22 +71,13 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
       })
    }
 
-   const handleBlur = () => {
-      setIsFocused(false)
-      setDisplayValue(value !== '' && value > 0 ? formatDisplay(value) : '')
-   }
-
    const colorClass = color === 'accent' ? 'text-accent' : 'text-danger'
-   const focusSymbolClass = color === 'accent' ? 'text-accent' : 'text-danger'
 
    if (variant === 'hero') {
       return (
          <div className="flex items-center justify-center ">
             <span
-               className={cn(
-                  'font-heading font-bold text-2xl leading-none transition-colors duration-200',
-                  isFocused ? focusSymbolClass : 'text-text-muted'
-               )}
+               className={cn('font-heading font-bold text-2xl leading-none', colorClass)}
             >
                $
             </span>
@@ -98,8 +88,6 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
                inputMode="decimal"
                value={displayValue}
                onChange={handleChange}
-               onFocus={() => setIsFocused(true)}
-               onBlur={handleBlur}
                placeholder={placeholder}
                className={cn(
                   'bg-transparent border-none outline-none shadow-none font-heading font-black tracking-[-2px] text-center leading-none text-4xl min-w-[3ch] tabular-nums',
@@ -119,8 +107,8 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
       <div className="relative">
          <span
             className={cn(
-               'absolute left-3.5 top-1/2 -translate-y-1/2 font-heading font-bold text-[15px] pointer-events-none select-none transition-colors duration-200',
-               isFocused ? focusSymbolClass : 'text-text-muted'
+               'absolute left-3.5 top-1/2 -translate-y-1/2 font-heading font-bold text-[15px] pointer-events-none select-none',
+               colorClass
             )}
          >
             $
@@ -132,8 +120,6 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
             inputMode="decimal"
             value={displayValue}
             onChange={handleChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={handleBlur}
             placeholder={placeholder}
             className="w-full font-heading font-bold text-lg tracking-[-0.3px] pl-8"
          />

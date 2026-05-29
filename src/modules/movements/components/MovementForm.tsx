@@ -1,12 +1,4 @@
-import {
-   TrendingUp,
-   TrendingDown,
-   AlertCircle,
-   Plus,
-   X,
-   Check,
-   Trash2,
-} from 'lucide-react'
+import { AlertCircle, Plus, X, Check, Trash2 } from 'lucide-react'
 import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
 import type { Categoria, TipoMovimiento } from '@/models/categoria'
 import type { PostMovimientoBody } from '../services/postMovimiento'
@@ -19,6 +11,7 @@ import { FormLabel } from './FormLabel'
 import { format } from 'date-fns'
 import { cn } from '@/utils/cn'
 import {
+   MovementTypeToggle,
    ConfirmModal,
    CurrencyInput,
    DatePicker,
@@ -248,33 +241,13 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                   <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
                      <div>
                         <FormLabel>Tipo</FormLabel>
-                        <div className="grid grid-cols-2 rounded-md overflow-hidden border border-border-strong">
-                           {(['INGRESO', 'EGRESO'] as TipoMovimiento[]).map((t) => (
-                              <button
-                                 key={t}
-                                 type="button"
-                                 onClick={() => {
-                                    setTipo(t)
-                                    setCategoriaId('')
-                                 }}
-                                 className={cn(
-                                    'flex items-center justify-center gap-2 py-3 border-none text-sm font-bold font-body cursor-pointer transition-colors duration-200 active:scale-[0.96]',
-                                    tipo === t
-                                       ? t === 'INGRESO'
-                                          ? 'bg-accent text-background-deep'
-                                          : 'bg-danger text-white'
-                                       : 'bg-background text-text-muted hover:text-text-secondary'
-                                 )}
-                              >
-                                 {t === 'INGRESO' ? (
-                                    <TrendingUp size={15} strokeWidth={2.5} />
-                                 ) : (
-                                    <TrendingDown size={15} strokeWidth={2.5} />
-                                 )}
-                                 {t === 'INGRESO' ? 'Ingreso' : 'Gasto'}
-                              </button>
-                           ))}
-                        </div>
+                        <MovementTypeToggle
+                           value={tipo}
+                           onChange={(t) => {
+                              setTipo(t)
+                              setCategoriaId('')
+                           }}
+                        />
                      </div>
 
                      <div
@@ -288,6 +261,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
                         <p className="text-[10px] font-bold text-text-muted uppercase tracking-[1px] text-center mb-4">
                            Monto
                         </p>
+
                         <CurrencyInput
                            value={monto}
                            onChange={setMonto}
