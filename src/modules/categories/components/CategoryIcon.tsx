@@ -1,12 +1,28 @@
+import { Tag } from 'lucide-react'
+import { cn } from '@/utils/cn'
+
 interface CategoryIconProps {
    icono: string
    size?: number
    className?: string
 }
 
-export function CategoryIcon({ icono, size = 20, className = '' }: CategoryIconProps) {
+export const CategoryIcon: React.FC<CategoryIconProps> = ({
+   icono,
+   size = 20,
+   className = '',
+}) => {
    const isEmoji = icono && !/^[A-Z]/.test(icono)
-   const display = isEmoji ? icono : '💰'
+
+   if (!isEmoji) {
+      return (
+         <Tag
+            size={Math.round(size * 0.8)}
+            className={cn('text-text-muted', className)}
+            aria-label="category icon"
+         />
+      )
+   }
 
    return (
       <span
@@ -15,7 +31,7 @@ export function CategoryIcon({ icono, size = 20, className = '' }: CategoryIconP
          role="img"
          aria-label="category icon"
       >
-         {display}
+         {icono}
       </span>
    )
 }

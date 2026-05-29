@@ -1,4 +1,4 @@
-import { EyeOff, Lock, Pencil, Trash2 } from 'lucide-react'
+import { Lock, Pencil, Trash2 } from 'lucide-react'
 import type { Categoria } from '@/models/categoria'
 import { CategoryIcon } from './CategoryIcon'
 import { cn } from '@/utils/cn'
@@ -39,7 +39,7 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
             title="Ocultar de mi lista"
             className="w-8 h-8 flex items-center justify-center rounded-md text-text-muted hover:text-text-secondary hover:bg-white/8 transition-colors border-none bg-transparent cursor-pointer"
          >
-            <EyeOff size={14} />
+            <Trash2 size={14} />
          </button>
       ) : (
          <div className="flex gap-1">
@@ -50,6 +50,7 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
             >
                <Pencil size={14} />
             </button>
+
             <button
                onClick={() => onDelete(categoria)}
                disabled={isDeleting}

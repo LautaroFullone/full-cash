@@ -3,6 +3,7 @@ import type { UpdateCategoriaArgs } from './services/putCategoria'
 import { CATEGORY_LIMIT_PER_TIPO } from '@/models/categoria'
 import type { PostCategoriaBody } from './services/postCategoria'
 import { ConfirmModal, EntityManager } from '@/components'
+import { CategoryIcon } from './components/CategoryIcon'
 import { EmojiPicker } from './components/EmojiPicker'
 import { CategoryRow } from './components/CategoryRow'
 import { Plus } from 'lucide-react'
@@ -131,7 +132,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
    const filtered = categorias.filter((c) => c.tipo === tab)
    const usedEmojis = categorias.map((c) => c.icono).filter(Boolean)
    const atLimit = filtered.length >= CATEGORY_LIMIT_PER_TIPO
-   const formDisabled = !formNombre.trim() || !formIcono
+   const formDisabled = !formNombre.trim()
    const handleFormSubmit = view === 'create' ? handleCreate : handleSaveEdit
 
    const title =
@@ -200,7 +201,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
                            onClick={() => setShowPicker((v) => !v)}
                            className="w-10 h-10 rounded-lg border-2 border-border-strong bg-surface-elevated text-xl cursor-pointer flex items-center justify-center hover:border-accent/50 transition-[border-color]"
                         >
-                           {formIcono || '❓'}
+                           <CategoryIcon icono={formIcono} size={20} />
                         </button>
                      </div>
                      <div className="flex flex-col gap-1.5 flex-1">
