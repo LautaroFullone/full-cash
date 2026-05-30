@@ -2,7 +2,6 @@ import type { Movimiento } from '@/modules/movements/services/getMovimientos'
 import { CategoryIcon } from '@/modules/categories/components/CategoryIcon'
 import { getCategoryColor } from '@/models/categoria'
 import { formatCurrency } from '@/utils'
-import { SquarePen } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 interface TimelineRowProps {
@@ -16,7 +15,11 @@ export const TimelineRow: React.FC<TimelineRowProps> = ({ mov, onEditClick }) =>
    const title = hasConcepto ? mov.concepto : (mov.categoria?.nombre ?? '—')
 
    return (
-      <div className="flex items-center py-2 gap-3 rounded-md transition-colors duration-150 hover:bg-white/3">
+      <button
+         type="button"
+         onClick={() => onEditClick(mov)}
+         className="flex w-full items-center py-2 gap-3 rounded-md text-left transition-colors duration-150 hover:bg-white/3 active:bg-white/8"
+      >
          <div className="w-9.5 h-9.5 rounded-sm shrink-0 flex items-center justify-center bg-white/5">
             <CategoryIcon icono={mov.categoria?.icono ?? '💰'} size={18} />
          </div>
@@ -53,13 +56,6 @@ export const TimelineRow: React.FC<TimelineRowProps> = ({ mov, onEditClick }) =>
             {mov.tipo === 'INGRESO' ? '+' : '-'}
             {formatCurrency(mov.monto)}
          </span>
-
-         <button
-            onClick={() => onEditClick(mov)}
-            className="w-10 h-10 rounded-sm border-none bg-transparent text-text-muted flex items-center justify-center shrink-0 hover:bg-white/8 transition-colors duration-150"
-         >
-            <SquarePen size={14} />
-         </button>
-      </div>
+      </button>
    )
 }

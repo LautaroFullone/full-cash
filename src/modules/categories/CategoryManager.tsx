@@ -220,6 +220,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
                         />
                      </div>
                   </div>
+
                   {showPicker && (
                      <EmojiPicker
                         selected={formIcono}
@@ -234,10 +235,12 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
                         }}
                      />
                   )}
+
                   <div className="flex flex-col gap-1.5">
                      <label className="text-xs font-semibold text-text-muted uppercase tracking-wide">
                         Tipo
                      </label>
+
                      <MovementTypeToggle
                         variant="soft"
                         value={formTipo}

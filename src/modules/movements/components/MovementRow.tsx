@@ -1,7 +1,6 @@
 import { formatCurrency } from '@/utils/formatCurrency'
 import type { Movimiento } from '../services/getMovimientos'
 import { format } from 'date-fns'
-import { SquarePen } from 'lucide-react'
 import { es } from 'date-fns/locale'
 import { cn } from '@/utils/cn'
 
@@ -27,7 +26,11 @@ export const MovementRow: React.FC<MovementRowProps> = ({
          style={{ backgroundColor: `${color}40` }}
       />
 
-      <div className="relative flex items-center pl-1.5 py-2 gap-2 rounded-r-sm transition-colors duration-150 hover:bg-white/3">
+      <button
+         type="button"
+         onClick={() => onEditClick(mov)}
+         className="relative flex w-full items-center pl-1.5 py-2 gap-2 rounded-r-sm text-left transition-colors duration-150 hover:bg-white/3 active:bg-white/8"
+      >
          <div
             className="absolute -left-3 top-1/2 w-2.5 h-px rounded-full"
             style={{ backgroundColor: `${color}90` }}
@@ -65,13 +68,6 @@ export const MovementRow: React.FC<MovementRowProps> = ({
                {format(new Date(mov.fecha), 'd MMM', { locale: es })}
             </span>
          </div>
-
-         <button
-            onClick={() => onEditClick(mov)}
-            className="w-10 h-10 rounded-sm border-none bg-transparent text-text-muted flex items-center justify-center shrink-0 hover:opacity-100 hover:bg-white/8 transition-[background-color,opacity] duration-150"
-         >
-            <SquarePen size={14} />
-         </button>
-      </div>
+      </button>
    </div>
 )
