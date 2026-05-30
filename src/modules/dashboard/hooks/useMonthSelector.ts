@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export function useMonthSelector() {
+export const useMonthSelector = () => {
    const now = new Date()
    const [mes, setMes] = useState(now.getMonth() + 1)
    const [anio, setAnio] = useState(now.getFullYear())

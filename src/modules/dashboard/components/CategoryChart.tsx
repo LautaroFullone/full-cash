@@ -1,6 +1,7 @@
 import type { DistribucionCategoria } from '@/modules/movements/services/getResumenMensual'
 import { getCategoryColor } from '@/models/categoria'
 import type { TipoMovimiento } from '@/models/categoria'
+import { ChartLegendItem } from './ChartLegendItem'
 import { cn } from '@/utils/cn'
 
 interface CategoryChartProps {
@@ -59,15 +60,11 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
          {/* Legend */}
          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
             {chartData.map((item) => (
-               <div key={item.categoriaId} className="flex items-center gap-1.5">
-                  <div
-                     className="w-2.5 h-2.5 rounded-full shrink-0"
-                     style={{ backgroundColor: item.color }}
-                  />
-                  <span className="text-xs text-text-secondary">
-                     {item.categoriaNombre}
-                  </span>
-               </div>
+               <ChartLegendItem
+                  key={item.categoriaId}
+                  nombre={item.categoriaNombre}
+                  color={item.color}
+               />
             ))}
          </div>
       </div>

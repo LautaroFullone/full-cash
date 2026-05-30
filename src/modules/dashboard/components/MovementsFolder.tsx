@@ -4,7 +4,6 @@ import { TrendingUp, TrendingDown } from 'lucide-react'
 import { FOLDER_BG, FOLDER_ACCENT } from '../utils/folderColors'
 import type { TipoMovimiento } from '@/models/categoria'
 import { formatCurrency } from '@/utils'
-import { SummaryChip } from './SummaryChip'
 import { GeneralTab } from './GeneralTab'
 import { FolderBody } from './FolderBody'
 import { FolderTab } from './FolderTab'
@@ -28,11 +27,14 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
    onTabChange,
    onEdit,
 }) => {
-   const showAll = activeTab === null
+   const isGeneralTabActive = activeTab === null
 
    const filtered = useMemo(
-      () => (showAll ? movimientos : movimientos.filter((m) => m.tipo === activeTab)),
-      [movimientos, activeTab, showAll]
+      () =>
+         isGeneralTabActive
+            ? movimientos
+            : movimientos.filter((m) => m.tipo === activeTab),
+      [movimientos, activeTab, isGeneralTabActive]
    )
 
    const distribucion = useMemo<DistribucionCategoria[]>(() => {
@@ -61,7 +63,7 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
          .sort((a, b) => b.total - a.total)
    }, [filtered])
 
-   const bodyRadius = showAll
+   const bodyRadius = isGeneralTabActive
       ? 'rounded-b-lg'
       : activeTab === 'INGRESO'
         ? 'rounded-b-lg rounded-tr-lg'
@@ -72,18 +74,20 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
          className="animate-slide-up [animation-delay:0.1s] [animation-fill-mode:backwards]"
          style={
             {
-               '--folder-bg': showAll ? 'var(--color-surface)' : FOLDER_BG[activeTab],
-               '--folder-accent': showAll
+               '--folder-bg': isGeneralTabActive
+                  ? 'var(--color-surface)'
+                  : FOLDER_BG[activeTab],
+               '--folder-accent': isGeneralTabActive
                   ? 'var(--color-text-secondary)'
                   : FOLDER_ACCENT[activeTab],
             } as React.CSSProperties
          }
       >
          {/* Cabecera General — ancla full-width, activa o como barra de retorno */}
-         <GeneralTab active={showAll} onClick={() => onTabChange(null)} />
+         <GeneralTab active={isGeneralTabActive} onClick={() => onTabChange(null)} />
 
          {/* Tabs de tipo — solo cuando hay un tipo activo */}
-         {!showAll && (
+         {!isGeneralTabActive && (
             <div className="grid grid-cols-2 gap-4 mt-3 animate-fade-in">
                <FolderTab
                   label="Ingresos"
@@ -115,7 +119,7 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
          <div
             className={cn(
                'p-5 transition-[border-radius] duration-300',
-               showAll ? 'mt-0' : 'mt-4',
+               isGeneralTabActive ? 'mt-0' : 'mt-4',
                bodyRadius
             )}
             style={{ backgroundColor: 'var(--folder-bg)' }}
@@ -124,30 +128,13 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
                key={activeTab ?? 'general'}
                className="flex flex-col gap-5 animate-fade-in"
             >
-               {showAll && (
-                  <div className="flex gap-3 -mt-5">
-                     <SummaryChip
-                        label="Ingresos"
-                        value={formatCurrency(totalIngresos)}
-                        icon={<TrendingUp size={15} />}
-                        tone="accent"
-                        onClick={() => onTabChange('INGRESO')}
-                     />
-
-                     <SummaryChip
-                        label="Egresos"
-                        value={formatCurrency(totalEgresos)}
-                        icon={<TrendingDown size={15} />}
-                        tone="danger"
-                        onClick={() => onTabChange('EGRESO')}
-                     />
-                  </div>
-               )}
-
                <FolderBody
                   activeTab={activeTab}
                   filtered={filtered}
                   distribucion={distribucion}
+                  totalIngresos={totalIngresos}
+                  totalEgresos={totalEgresos}
+                  onTabChange={onTabChange}
                   onEdit={onEdit}
                />
             </div>

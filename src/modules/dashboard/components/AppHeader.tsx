@@ -46,7 +46,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                {isAdmin && (
                   <button
                      onClick={onOpenUsers}
-                     className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+                     className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-colors duration-200"
                   >
                      <Users size={14} />
                      Usuarios
@@ -55,7 +55,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
                <button
                   onClick={onOpenCategories}
-                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-colors duration-200"
                >
                   <Tags size={14} />
                   Categorías
@@ -63,7 +63,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
                <button
                   onClick={onOpenPlatforms}
-                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+                  className="flex items-center gap-1.5 px-3.5 h-9 rounded-md border border-border-strong bg-transparent text-text-secondary text-[13px] font-medium cursor-pointer hover:border-accent hover:text-accent transition-colors duration-200"
                >
                   <CreditCard size={14} />
                   Plataformas
@@ -80,7 +80,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                <button
                   onClick={onLogout}
                   title="Cerrar sesión"
-                  className="w-9 h-9 flex items-center justify-center rounded-md border border-border-strong text-text-secondary cursor-pointer hover:border-danger/60 hover:text-danger transition-all duration-200"
+                  className="w-9 h-9 flex items-center justify-center rounded-md border border-border-strong text-text-secondary cursor-pointer hover:border-danger/60 hover:text-danger transition-colors duration-200"
                >
                   <LogOut size={18} />
                </button>

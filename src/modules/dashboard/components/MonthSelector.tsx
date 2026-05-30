@@ -22,7 +22,7 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
       <button
          onClick={onPrevMonth}
          aria-label="Mes anterior"
-         className="w-8 h-8 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors duration-200 shrink-0"
+         className="w-9 h-9 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors duration-200 shrink-0"
       >
          <ChevronLeft size={16} />
       </button>
@@ -37,7 +37,7 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
       <button
          onClick={onNextMonth}
          aria-label="Mes siguiente"
-         className="w-8 h-8 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors duration-200 shrink-0"
+         className="w-9 h-9 rounded-full border-none bg-background text-text-secondary flex items-center justify-center cursor-pointer hover:text-white transition-colors duration-200 shrink-0"
       >
          <ChevronRight size={16} />
       </button>

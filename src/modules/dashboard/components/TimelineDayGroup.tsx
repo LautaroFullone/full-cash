@@ -18,24 +18,10 @@ export const TimelineDayGroup: React.FC<TimelineDayGroupProps> = ({
 
    return (
       <div>
-         <div className="flex items-center justify-between gap-2 pt-2 pb-1">
+         <div className="flex items-center gap-2 pt-2 pb-1">
             <span className="text-xs font-semibold text-text-secondary uppercase tracking-[0.5px]">
                {dayLabel}
             </span>
-
-            {/* <span
-               className={cn(
-                  'text-xs font-semibold tabular-nums',
-                  bucket.net === 0
-                     ? 'text-text-muted'
-                     : isPositive
-                       ? 'text-accent'
-                       : 'text-danger'
-               )}
-            >
-               {bucket.net !== 0 && (isPositive ? '+' : '-')}
-               {formatCurrency(Math.abs(bucket.net))}
-            </span> */}
          </div>
 
          <div className="flex flex-col">

@@ -1,12 +1,8 @@
-import { createPortal } from 'react-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { MESES } from '../utils/meses'
-import { cn } from '@/utils/cn'
-
-const POPUP_WIDTH = 208 // w-52
-const POPUP_MAX_HEIGHT = 280 // approx altura del popup con month grid + footer
-const VIEWPORT_MARGIN = 8
+import { MonthCell } from './MonthCell'
 
 interface MonthYearPickerProps {
    mes: number
@@ -33,17 +29,11 @@ export const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
    const updatePosition = () => {
       if (!triggerRef.current) return
       const rect = triggerRef.current.getBoundingClientRect()
-      const idealLeft = rect.left + rect.width / 2 - POPUP_WIDTH / 2
-      const left = Math.max(
-         VIEWPORT_MARGIN,
-         Math.min(idealLeft, window.innerWidth - POPUP_WIDTH - VIEWPORT_MARGIN)
-      )
-      // Flip arriba si no entra abajo
+      const idealLeft = rect.left + rect.width / 2 - 208 / 2 // 208 = ancho del popup (w-52)
+      const left = Math.max(8, Math.min(idealLeft, window.innerWidth - 208 - 8))
+      // Flip arriba si no entra abajo (280 = alto aprox. del popup)
       const spaceBelow = window.innerHeight - rect.bottom
-      const top =
-         spaceBelow < POPUP_MAX_HEIGHT + VIEWPORT_MARGIN
-            ? Math.max(VIEWPORT_MARGIN, rect.top - POPUP_MAX_HEIGHT - 8)
-            : rect.bottom + 8
+      const top = spaceBelow < 280 + 8 ? Math.max(8, rect.top - 280 - 8) : rect.bottom + 8
       setPopupPos({ top, left })
    }
 
@@ -105,7 +95,7 @@ export const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
                         <button
                            type="button"
                            onClick={() => setViewAnio((y) => y - 1)}
-                           className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:text-white transition-colors active:scale-[0.96]"
+                           className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:text-white transition-colors active:scale-[0.96]"
                         >
                            <ChevronLeft size={14} />
                         </button>
@@ -117,7 +107,7 @@ export const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
                         <button
                            type="button"
                            onClick={() => setViewAnio((y) => y + 1)}
-                           className="w-8 h-8 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:text-white transition-colors active:scale-[0.96]"
+                           className="w-9 h-9 rounded-sm border border-border-strong bg-transparent text-text-muted flex items-center justify-center cursor-pointer hover:text-white transition-colors active:scale-[0.96]"
                         >
                            <ChevronRight size={14} />
                         </button>
@@ -127,21 +117,13 @@ export const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
                      <div className="grid grid-cols-3 gap-1">
                         {MESES.map((nombre, i) => {
                            const m = i + 1
-                           const isSelected = m === mes && viewAnio === anio
                            return (
-                              <button
+                              <MonthCell
                                  key={m}
-                                 type="button"
+                                 label={nombre}
+                                 selected={m === mes && viewAnio === anio}
                                  onClick={() => handleSelect(m)}
-                                 className={cn(
-                                    'h-9 rounded-sm border text-[13px] font-body cursor-pointer transition-colors duration-150 active:scale-[0.96]',
-                                    isSelected
-                                       ? 'bg-accent text-[#003a34] border-transparent font-bold'
-                                       : 'border-border-strong text-text-secondary bg-transparent hover:bg-white/6 hover:text-white'
-                                 )}
-                              >
-                                 {nombre}
-                              </button>
+                              />
                            )
                         })}
                      </div>
