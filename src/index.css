@@ -245,6 +245,36 @@ button {
    );
 }
 
+/* Center tab (e.g. middle of a 3-tab strip): concave bridge on BOTH bottom
+   corners — ::before fuses the left side, ::after fuses the right side. */
+.folder-tab[data-active='true'][data-side='both']::before,
+.folder-tab[data-active='true'][data-side='both']::after {
+   content: '';
+   position: absolute;
+   bottom: calc((var(--radius-lg) + 1px) * -1);
+   width: calc(var(--radius-lg) + 1px);
+   height: calc(var(--radius-lg) + 1px);
+   pointer-events: none;
+}
+
+.folder-tab[data-active='true'][data-side='both']::before {
+   left: calc(var(--radius-lg) * -1);
+   background: radial-gradient(
+      circle at top left,
+      transparent var(--radius-lg),
+      var(--folder-bg) calc(var(--radius-lg) + 1px)
+   );
+}
+
+.folder-tab[data-active='true'][data-side='both']::after {
+   right: calc(var(--radius-lg) * -1);
+   background: radial-gradient(
+      circle at top right,
+      transparent var(--radius-lg),
+      var(--folder-bg) calc(var(--radius-lg) + 1px)
+   );
+}
+
 /* ── Animations ── */
 @keyframes fadeIn {
    from {

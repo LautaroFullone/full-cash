@@ -8,7 +8,7 @@ interface FolderTabProps {
    bubbleClass: string
    iconBgClass: string
    active: boolean
-   side: 'left' | 'right'
+   side: 'left' | 'right' | 'both'
    onClick: () => void
 }
 

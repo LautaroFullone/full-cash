@@ -81,6 +81,7 @@ export function DashboardPage() {
                <p className="text-xs text-text-muted mb-1 font-semibold uppercase tracking-[1px]">
                   Saldo del mes
                </p>
+
                <h2
                   className={cn(
                      'font-heading text-4xl font-black tracking-[-1px] transition-colors duration-300',

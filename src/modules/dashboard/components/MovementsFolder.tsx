@@ -1,12 +1,12 @@
+import type { DistribucionCategoria } from '@/modules/movements/services/getResumenMensual'
 import type { Movimiento } from '@/modules/movements/services/getMovimientos'
-import { MovementList } from '@/modules/movements/components/MovementList'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import { FOLDER_BG, FOLDER_ACCENT } from '../utils/folderColors'
 import type { TipoMovimiento } from '@/models/categoria'
-import { TrendingUp, TrendingDown } from 'lucide-react'
-import { MovementTimeline } from './MovementTimeline'
-import { CategoryChart } from './CategoryChart'
-import { TodoControl } from './TodoControl'
 import { formatCurrency } from '@/utils'
+import { SummaryChip } from './SummaryChip'
+import { GeneralTab } from './GeneralTab'
+import { FolderBody } from './FolderBody'
 import { FolderTab } from './FolderTab'
 import { useMemo } from 'react'
 import { cn } from '@/utils/cn'
@@ -28,14 +28,14 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
    onTabChange,
    onEdit,
 }) => {
-   const isTodos = activeTab === null
+   const showAll = activeTab === null
 
    const filtered = useMemo(
-      () => (isTodos ? movimientos : movimientos.filter((m) => m.tipo === activeTab)),
-      [movimientos, activeTab, isTodos]
+      () => (showAll ? movimientos : movimientos.filter((m) => m.tipo === activeTab)),
+      [movimientos, activeTab, showAll]
    )
 
-   const distribucion = useMemo(() => {
+   const distribucion = useMemo<DistribucionCategoria[]>(() => {
       const map = new Map<string, { nombre: string; colorIndex: number; total: number }>()
       filtered.forEach((m) => {
          const cur = map.get(m.categoriaId)
@@ -61,73 +61,96 @@ export const MovementsFolder: React.FC<MovementsFolderProps> = ({
          .sort((a, b) => b.total - a.total)
    }, [filtered])
 
+   const bodyRadius = showAll
+      ? 'rounded-b-lg'
+      : activeTab === 'INGRESO'
+        ? 'rounded-b-lg rounded-tr-lg'
+        : 'rounded-b-lg rounded-tl-lg'
+
    return (
       <div
          className="animate-slide-up [animation-delay:0.1s] [animation-fill-mode:backwards]"
          style={
             {
-               '--folder-bg': isTodos ? 'var(--color-surface)' : FOLDER_BG[activeTab],
-               '--folder-accent': isTodos ? 'transparent' : FOLDER_ACCENT[activeTab],
+               '--folder-bg': showAll ? 'var(--color-surface)' : FOLDER_BG[activeTab],
+               '--folder-accent': showAll
+                  ? 'var(--color-text-secondary)'
+                  : FOLDER_ACCENT[activeTab],
             } as React.CSSProperties
          }
       >
-         <div className="mb-3">
-            <TodoControl active={isTodos} onClick={() => onTabChange(null)} />
-         </div>
+         {/* Cabecera General — ancla full-width, activa o como barra de retorno */}
+         <GeneralTab active={showAll} onClick={() => onTabChange(null)} />
 
-         <div className="grid grid-cols-2 gap-4">
-            <FolderTab
-               label="Ingresos"
-               value={formatCurrency(totalIngresos)}
-               icon={<TrendingUp size={16} />}
-               accentClass="text-accent"
-               bubbleClass="bg-accent/12"
-               iconBgClass="bg-accent/15"
-               active={activeTab === 'INGRESO'}
-               side="left"
-               onClick={() => onTabChange('INGRESO')}
-            />
+         {/* Tabs de tipo — solo cuando hay un tipo activo */}
+         {!showAll && (
+            <div className="grid grid-cols-2 gap-4 mt-3 animate-fade-in">
+               <FolderTab
+                  label="Ingresos"
+                  value={formatCurrency(totalIngresos)}
+                  icon={<TrendingUp size={16} />}
+                  accentClass="text-accent"
+                  bubbleClass="bg-accent/12"
+                  iconBgClass="bg-accent/15"
+                  active={activeTab === 'INGRESO'}
+                  side="left"
+                  onClick={() => onTabChange('INGRESO')}
+               />
 
-            <FolderTab
-               label="Egresos"
-               value={formatCurrency(totalEgresos)}
-               icon={<TrendingDown size={16} />}
-               accentClass="text-danger"
-               bubbleClass="bg-danger/12"
-               iconBgClass="bg-danger/15"
-               active={activeTab === 'EGRESO'}
-               side="right"
-               onClick={() => onTabChange('EGRESO')}
-            />
-         </div>
+               <FolderTab
+                  label="Egresos"
+                  value={formatCurrency(totalEgresos)}
+                  icon={<TrendingDown size={16} />}
+                  accentClass="text-danger"
+                  bubbleClass="bg-danger/12"
+                  iconBgClass="bg-danger/15"
+                  active={activeTab === 'EGRESO'}
+                  side="right"
+                  onClick={() => onTabChange('EGRESO')}
+               />
+            </div>
+         )}
 
+         {/* Body persistente — el bg morfea suave entre surface y el tinte del tipo */}
          <div
             className={cn(
-               'mt-4 p-5 flex flex-col gap-5 transition-colors duration-200',
-               isTodos
-                  ? 'rounded-lg'
-                  : activeTab === 'INGRESO'
-                    ? 'rounded-b-lg rounded-tr-lg'
-                    : 'rounded-b-lg rounded-tl-lg'
+               'p-5 transition-[border-radius] duration-300',
+               showAll ? 'mt-0' : 'mt-4',
+               bodyRadius
             )}
             style={{ backgroundColor: 'var(--folder-bg)' }}
          >
-            {isTodos ? (
-               <MovementTimeline movimientos={filtered} onEdit={onEdit} />
-            ) : (
-               <>
-                  <CategoryChart distribucion={distribucion} tipo={activeTab} bare />
+            <div
+               key={activeTab ?? 'general'}
+               className="flex flex-col gap-5 animate-fade-in"
+            >
+               {showAll && (
+                  <div className="flex gap-3 -mt-5">
+                     <SummaryChip
+                        label="Ingresos"
+                        value={formatCurrency(totalIngresos)}
+                        icon={<TrendingUp size={15} />}
+                        tone="accent"
+                        onClick={() => onTabChange('INGRESO')}
+                     />
 
-                  <div className="h-px bg-white/6" />
+                     <SummaryChip
+                        label="Egresos"
+                        value={formatCurrency(totalEgresos)}
+                        icon={<TrendingDown size={15} />}
+                        tone="danger"
+                        onClick={() => onTabChange('EGRESO')}
+                     />
+                  </div>
+               )}
 
-                  <MovementList
-                     movimientos={filtered}
-                     tipo={activeTab}
-                     onEdit={onEdit}
-                     bare
-                  />
-               </>
-            )}
+               <FolderBody
+                  activeTab={activeTab}
+                  filtered={filtered}
+                  distribucion={distribucion}
+                  onEdit={onEdit}
+               />
+            </div>
          </div>
       </div>
    )
