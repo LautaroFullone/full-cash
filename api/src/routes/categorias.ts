@@ -12,6 +12,12 @@ import { z } from 'zod'
 const router = Router()
 router.use(authMiddleware)
 
+const isUniqueConstraintError = (error: unknown) =>
+   typeof error === 'object' &&
+   error !== null &&
+   'code' in error &&
+   (error as { code?: unknown }).code === 'P2002'
+
 const createCategoriaSchema = z.object({
    nombre: z.string().min(1, 'Nombre es requerido').max(100),
    tipo: z.enum(['INGRESO', 'EGRESO']),
@@ -96,6 +102,10 @@ router.post('/', async (req, res) => {
          res.status(400).json({ error: 'Datos inválidos', details: error.errors })
          return
       }
+      if (isUniqueConstraintError(error)) {
+         res.status(409).json({ error: 'Ya existe una categoría con ese nombre' })
+         return
+      }
       logError('POST /api/categorias', error)
       res.status(500).json({ error: 'Error interno del servidor' })
    }
@@ -122,6 +132,10 @@ router.put('/:id', async (req, res) => {
    } catch (error) {
       if (error instanceof z.ZodError) {
          res.status(400).json({ error: 'Datos inválidos', details: error.errors })
+         return
+      }
+      if (isUniqueConstraintError(error)) {
+         res.status(409).json({ error: 'Ya existe una categoría con ese nombre' })
          return
       }
       logError(`PUT /api/categorias/${req.params.id}`, error)

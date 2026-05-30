@@ -4,3 +4,5 @@ export interface Plataforma {
    createdAt: string
    movimientoCount?: number
 }
+
+export const PLATFORM_LIMIT = 15

@@ -1,4 +1,5 @@
 export { cn } from './cn'
+export { sortCategorias } from './sortCategorias'
 export { formatCurrency } from './formatCurrency'
 export { formatNumber } from './formatNumber'
 export { useSwipeToClose } from './useSwipeToClose'

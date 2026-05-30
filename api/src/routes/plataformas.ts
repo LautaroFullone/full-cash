@@ -7,6 +7,14 @@ import { z } from 'zod'
 const router = Router()
 router.use(authMiddleware)
 
+const PLATFORM_LIMIT = 15
+
+const isUniqueConstraintError = (error: unknown) =>
+   typeof error === 'object' &&
+   error !== null &&
+   'code' in error &&
+   (error as { code?: unknown }).code === 'P2002'
+
 const createPlataformaSchema = z.object({
    nombre: z.string().min(1, 'Nombre es requerido').max(100),
 })
@@ -37,11 +45,24 @@ router.post('/', async (req, res) => {
    try {
       const userId = (req as AuthRequest).user.id
       const data = createPlataformaSchema.parse(req.body)
+
+      const count = await prisma.plataforma.count({ where: { userId } })
+      if (count >= PLATFORM_LIMIT) {
+         res.status(400).json({
+            error: `Límite de ${PLATFORM_LIMIT} plataformas alcanzado`,
+         })
+         return
+      }
+
       const plataforma = await prisma.plataforma.create({ data: { ...data, userId } })
       res.status(201).json({ ...plataforma, movimientoCount: 0 })
    } catch (error) {
       if (error instanceof z.ZodError) {
          res.status(400).json({ error: 'Datos inválidos', details: error.errors })
+         return
+      }
+      if (isUniqueConstraintError(error)) {
+         res.status(409).json({ error: 'Ya existe una plataforma con ese nombre' })
          return
       }
       logError('POST /api/plataformas', error)

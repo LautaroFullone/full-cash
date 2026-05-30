@@ -6,7 +6,7 @@ import type { PutMovimientoBody } from '../services/putMovimiento'
 import type { Movimiento } from '../services/getMovimientos'
 import type { Plataforma } from '@/models/plataforma'
 import { useState, useEffect, useRef } from 'react'
-import { useSwipeToClose } from '@/utils'
+import { useSwipeToClose, sortCategorias } from '@/utils'
 import { FormLabel } from './FormLabel'
 import { format } from 'date-fns'
 import { cn } from '@/utils/cn'
@@ -108,7 +108,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({
       isOpen: mounted && !closing,
    })
 
-   const filteredCategorias = categorias.filter((c) => c.tipo === tipo)
+   const filteredCategorias = sortCategorias(categorias.filter((c) => c.tipo === tipo))
 
    const resetForm = () => {
       setConcepto('')

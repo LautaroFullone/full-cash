@@ -62,7 +62,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({ value, onChange }) => {
          <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="w-full flex items-center gap-2.5 py-2.5 px-3.5 text-white text-sm font-body cursor-pointer text-left bg-transparent border-none rounded-md active:scale-[0.99] transition-transform duration-100"
+            className="w-full flex items-center gap-2.5 py-2.5 px-3.5 text-white text-base font-body cursor-pointer text-left bg-transparent border-none rounded-md active:scale-[0.99] transition-transform duration-100"
          >
             <CalendarDays
                size={16}

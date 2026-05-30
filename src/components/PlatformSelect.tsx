@@ -42,7 +42,7 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
          <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="w-full flex items-center gap-2.5 py-2.5 px-3.5 text-white text-sm font-body cursor-pointer text-left bg-transparent border-none active:scale-[0.99] transition-transform duration-100"
+            className="w-full flex items-center gap-2.5 py-2.5 px-3.5 text-white text-base font-body cursor-pointer text-left bg-transparent border-none active:scale-[0.99] transition-transform duration-100"
          >
             <span className={cn('flex-1', !value && 'text-text-muted')}>
                {selectedLabel}

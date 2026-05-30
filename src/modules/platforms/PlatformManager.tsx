@@ -1,5 +1,6 @@
 import { ConfirmModal, EntityManager } from '@/components'
 import { PlatformRow } from './components/PlatformRow'
+import { PLATFORM_LIMIT } from '@/models/plataforma'
 import type { Plataforma } from '@/models/plataforma'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
@@ -80,10 +81,13 @@ export const PlatformManager: React.FC<PlatformManagerProps> = ({
    }
 
    const formDisabled = !nombre.trim()
+   const atLimit = plataformas.length >= PLATFORM_LIMIT
 
    const primaryBtn =
       view === 'list'
-         ? { icon: Plus, label: 'Nueva plataforma', onClick: handleStartCreate }
+         ? atLimit
+            ? undefined
+            : { icon: Plus, label: 'Nueva plataforma', onClick: handleStartCreate }
          : {
               label: 'Crear',
               isLoading: saving,
@@ -156,6 +160,12 @@ export const PlatformManager: React.FC<PlatformManagerProps> = ({
                            />
                         ))}
                      </div>
+                  )}
+
+                  {atLimit && (
+                     <p className="text-center text-[12px] text-text-muted py-1 mt-1">
+                        Límite de {PLATFORM_LIMIT} plataformas alcanzado
+                     </p>
                   )}
                </>
             )}

@@ -6,6 +6,7 @@ import { MovementTypeToggle, ConfirmModal, EntityManager } from '@/components'
 import { CategoryIcon } from './components/CategoryIcon'
 import { EmojiPicker } from './components/EmojiPicker'
 import { CategoryRow } from './components/CategoryRow'
+import { sortCategorias } from '@/utils'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
 
@@ -36,14 +37,12 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
    const [formTipo, setFormTipo] = useState<TipoMovimiento>('EGRESO')
    const [showPicker, setShowPicker] = useState(false)
    const [saving, setSaving] = useState(false)
-   const [formError, setFormError] = useState('')
 
    const handleStartCreate = () => {
       setFormNombre('')
       setFormIcono('')
       setFormTipo(tab)
       setShowPicker(false)
-      setFormError('')
       setView('create')
    }
 
@@ -53,7 +52,6 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
       setFormIcono(categoria.icono)
       setFormTipo(categoria.tipo)
       setShowPicker(false)
-      setFormError('')
       setView('edit')
    }
 
@@ -64,17 +62,15 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
       setFormIcono('')
       setFormTipo(tab)
       setShowPicker(false)
-      setFormError('')
    }
 
    const handleCreate = async () => {
-      setFormError('')
       setSaving(true)
       try {
          await onCreate({ nombre: formNombre.trim(), tipo: formTipo, icono: formIcono })
          handleCancelForm()
-      } catch (err) {
-         setFormError(err instanceof Error ? err.message : 'Error al crear categoría')
+      } catch {
+         // El error se muestra mediante el toast de useCategories
       } finally {
          setSaving(false)
       }
@@ -82,7 +78,6 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
 
    const handleSaveEdit = async () => {
       if (!editingCategoria) return
-      setFormError('')
       setSaving(true)
       try {
          await onUpdate({
@@ -94,10 +89,8 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
             },
          })
          handleCancelForm()
-      } catch (err) {
-         setFormError(
-            err instanceof Error ? err.message : 'Error al actualizar categoría'
-         )
+      } catch {
+         // El error se muestra mediante el toast de useCategories
       } finally {
          setSaving(false)
       }
@@ -128,7 +121,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
       setDeleteError(null)
    }
 
-   const filtered = categorias.filter((c) => c.tipo === tab)
+   const filtered = sortCategorias(categorias.filter((c) => c.tipo === tab))
    const usedEmojis = categorias.map((c) => c.icono).filter(Boolean)
    const atLimit = filtered.length >= CATEGORY_LIMIT_PER_TIPO
    const formDisabled = !formNombre.trim()
@@ -160,21 +153,19 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
    const secondaryBtn =
       view !== 'list' ? { label: 'Cancelar', onClick: handleCancelForm } : undefined
 
-   const confirmTitle = confirmCategoria
-      ? confirmCategoria.userId === null
-         ? '¿Ocultar categoría?'
-         : '¿Eliminar categoría?'
-      : ''
+   const confirmMovs =
+      confirmCategoria && confirmCategoria.userId !== null
+         ? (confirmCategoria.movimientoCount ?? 0)
+         : 0
 
    const confirmDescription = confirmCategoria
-      ? confirmCategoria.userId === null
-         ? 'Esta categoría global dejará de aparecer en tu lista al cargar movimientos. Podrás volver a mostrarla más adelante desde la gestión de categorías.'
-         : (confirmCategoria.movimientoCount ?? 0) > 0
-           ? `Tiene ${confirmCategoria.movimientoCount} movimiento${confirmCategoria.movimientoCount !== 1 ? 's' : ''} asociado${confirmCategoria.movimientoCount !== 1 ? 's' : ''}. Se reasignarán automáticamente a "${confirmCategoria.tipo === 'EGRESO' ? 'Otros gastos' : 'Otros ingresos'}". Esta acción no puede deshacerse.`
-           : 'Se eliminará esta categoría de tu lista de forma permanente. Esta acción no puede deshacerse.'
+      ? confirmMovs > 0
+         ? `"${confirmCategoria.nombre}" tiene ${confirmMovs} movimiento${confirmMovs !== 1 ? 's' : ''} asociado${confirmMovs !== 1 ? 's' : ''}. Se reasignarán a "${confirmCategoria.tipo === 'EGRESO' ? 'Otros gastos' : 'Otros ingresos'}". Esta acción no puede deshacerse.`
+         : `Se eliminará "${confirmCategoria.nombre}" de tu lista de categorías. Esta acción no puede deshacerse.`
       : undefined
 
-   const confirmLabel = confirmCategoria?.userId === null ? 'Ocultar' : 'Eliminar'
+   const confirmTitle = '¿Eliminar categoría?'
+   const confirmLabel = 'Eliminar'
 
    return (
       <>
@@ -247,7 +238,6 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
                         onChange={setFormTipo}
                      />
                   </div>
-                  {formError && <p className="text-danger text-[13px]">{formError}</p>}
                </div>
             ) : (
                <>
