@@ -82,7 +82,12 @@ export const MovementForm: React.FC<MovementFormProps> = ({
          setMounted(true)
          setClosing(false)
          setTipo(initialTipo)
+         setConcepto('')
+         setMonto('')
          setCategoriaId('')
+         setPlataformaId('')
+         setFecha(format(new Date(), 'yyyy-MM-dd'))
+         setError('')
       }
    }, [movimiento, isOpen, isEditMode, initialTipo])
 
