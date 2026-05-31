@@ -3,7 +3,7 @@ import { formatCurrency } from '@/utils/formatCurrency'
 import { getCategoryColor } from '@/models/categoria'
 import type { Movimiento } from '../services/getMovimientos'
 import { MovementRow } from './MovementRow'
-import type { Grupo } from '../models/grupo'
+import type { Grupo } from '@/models/grupo'
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/utils/cn'
 

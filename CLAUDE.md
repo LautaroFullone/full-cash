@@ -13,7 +13,7 @@ full-cash/
 │   ├── components/               primitivos UI reutilizados entre módulos
 │   │   └── index.ts              barrel — importar SIEMPRE desde aquí
 │   ├── stores/                   Zustand — estado + setters, sin lógica async
-│   ├── models/                   tipos compartidos entre dos o más módulos
+│   ├── models/                   todos los tipos de dominio (los módulos no tienen models/)
 │   ├── utils/
 │   │   └── index.ts              barrel — importar SIEMPRE desde aquí
 │   ├── lib/fetchAPI.ts           fetch base con header de autenticación
@@ -36,7 +36,7 @@ full-cash/
 - **Store (Zustand)** = estado + setters únicamente. Sin lógica async, sin llamadas a la API.
 - **Page** = raíz de un módulo. Orquesta hooks y ensambla componentes. Nunca llama `fetchAPI` directamente.
 - **Component** = puramente visual, recibe props. Sin fetch, sin lectura de stores (salvo que sea inevitable).
-- Los imports entre módulos se resuelven hacia `@/models/`, `@/utils/`, `@/components/`, `@/stores/`, `@/lib/`. Si dos módulos comparten algo, moverlo ahí.
+- Los imports entre módulos se resuelven hacia `@/models/`, `@/utils/`, `@/components/`, `@/stores/`, `@/lib/`. Si dos módulos comparten algo, moverlo ahí. Los tipos de dominio van siempre a `@/models/`, nunca a una carpeta `models/` dentro del módulo.
 - Importar siempre desde barrel (`@/components`, `@/utils`), nunca desde el path individual.
 
 ## API — Endpoints

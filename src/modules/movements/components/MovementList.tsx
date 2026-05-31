@@ -1,7 +1,7 @@
 import { CategoryGroupRow } from './CategoryGroupRow'
 import type { Movimiento } from '../services/getMovimientos'
 import type { TipoMovimiento } from '@/models/categoria'
-import type { Grupo } from '../models/grupo'
+import type { Grupo } from '@/models/grupo'
 import { useState, useMemo } from 'react'
 import { Inbox } from 'lucide-react'
 

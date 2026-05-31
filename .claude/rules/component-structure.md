@@ -4,7 +4,7 @@
 
 - Un componente por archivo (salvo excepciones explícitas abajo)
 - `.map()` con lógica → extraer a componente propio
-- Solo la interfaz de props inline; el resto a `models/`
+- Solo la interfaz de props inline; el resto a `src/models/`
 - Skeleton propio → al final del mismo archivo
 - Constantes estáticas → `utils/` del módulo
 
@@ -117,10 +117,9 @@ Puede quedarse inline solo si es trivial — un `<span>`, un `<li>` con texto pl
 
 ## Tipos en archivos de componentes
 
-El único tipo que puede estar definido dentro de un archivo de componente es la interfaz de sus props. Todo lo demás va a `models/`:
+El único tipo que puede estar definido dentro de un archivo de componente es la interfaz de sus props. Todo lo demás va a `src/models/`.
 
-- Usado solo dentro del módulo → `modules/<dominio>/models/`
-- Usado en más de un módulo → `src/models/`
+Los módulos **no tienen** carpeta `models/`. Todos los tipos de dominio — sin importar si se usan en uno o varios módulos — viven en la carpeta general `src/models/`.
 
 ```tsx
 // ✅ Solo la interfaz de props — permitido inline
@@ -130,12 +129,12 @@ interface MovementRowProps {
    onEditClick: (mov: Movimiento) => void
 }
 
-// ❌ Tipo de dominio — debe ir en models/
+// ❌ Tipo de dominio — debe ir en src/models/
 type Grupo = {
    categoriaId: string
    movimientos: Movimiento[]
 }
-// → modules/movements/models/grupo.ts
+// → src/models/grupo.ts
 ```
 
 ## Orden del contenido dentro de un componente

@@ -1,5 +1,5 @@
+import type { Movimiento } from '@/modules/movements/services/getMovimientos'
 import type { TipoMovimiento } from '@/models/categoria'
-import type { Movimiento } from '../services/getMovimientos'
 
 export type Grupo = {
    categoriaId: string
