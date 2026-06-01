@@ -10,7 +10,8 @@
       "db:reset": "npx prisma migrate reset",
       "db:push": "npx prisma db push",
       "db:seed": "npx tsx src/seed.ts",
-      "db:studio": "npx prisma studio"
+      "db:studio": "npx prisma studio",
+      "create-user": "npx tsx src/create-user.ts"
    },
    "dependencies": {
       "@prisma/client": "^6.9.0",
