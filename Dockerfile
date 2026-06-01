@@ -38,6 +38,7 @@ WORKDIR /app
 COPY --from=builder /app/api/package*.json ./api/
 COPY --from=builder /app/api/node_modules ./api/node_modules
 COPY --from=builder /app/api/dist ./api/dist
+COPY --from=builder /app/api/src ./api/src
 COPY --from=builder /app/api/prisma ./api/prisma
 
 # Copiar los archivos estáticos compilados del frontend
